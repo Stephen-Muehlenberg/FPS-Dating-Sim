@@ -1,0 +1,202 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &993859897446870641
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 994931181170020247}
+      propertyPath: m_Name
+      value: Player Conversation Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.jump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.sprint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.slide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.walk.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.strafe.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.jump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.sprint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.slide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.walk.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.strafe.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: headbob.scale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.walk.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: movement.speed.strafe.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.jump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.sprint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: constraints.slide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 887986346160889391}
+      propertyPath: headbob.scale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 992446076718858793}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 994931181170020247}
+      propertyPath: m_Name
+      value: Player Conversation Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 994931181170020247}
+      propertyPath: m_Name
+      value: Player Conversation Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217077000724966, guid: 1f233959881033445ad623334751c786, type: 3}
+      propertyPath: m_Name
+      value: Player Conversation Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 4228984961068120, guid: 1f233959881033445ad623334751c786, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+        type: 3}
+      propertyPath: constraints.jump
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+        type: 3}
+      propertyPath: constraints.sprint
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+        type: 3}
+      propertyPath: constraints.slide
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+        type: 3}
+      propertyPath: movement.speed.walk.delta
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+        type: 3}
+      propertyPath: movement.speed.strafe.delta
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 114113145995705270, guid: 1f233959881033445ad623334751c786, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 1f233959881033445ad623334751c786, type: 3}
+--- !u!1 &994931181170020247 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1217077000724966, guid: 1f233959881033445ad623334751c786,
+    type: 3}
+  m_PrefabInstance: {fileID: 993859897446870641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &992446076718858793 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4228984961068120, guid: 1f233959881033445ad623334751c786,
+    type: 3}
+  m_PrefabInstance: {fileID: 993859897446870641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &887986346160889391 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114882124930265182, guid: 1f233959881033445ad623334751c786,
+    type: 3}
+  m_PrefabInstance: {fileID: 993859897446870641}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994931181170020247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_GeneratorAsset: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: c21a0d4b762c6e841975ea70de002d4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
