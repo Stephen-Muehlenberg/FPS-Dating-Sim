@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class Weapon {
+﻿public class Weapon {
   public string name;
   public string weaponName;
   public int index;
@@ -20,21 +18,9 @@ public class Weapon {
     this.combatSpeaker = combatSpeaker;
   }
 
-  public void setEquipped(bool equipped) { setEquipped(equipped, false); }
-  public void setEquipped(bool equipped, bool playEffects) {
-    if (this.equipped == equipped) return; // No change // TODO i reckon this is the problem
-    if (!canEquip) throw new UnityException("Can't equip " + name + " while canEquip == false.");
-
-    if (equipped) {
-      if (Weapons.currentlyEquipped != null) Weapons.currentlyEquipped.setEquipped(false);
-      Weapons.currentlyEquipped = this;
-    }
-    else Weapons.currentlyEquipped = null;
-
-    this.equipped = equipped;
-
-    controller.setEquipped(equipped, playEffects);
-  }
+  public void equip() { Weapons.setEquipped(this, true, true); }
+  public void equip(bool playEffects) { Weapons.setEquipped(this, true, true); }
+  public void unequip() { Weapons.setEquipped(this, false, false); }
 
   // Weapons persist between scene changes, but controllers do not.
   // When new controllers are loaded in, make sure to initialize them

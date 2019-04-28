@@ -28,7 +28,7 @@ public class AttackIfInRange : MonoBehaviour {
   }
 
   public void Update() {
-    if (Time.timeScale == 0) return; // Game is paused; do nothing
+    if (TimeUtils.gameplayPaused) return; // Game is paused; do nothing
 
     if (target == null) return;
 

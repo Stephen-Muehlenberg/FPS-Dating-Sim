@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.Audio;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class Quest_Introduction : Quest {
@@ -19,13 +19,6 @@ public class Quest_Introduction : Quest {
 
   private int greetingSelection = -1;
   private int proficiencySelection = -1;
-
-  private void foo(Hashtable bar) {
-    bar.Add("baz", "fuz");
-    var biz = new Hashtable();
-    var bez = new Dictionary<string, float>();
-    var wuz = biz["aaa"];
-  }
 
   public override void start(Hashtable args) {
     state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
@@ -75,7 +68,12 @@ public class Quest_Introduction : Quest {
         rectTransform.offsetMin = new Vector2(0, 0);
         rectTransform.offsetMax = new Vector2(0, 0);
 
-        // TODO: Play sound effects - sirens, screams, explosions
+        // Fade in background noises
+        // TODO play more and varied sounds - screams, explosions, monster roars, thunder
+        var mixer = Resources.Load<AudioMixer>("Audio/MainMixer");
+        AudioSource sirens = setupAmbientAudioSource("Ambience - sirens", "Audio/Environment/Sirens", mixer);
+        AudioSource alarms = setupAmbientAudioSource("Ambience - alarms", "Audio/Environment/Alarm", mixer);
+        player.StartCoroutine(fadeVolume(1, 4, sirens, alarms));
 
         ScreenFade.fadeIn(() => {
           new Conversation()
@@ -86,16 +84,15 @@ public class Quest_Introduction : Quest {
             .show(() => {
               player.StartCoroutine(fadeGraphic(fillImage, 0, 4, true));
 
-              // TODO play fire sound effects, slowly fade out as we zoom out
-
               var slowZoomCoroutine = zoomOutSlowly(player.camera);
               player.StartCoroutine(slowZoomCoroutine);
+              player.StartCoroutine(fadeOutAmbienceBasedOnZoom(player.camera, sirens, alarms));
 
               new Conversation()
                 .speaker(Conversation.Speaker.MC_NARRATION, "")
                 .wait(1.5f)
                 .text("Seems to be an apocalypse. Monsters, or demons, or undead... maybe all of the above?")
-                .text("It's been pretty bad.")
+        /*        .text("It's been pretty bad.")
                 .text("They've been rampaging through the streets, emptying out the whole town pretty quickly.")
                 .text("Everyone who hasn't been cut down is running for their lives.")
                 .wait(0.5f)
@@ -107,7 +104,7 @@ public class Quest_Introduction : Quest {
                 .text("...I already saw his body on the way over. I don't know why I'm still mentally yelling at him.")
                 .text("Pretty sure he bled on the welcome mat, though. Which, honestly, is just like him. I've never seen him make <i>coffee</i> without leaving something for me to clean up.")
                 .wait(2.5f)
-                .text("<i>Sigh.</i> I should probably find some detergent or something.")
+       */         .text("<i>Sigh.</i> I should probably find some detergent or something.")
                 .text("Does detergent work on blood? I don't have a lot of experience with this.")
                 .show(() => {
                   // If slow zoom hasn't finished, stop slow zoom and quickly finish zooming out
@@ -178,15 +175,16 @@ public class Quest_Introduction : Quest {
     fpController.move.inputDisabled = true;
 
     // TOOD fix this
-    player.StartCoroutine(setCrouchHeight(0.7f, 1.5f));
-    player.StartCoroutine(smoothMove(player.transform, new Vector3(2.93f, player.transform.position.y, -3), 0.5f));
-    player.StartCoroutine(setLookDirection(new Vector3(5, 90, 0), 1.5f));
+    player.setCrouchHeight(0.7f, 1.5f);
+    player.smoothMove(new Vector3(2.93f, player.transform.position.y, -3), 0.5f);
+//    player.StartCoroutine(smoothMove(player.transform, new Vector3(2.93f, player.transform.position.y, -3), 0.5f));
+    player.setLookDirection(new Vector3(5, 90, 0), 1.5f);
 
     new Conversation()
       .wait(1.5f)
       .speaker(Conversation.Speaker.MC_NARRATION, "")
       .text("I'm not <i>totally</i> sure why I'm here.")
-      .wait(0.5f)
+ /*     .wait(0.5f)
       .text("Maybe because I've been gunning for Employee of the Month for a while now, and I can't stop <i>now</i>.")
       .text("This kind of dedication would look pretty good to any secret shoppers that showed up.")
       .wait(0.5f)
@@ -196,16 +194,16 @@ public class Quest_Introduction : Quest {
       .text("Maybe...")
       .wait(1)
       .text("Maybe I just like the routine. If I'm going to get devoured by aliens, I might as well keep doing my job until it happens.")
-      .text("Not like I have much else going on.")
+ */     .text("Not like I have much else going on.")
       .wait(1.5f)
       .text(Conversation.Speaker.NONE, "*<i>Doorbell rings</i>*")
       .text("*<i>Footsteps</i>*")
       .performAction(() => {
-        player.StartCoroutine(setLookDirection(new Vector3(-5, 90, 0), 0.5f));
-        Actors.getRose().transform.position = new Vector3(1.35f, 0, -3.45f);
-        Actors.getVanessa().transform.position = new Vector3(0.668f, 0, -4.6f);
-        Actors.getFizzy().transform.position = new Vector3(0.78f, 0, -5.67f);
-        Actors.getMay().transform.position = new Vector3(0.95f, 0, -7.03f);
+        player.setLookDirection(new Vector3(-5, 90, 0), 0.5f);
+        Actors.getRose().transform.position = new Vector3(1.35f, 0, -6.45f);
+        Actors.getVanessa().transform.position = new Vector3(0.668f, 0, -7.6f);
+        Actors.getFizzy().transform.position = new Vector3(0.78f, 0, -8.67f);
+        Actors.getMay().transform.position = new Vector3(0.95f, 0, -10.03f);
       })
       .wait(0.5f)
       .speaker(Conversation.Speaker.MC_NARRATION, "")
@@ -213,9 +211,14 @@ public class Quest_Introduction : Quest {
       .text("…Or aliens. Probably aliens.")
       .text("Maybe I can offer a complimentary muffin to go with my brains.")
       .performAction(() => {
-        // TODO have the girls walk into position over the next few seconds, while dialog plays over them.
-        Player.SINGLETON.StartCoroutine(setCrouchHeight(0.95f, 1f));
-        player.StartCoroutine(setLookDirection(new Vector3(-10, 250, 0), 1f));
+        // Make the girls walk into place during the conversation
+        player.StartCoroutine(walk(Actors.getRose().transform, new Vector3(1.35f, 0, -3.45f), 5));
+        player.StartCoroutine(walk(Actors.getVanessa().transform, new Vector3(0.668f, 0, -4.6f), 5.4f));
+        player.StartCoroutine(walk(Actors.getFizzy().transform, new Vector3(0.78f, 0, -5.67f), 5.75f));
+        player.StartCoroutine(walk(Actors.getMay().transform, new Vector3(0.95f, 0, -7.03f), 6.05f));
+        
+        player.setCrouchHeight(0.95f, 1f);
+        player.setLookDirection(new Vector3(-10, 250, 0), 1f);
       })
       .wait(1.3f)
       .text("They're not aliens, surprisingly.")
@@ -256,10 +259,12 @@ public class Quest_Introduction : Quest {
     else if (greetingSelection == 3) greetingText = GREETING_3;
     else throw new UnityException("greetingSelection must have been set between 0 and 3 before this point.");
 
+    Player player = Player.SINGLETON;
+
     var convo = new Conversation()
       .performAction(() => {
-        Player.SINGLETON.StartCoroutine(setCrouchHeight(1.7f, 0.3f));
-        Player.SINGLETON.StartCoroutine(setLookDirection(new Vector3(2, 240, 0), 0.3f));
+        player.setCrouchHeight(1.7f, 0.3f);
+        player.setLookDirection(new Vector3(2, 240, 0), 0.3f);
       })
       .speaker(Conversation.Speaker.MC)
       .text(greetingText)
@@ -378,33 +383,32 @@ public class Quest_Introduction : Quest {
       .text(Conversation.Speaker.FIZZY, "Yeah, yeah. C'mon, your turn, Vanessa!")
       .text(Conversation.Speaker.MC_NARRATION, "The roar of a monster fills the air. Then more roars, closer, join in.")
       .text(Conversation.Speaker.VANESSA, "I'm not sure we have time for that.")
-      .text(Conversation.Speaker.MAY, "We need to get moving. Every monster in the neighborhood's gonna be heading for this cafe.")
+      .text(Conversation.Speaker.MAY, "Preeetty sure you just got the attention of every monster in the neighborhood, Fiz.")
+      .text(Conversation.Speaker.FIZZY, "My bad.")
+      .text(Conversation.Speaker.MAY, "<i>Sigh.</i> We'd better get moving. This place isn't really defensible.")
       .text(Conversation.Speaker.ROSE, "Cmhm fhef dmf— Urfh…")
       .text(Conversation.Speaker.MC_NARRATION, "Rose quickly scarfs down the remainder of her muffin.")
-      .text(Conversation.Speaker.ROSE, "Come on, sis, don't be stupid. You guys can barely walk, let alone carry a gun.")
-      .text(Conversation.Speaker.FIZZY, "Yeah, even <i>I'm</i> getting tired.")
-      .text(Conversation.Speaker.MC, "I could—")
-      .text(Conversation.Speaker.VANESSA, "I'm afraid there's nothing for it. We must wait for them here.")
-      .text(Conversation.Speaker.MC, "What if—")
-      .text(Conversation.Speaker.MAY, "Shit. This really isn't a defensible position. There's no way we can hold out here.")
-      .text(Conversation.Speaker.MC, "There's a—")
-      .text(Conversation.Speaker.VANESSA, "This might be it then. It's been a pleasure knowing you all.")
-      .text(Conversation.Speaker.MC, "Will you just—")
-      .text(Conversation.Speaker.FIZZY, "Noooooo! Vanessaaaaa! I don't want you to dieeeee!")
-      .text(Conversation.Speaker.MC, "...Seriously?")
-      .text(Conversation.Speaker.ROSE, "Hey, what about me!? And May, I guess. You want us to not die too, right?")
-      .text(Conversation.Speaker.MC, "<b>HEY!</b>")
-      .wait(0.5f)
-      .text(Conversation.Speaker.MC_NARRATION, "They finally snap out of their little bubble.")
-      .wait(0.5f)
-      .text(Conversation.Speaker.MC, "We <i>have</i> a back door. Leads onto some sidestreets, away from the main roads.")
-      .text("And I can totally carry all of you. Er, well, gun you. Steve made me do all the heavy lifting around here all the time.")
-      .wait(1f)
-      .text(Conversation.Speaker.MAY, "I mean, ok, that <i>sounds</i> like a good plan, but—")
+      .text(Conversation.Speaker.ROSE, "Come on, sis, don't be stupid. We've been running around all morning; you guys can barely stand.")
+      .text(Conversation.Speaker.FIZZY, "Even <i>I'm</i> tired of running.")
+      .text(Conversation.Speaker.VANESSA, "I'm afraid she's right. We've no choice but to make a stand here, defensible or not.")
+      .text(Conversation.Speaker.MAY, "Shit. I'm sorry guys, I should have found somewhere safer for us to rest.")
+      .speaker(Conversation.Speaker.FIZZY)
+      .choice("If only there was some random helpful person willing to carry us poor, exhausted, attractive girls around. And possibly use us to slay demons.",
+        "Demon slaying? Awesome, sign me up!",
+        "Oooh! Me! I'm a random helpful person willing to something something attractive girls.",
+        "Subtle <i>and</i> modest. How can I refuse such charm?",
+        "Well, I guess I'd be a lot safer with a bunch of sentient gun ladies by my side.",
+        (selection, _) => {
+          // TODO
+        }
+      )
+      .text(Conversation.Speaker.MC, "I should also mention there's a back door, leads onto some side streets away from the main roads. Might have a better chance of escaping monsters back there.")
+      .text(Conversation.Speaker.MAY, "I mean, ok, that all <i>sounds</i> pretty good, but—")
       .speaker(Conversation.Speaker.ROSE)
       .choice("Do you even know how to <i>use</i> a gun?", PROFICIENCY_0, PROFICIENCY_1, PROFICIENCY_2, PROFICIENCY_3, (selection, _) => {
         proficiencySelection = selection;
       })
+      // TODO this isn't working; looks like PROF_3 is always being selected.
       .text(Conversation.Speaker.MC, 
         proficiencySelection == 0 ? PROFICIENCY_0 :
         proficiencySelection == 1 ? PROFICIENCY_1 :
@@ -416,9 +420,7 @@ public class Quest_Introduction : Quest {
       .show(() => { QuestManager.start(new Quest_Tutorial()); });
   }
 
-  private void foo() {
-    state = 60;
-  }
+  // ---------- UTILS -----------
 
   // TODO this might be a useful generic util
   private IEnumerator fadeGraphic(Graphic image, float alpha, float fadeDuration, bool destroyImageOnComplete) {
@@ -445,6 +447,19 @@ public class Quest_Introduction : Quest {
     }
   }
 
+  private IEnumerator fadeOutAmbienceBasedOnZoom(Camera camera, params AudioSource[] audioSources) {
+    while (camera.fieldOfView < 75) {
+      foreach (AudioSource source in audioSources) {
+        source.volume = 1f - ((camera.fieldOfView - 6) / 69f);
+      }
+      yield return null;
+    }
+
+    for (int i = audioSources.Length - 1; i >= 0; i--) {
+      GameObject.Destroy(audioSources[i].gameObject);
+    }
+  }
+
   private IEnumerator waitForPlayerToLookAround(Transform playerTransform) {
     while (playerTransform.rotation.eulerAngles.x < -25 || playerTransform.rotation.eulerAngles.x > 25
       || (playerTransform.rotation.eulerAngles.y < 330 && playerTransform.rotation.eulerAngles.y > 30)) {
@@ -458,38 +473,7 @@ public class Quest_Introduction : Quest {
     setState(30);
   }
 
-  // TODO move this to some sort of utils class?
-  private IEnumerator setCrouchHeight(float height, float duration) {
-    var player = Player.SINGLETON;
-    var headbob = player.GetComponent<FirstPersonModule.FirstPersonController>().headbob;
-    var baseHeadHeight = headbob.baseHeadHeight;
-    var camera = Camera.main;
-    var t = 0f;
-    var timeMultiplier = 1f / duration;
-    while (t < 1) {
-      headbob.setBaseHeadHeight(Mathf.SmoothStep(baseHeadHeight, height, t));
-      t += Time.deltaTime * timeMultiplier;
-      yield return null;
-    }
-    headbob.baseHeadHeight = height;
-  }
-
-  private IEnumerator smoothMove(Vector3 destination, float duration) {
-    var playerTransform = Player.SINGLETON.transform;
-    Vector3 velocity = Vector3.zero;
-
-    var t = 0f;
-    var timeMultiplier = 1f / duration;
-    while (t < 1) {
-      playerTransform.position = new Vector3(
-        Mathf.SmoothStep(playerTransform.position.x, destination.x, t),
-        Mathf.SmoothStep(playerTransform.position.y, destination.y, t),
-        Mathf.SmoothStep(playerTransform.position.z, destination.z, t));
-      t += Time.deltaTime * timeMultiplier;
-      yield return null;
-    }
-  }
-
+  // TODO move this to some utils file
   private IEnumerator smoothMove(Transform transform, Vector3 destination, float duration) { return smoothMove(transform, destination, duration, null); }
   private IEnumerator smoothMove(Transform transform, Vector3 destination, float duration, Callback callback) {
     Vector3 velocity = Vector3.zero;
@@ -500,19 +484,47 @@ public class Quest_Introduction : Quest {
     callback?.Invoke();
   }
 
-  private IEnumerator setLookDirection(Vector3 direction, float duration) {
-    var player = Player.SINGLETON;
-    Quaternion startingRotation = Quaternion.Euler(player.camera.transform.localRotation.eulerAngles.x, player.transform.rotation.eulerAngles.y, 0);
-    Quaternion targetRotation = Quaternion.Euler(direction);
-    Quaternion currentRotation;
-    var t = 0f;
-    var timeMultiplier = 1f / duration;
-    while (t < 1) {
-      currentRotation = Quaternion.Slerp(startingRotation, targetRotation, t);
-      player.transform.rotation = Quaternion.Euler(0, currentRotation.eulerAngles.y, 0);
-      player.camera.transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, 0, 0);
-      t += Time.deltaTime * timeMultiplier;
+  // Move the transform at a constant speed to the destination, with slight vertical headbob.
+  private IEnumerator walk(Transform transform, Vector3 destination, float duration) {
+    Vector3 origin = transform.position;
+    float t = 0f; // Realtime spent walking
+    float progress = 0; // Fraction completed
+    while (transform.position != destination) {
+    //  if (TimeUtils.dialogPaused) yield return null;
+
+   //   t += Time.deltaTime;
+      progress += Time.deltaTime / duration;
+      Vector3.Lerp(origin, destination, progress);
+ //     transform.position = new Vector3(transform.position.x, transform.position.y + Mathf.Sin(t), transform.position.z);
       yield return null;
     }
+  }
+
+  private IEnumerator fadeVolume(float targetVolume, float fadeDuration, params AudioSource[] audioSources) {
+    float t = 0;
+    float volumeDeltaPerSecond = (targetVolume - audioSources[0].volume) / fadeDuration;
+
+    while (t < fadeDuration) {
+      foreach (AudioSource audioSource in audioSources) {
+        audioSource.volume += volumeDeltaPerSecond * Time.deltaTime;
+      }
+      t += Time.deltaTime;
+      yield return null;
+    }
+
+    foreach (AudioSource audioSource in audioSources) {
+      audioSource.volume = targetVolume;
+    }
+  }
+
+  private AudioSource setupAmbientAudioSource(string name, string resource, AudioMixer mixer) {
+    GameObject obj = new GameObject("Ambience: " + resource);
+    AudioSource source = obj.AddComponent<AudioSource>();
+    source.clip = Resources.Load<AudioClip>(resource);
+    source.outputAudioMixerGroup = mixer.outputAudioMixerGroup;
+    source.volume = 0;
+    source.loop = true;
+    source.Play();
+    return source;
   }
 }

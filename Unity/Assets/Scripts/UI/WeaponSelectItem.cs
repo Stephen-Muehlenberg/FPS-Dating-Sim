@@ -10,12 +10,16 @@ public class WeaponSelectItem : MonoBehaviour {
 
   public void enable() {
     text.enabled = true;
-    image.enabled = true;
+    // TODO clean this up and verify it works
+    //image.enabled = true;
+    image.color = unselectedColour;
   }
 
   public void disable() {
     text.enabled = false;
-    image.enabled = false;
+    // TODO clean this up and verify it works
+    //image.enabled = false;
+    image.color = new Color(0, 0, 0, 0.4f);
   }
 
   public void highlight() {

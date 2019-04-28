@@ -196,50 +196,48 @@ namespace FirstPersonModule {
       currentProfile = running ? runProfile : walkProfile;
 
       // INPUT
-      if (!inputDisabled) {
-        movementInput =
-          (controller.transform.forward * Input.GetAxis("Vertical")) +
-          (controller.transform.right * Input.GetAxis("Horizontal"));
+      if (inputDisabled) movementInput = Vector3.zero;
+      else movementInput =
+        (controller.transform.forward * Input.GetAxis("Vertical")) +
+        (controller.transform.right * Input.GetAxis("Horizontal"));
 
-        moving = movementInput != Vector3.zero;
+      moving = movementInput != Vector3.zero;
 
-        if (moving) {
-          currentAcceleration = controller.inAir ? currentProfile.airAcceleration : currentProfile.acceleration;
-          velocityDelta = movementInput.normalized * currentAcceleration * Time.deltaTime;
+      if (moving) {
+        currentAcceleration = controller.inAir ? currentProfile.airAcceleration : currentProfile.acceleration;
+        velocityDelta = movementInput.normalized * currentAcceleration * Time.deltaTime;
 
-          // Ignore vertical component
-          newSpeedSq = (controller.velocity + velocityDelta).horizontalSqMagnitude();
-          oldSpeedSq = controller.velocity.horizontalSqMagnitude();
+        // Ignore vertical component
+        newSpeedSq = (controller.velocity + velocityDelta).horizontalSqMagnitude();
+        oldSpeedSq = controller.velocity.horizontalSqMagnitude();
 
-          // If velocity plus velocity delta has a magnitude greater than max speed, just apply the side-to-side movement, ignoring forward movement.
-          if (newSpeedSq > currentProfile.speedSq) {
-            // Get the normalized direction of the tangent of the current velocity.
-            velocityTangent = (rightAnglesRotation * controller.velocity).horizontalNormalized();
-            // Project the input onto the tangent, so we get ONLY the side-to-side movement.
-            sidewaysMovement = Vector3.Project(velocityDelta, velocityTangent);
-            // Subtract vertical motion because we only want to modify horizontal movement.
-            oldHorizontalVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z);
-            // Add the side-to-side movement to the current movement, then scale the result to move at max speed.
-            newHorizontalVelocity = (oldHorizontalVelocity + sidewaysMovement).normalized * currentProfile.speed;
-            // Add the vertical motion back in after modifying horizontal movement.
-            controller.velocity = newHorizontalVelocity + (Vector3.up * controller.velocity.y);
-          }
-
-          // Otherwise just add delta to velocity
-          else {
-            controller.velocity += velocityDelta;
-          }
-
-          // Only apply velocity change if it's either slowing you down OR it's speeding you up but not beyond your max speed.
-          // This prevents you accelerating, e.g. if something is pushing you forward rapidly - moving back or to the side will work,
-          // but you can't get any more forward velocity.
-          //    if (newSpeedSq < oldSpeedSq || newSpeedSq < currentProfile.speedSq) { // TODO cache currentProfile.speed ^2
-          //    velocity += velocityDelta;
-          //}
-          // TODO if velocityDelta would push it over the speed limit but we're not CURRENTLY at the limit, increase to (but not over) the limit
+        // If velocity plus velocity delta has a magnitude greater than max speed, just apply the side-to-side movement, ignoring forward movement.
+        if (newSpeedSq > currentProfile.speedSq) {
+          // Get the normalized direction of the tangent of the current velocity.
+          velocityTangent = (rightAnglesRotation * controller.velocity).horizontalNormalized();
+          // Project the input onto the tangent, so we get ONLY the side-to-side movement.
+          sidewaysMovement = Vector3.Project(velocityDelta, velocityTangent);
+          // Subtract vertical motion because we only want to modify horizontal movement.
+          oldHorizontalVelocity = new Vector3(controller.velocity.x, 0, controller.velocity.z);
+          // Add the side-to-side movement to the current movement, then scale the result to move at max speed.
+          newHorizontalVelocity = (oldHorizontalVelocity + sidewaysMovement).normalized * currentProfile.speed;
+          // Add the vertical motion back in after modifying horizontal movement.
+          controller.velocity = newHorizontalVelocity + (Vector3.up * controller.velocity.y);
         }
+
+        // Otherwise just add delta to velocity
+        else {
+          controller.velocity += velocityDelta;
+        }
+
+        // Only apply velocity change if it's either slowing you down OR it's speeding you up but not beyond your max speed.
+        // This prevents you accelerating, e.g. if something is pushing you forward rapidly - moving back or to the side will work,
+        // but you can't get any more forward velocity.
+        //    if (newSpeedSq < oldSpeedSq || newSpeedSq < currentProfile.speedSq) { // TODO cache currentProfile.speed ^2
+        //    velocity += velocityDelta;
+        //}
+        // TODO if velocityDelta would push it over the speed limit but we're not CURRENTLY at the limit, increase to (but not over) the limit
       }
-      else movementInput = Vector3.zero;
 
       if (controller.velocity == Vector3.zero) return; // No need to decelerate if we're not moving
 

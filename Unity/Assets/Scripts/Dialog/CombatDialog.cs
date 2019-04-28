@@ -32,7 +32,10 @@ public class CombatDialog {
       public Wait(float duration) { this.duration = duration; }
     }
 
-    // TODO public class PerformCallback : Action {}
+    public class PerformAction : Action {
+      public Callback callback;
+      public PerformAction(Callback callback) { this.callback = callback; }
+    }
   }
 
   // ==== ENUMS ====
@@ -67,6 +70,11 @@ public class CombatDialog {
 
   public CombatDialog wait(float duration) {
     actions.Add(new Action.Wait(duration));
+    return this;
+  }
+
+  public CombatDialog performAction(Callback callback) {
+    actions.Add(new Action.PerformAction(callback));
     return this;
   }
 

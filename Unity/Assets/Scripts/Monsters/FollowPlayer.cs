@@ -10,7 +10,7 @@ public class FollowPlayer : MonoBehaviour {
   }
 	
 	void Update () {
-    if (Time.timeScale == 0) return; // Game is paused; do nothing
+    if (TimeUtils.gameplayPaused) return;
 
     navAgent.SetDestination(Player.SINGLETON.transform.position);
   }

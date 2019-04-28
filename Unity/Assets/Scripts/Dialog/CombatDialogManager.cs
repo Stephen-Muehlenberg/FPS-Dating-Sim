@@ -77,6 +77,10 @@ public class CombatDialogManager : MonoBehaviour {
       timeTillNextMessage = (action as CombatDialog.Action.Wait).duration;
       return;
     }
+    if (action is CombatDialog.Action.PerformAction) {
+      (action as CombatDialog.Action.PerformAction).callback.Invoke();
+      finishCurrentAction();
+    }
     else
       throw new UnityException("Unhandled CombatDialog.Action " + action);
   }

@@ -49,7 +49,7 @@ public class GunSwitch : MonoBehaviour {
   public void equip(Weapon newWeapon) { equip(newWeapon, false); }
   public void equip(Weapon newWeapon, bool playEffects) {
     if (Weapons.currentlyEquipped == newWeapon) return; // No change
-    newWeapon.setEquipped(true);
+    newWeapon.equip();
     if (playEffects) audioSource.Play();
   }
 }

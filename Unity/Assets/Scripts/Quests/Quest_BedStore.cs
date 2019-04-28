@@ -29,7 +29,7 @@ public class Quest_BedStore : Quest {
 
   public void setState(int state) {
     this.state = state;
-    if (state == 0) SceneTransition.fadeTo("cafe", null, () => { startConversation(); });
+    if (state == 0) SceneTransition.fadeTo("cafe", () => { startConversation(); });
     else if (state == 10) SceneTransition.fadeTo("mission_bed_store", () => { setupLevel(); }); // TODO probably show some sort of text once you load, directing you
     else if (state == 20) setupClearNearbyEnemies();
     else if (state == 30) setupOutsideDialog();
@@ -55,9 +55,10 @@ public class Quest_BedStore : Quest {
     var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
     firstPersonController.move.inputDisabled = true;
     firstPersonController.jump.inputDisabled = true;
+    Weapons.unequip();
 
     new Conversation()
-      .wait(1.25f)
+      .wait(2f)
       .text(Conversation.Speaker.MC_NARRATION, "<i>I stagger back into the café with four guns that each hop off and transform back into women.</i>")
       .wait(0.3f)
       .performAction(() => {
@@ -116,7 +117,7 @@ public class Quest_BedStore : Quest {
     locationMarkerTransform.position = new Vector3(156, 2.5f, 95);
     LocationMarker.add(locationMarkerTransform);
     CurrentQuestMessage.set("Head to the furniture store");
-    Weapons.MACHINE_GUN.setEquipped(true);
+    Weapons.MACHINE_GUN.equip();
   }
 
   // -- 20 --
@@ -143,7 +144,7 @@ public class Quest_BedStore : Quest {
       MonstersController.killAll();
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
-      Weapons.currentlyEquipped.setEquipped(false);
+      Weapons.currentlyEquipped.unequip();
       
       // Position actors
       Actors.getRose().setPosition(girlConversationPositionA);
@@ -255,7 +256,7 @@ public class Quest_BedStore : Quest {
       // Disable game stuff, enter conversation mode
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
-      Weapons.currentlyEquipped.setEquipped(false);
+      Weapons.currentlyEquipped.unequip();
 
       // Position actors based on whether they fought or scrounged
       var defenders = new List<Actor>();

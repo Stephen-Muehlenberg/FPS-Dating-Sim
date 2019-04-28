@@ -57,7 +57,7 @@ public class WeaponSelectMenu : MonoBehaviour {
     for (int i = 0; i < 4; i++) {
       if (singleton.canHighlight[i]) {
         singleton.weaponUiItems[i].enable();
-        if (i == currentlyHighlighted.index) singleton.weaponUiItems[i].highlight();
+        if (currentlyHighlighted != null && i == currentlyHighlighted.index) singleton.weaponUiItems[i].highlight();
         else singleton.weaponUiItems[i].unhighlight();
       }
       else singleton.weaponUiItems[i].disable();

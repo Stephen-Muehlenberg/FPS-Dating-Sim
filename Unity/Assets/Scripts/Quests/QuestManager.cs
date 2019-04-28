@@ -23,6 +23,7 @@ public class QuestManager {
     if (name == Quest_BedStore.NAME) return new Quest_BedStore();
     if (name == Quest_Introduction.NAME) return new Quest_Introduction();
     if (name == Quest_TestKillEnemies.NAME) return new Quest_TestKillEnemies();
+    if (name == Quest_Tutorial.NAME) return new Quest_Tutorial();
     throw new UnityException("Unknown quest " + name);
   }
 }
