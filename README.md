@@ -1,6 +1,6 @@
 # First Person Shooter Dating Sim (FPSDS)
 
-Project made in Unity, using version [2019.2.0a7 (alpha).](https://unity3d.com/alpha/2019.2)
+Project made in Unity, using version [2019.1.](https://store.unity.com/download)
 
 See the [Design Document](https://docs.google.com/document/d/1iEnVZLWjhzc0HxSSOfOO7gBJ_ZPNm7U-A5bZZpPRtIQ/edit?usp=sharing) for the task list.
 
