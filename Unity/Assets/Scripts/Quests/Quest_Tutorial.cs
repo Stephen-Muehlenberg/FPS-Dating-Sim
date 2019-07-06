@@ -56,47 +56,23 @@ public class Quest_Tutorial : Quest {
     // TODO play monster roar
 
     // TODO all this find game object is disgusting, improve it
-    GameObject torch1, torch2, torch3, torch4;
+    GameObject torch1, torch3, torch4;
     torch1 = GameObject.Find("Torch (1)");
-    torch2 = GameObject.Find("Torch (2)");
     torch3 = GameObject.Find("Torch (3)");
     torch4 = GameObject.Find("Torch (4)");
 
     torch1.GetComponent<FollowPlayer>().enabled = true;
-    torch2.GetComponent<FollowPlayer>().enabled = true;
     torch3.GetComponent<FollowPlayer>().enabled = true;
     torch4.GetComponent<FollowPlayer>().enabled = true;
 
     yield return new WaitForSeconds(1.2f);
 
-    torch1.GetComponent<NavMeshAgent>().isStopped = true;
-    torch2.GetComponent<NavMeshAgent>().isStopped = true;
-    torch3.GetComponent<NavMeshAgent>().isStopped = true;
-    torch4.GetComponent<NavMeshAgent>().isStopped = true;
-
-    TimeUtils.gameplayPaused = true;
-    Player.SINGLETON.firstPersonController.move.inputDisabled = true;
-    CurrentQuestMessage.clear();
-
-    new Conversation()
-      .text(Conversation.Speaker.MC, "So much for escaping undetected. Uhh, ladies? Little help.")
-      .text(Conversation.Speaker.MAY, "Monsters already? Darnit, that was quick.")
-      .text(Conversation.Speaker.MAY, "Ok, I need you to grab me and spray me all over!")
-      .wait(0.75f)
-      .text(Conversation.Speaker.MC, "Uhhhh…")
-      .text(Conversation.Speaker.ROSE, "Pfff, what?")
-      .text(Conversation.Speaker.MAY, "Bullets! Spray bullets! All over the monsters!")
-      .text(Conversation.Speaker.MAY, "Just grab me, aim, and shoot. Easy peasy.")
-      .text(Conversation.Speaker.MAY, "And stop snickering, Rose!")
-      .show(() => {
-        CurrentQuestMessage.set("Hold [Middle mouse] or [Q] to open the weapon menu\nHighlight a weapon to select it");
-        Weapons.MACHINE_GUN.canEquip = true;
-        Weapons.SHOTGUN.canEquip = false;
-        Weapons.SNIPER_RIFLE.canEquip = false;
-        Weapons.GRENADE_LAUNCHER.canEquip = false;
-        Player.SINGLETON.GetComponent<GunSwitch>().enabled = true;
-        Weapons.equipEvents += onWeaponEquipped;
-      });
+    new CombatDialog()
+      .message(CombatDialog.Speaker.MC, "So much for escaping undetected.\nLadies? Little help?")
+      .performAction(() => { Weapons.MACHINE_GUN.equip(); })
+      .message(CombatDialog.Speaker.MAY, "Gotcha covered. Just point and shoot.")
+      .performAction(() => { CurrentQuestMessage.set("[Left mouse] fires a burst, [Right mouse] fires full auto"); })
+      .show(CombatDialog.Priority.MAX);
   }
 
   private void onWeaponEquipped(Weapon weapon) {
