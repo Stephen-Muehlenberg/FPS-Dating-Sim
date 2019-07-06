@@ -36,9 +36,8 @@ public class Quest_Tutorial : Quest {
       },
       () => {
         new Conversation()
-          .text(Conversation.Speaker.MC_NARRATION, "So here I am, sneaking out the back door while carrying four guns who also happen to be girls.")
+          .text(Conversation.Speaker.MC_NARRATION, "So here I am, sneaking out the back door, loaded up with guns who also happen to be girls.")
           .text(Conversation.Speaker.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
-          .text(Conversation.Speaker.MC_NARRATION, "Oh well, no sign of monsters yet. Better get moving while the coast is clear.")
           .show(() => {
             CurrentQuestMessage.set("Escape through the back alleys");
             Player.SINGLETON.firstPersonController.move.inputDisabled = false;
@@ -80,7 +79,7 @@ public class Quest_Tutorial : Quest {
     CurrentQuestMessage.clear();
 
     new Conversation()
-      .text(Conversation.Speaker.MC, "Uhh, girls? Guess the coast <i>isn't</i> clear.")
+      .text(Conversation.Speaker.MC, "So much for escaping undetected. Uhh, ladies? Little help.")
       .text(Conversation.Speaker.MAY, "Monsters already? Darnit, that was quick.")
       .text(Conversation.Speaker.MAY, "Ok, I need you to grab me and spray me all over!")
       .wait(0.75f)

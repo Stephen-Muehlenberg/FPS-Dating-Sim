@@ -39,7 +39,8 @@ namespace FirstPersonModule {
     }
 
     public void Update() {
-      inAir = Physics.OverlapBox(transform.position + Vector3.down * 0.02f, new Vector3(0.25f, 0.06f, 0.25f), Quaternion.identity, collisionMask).Length == 0;
+      // Check if there's anything beneath the player. The distance is equal to characterController.skinWidth (currently 0.035) + 0.02 for extra padding
+      inAir = Physics.OverlapBox(transform.position + Vector3.down * 0.055f, new Vector3(0.25f, 0.06f, 0.25f), Quaternion.identity, collisionMask).Length == 0;
       
       look.update();
       move.update();
@@ -48,7 +49,6 @@ namespace FirstPersonModule {
       gravity.update();
 
       if (!isKinematic) characterController.Move(velocity * Time.deltaTime);
-     
     }
 
     public void enableAllInput() {
@@ -269,6 +269,10 @@ namespace FirstPersonModule {
   public class LookModule : ComponentModule {
     public float sensitivity = 100f;
 
+    public void restrictCameraToDirection(Vector3 direction, float maxRotation) {
+      // TODO
+    }
+
     // Cached to avoid re-allocation
     private float input;
     private float verticalRotation;
@@ -440,7 +444,7 @@ namespace FirstPersonModule {
           landingBobVelocity = Mathf.Max(currentFallSpeed * landingBobStrength, landingBobMaxStrength);
           cycleTime = 0; // Restart the headbob cycle
           currentFallSpeed = 0;
-          recoveryYPosition -= 0.001f; // Offset a tiny to indicate that a landing recovery is in progress
+          recoveryYPosition -= 0.001f; // Offset a tiny amount to indicate that a landing recovery is in progress
         } 
 
         // While still recovering from a landing, continue with the extra large headbob

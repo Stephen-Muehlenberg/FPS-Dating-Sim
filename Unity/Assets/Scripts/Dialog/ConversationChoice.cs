@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ConversationChoice : MonoBehaviour {
@@ -79,23 +77,19 @@ public class ConversationChoice : MonoBehaviour {
   }
 
   private void select(Text text) {
-    text.GetComponent<Outline>().effectColor = new Color(0.5f, 0.5f, 0.25f);
-    text.GetComponent<Outline>().effectDistance = new Vector2(3, 3);
+    text.color = new Color(1, 0.95f, 0.51f);
   }
 
   private void deselect(Text text) {
-    text.GetComponent<Outline>().effectColor = Color.black;
-    text.GetComponent<Outline>().effectDistance = new Vector2(1, 1);
+    text.color = Color.white;
   }
 
   private void highlight(Text text) {
     text.fontSize = 32;
-    text.color = Color.white;
   }
 
   private void unhighlight(Text text) {
     text.fontSize = 28;
-    text.color = new Color(0.85f, 0.85f, 0.85f);
   }
 
   private void updateSelection() {
@@ -127,96 +121,3 @@ public class ConversationChoice : MonoBehaviour {
     }
   }
 }
-
-/*
-  private const float MAX_MOUSE_SELECTION_OFFSET = 5f;
-
-  private bool[] canHighlight;
-
-  private enum Mode { HIGHLIGHT, SELECT, NONE };
-  private Mode mode;
-  private Weapon currentlyHighlightedWeapon;
-
-  private Weapon initiallyHighlightedWeapon;
-  private int minWeaponSelections, maxWeaponSelections;
-  private List<Weapon> selectedWeapons;
-  private SelectionCallback selectionCallback;
-  private bool firstFrameSkipped = false; // Ignore selections on the first frame as they may have been from a previous dialog
-  private bool canConfirmSelection = false; // Current selection is valid and can be confirmed
-
-  private Vector2 mouseInput; // Cached for re-use
-  private float absX, absY; // Cached for re-use
-
-  public static void startHighlight(Weapon currentlyHighlighted) {
-    if (singleton != null && singleton.mode != Mode.NONE) throw new UnityException("Cannot have two Weapon Selections simultaneously.");
-
-    if (singleton == null) initializeSingleton();
-
-    singleton.gameObject.SetActive(true);
-    singleton.mode = Mode.HIGHLIGHT;
-    singleton.currentlyHighlightedWeapon = currentlyHighlighted;
-    singleton.initiallyHighlightedWeapon = currentlyHighlighted;
-    singleton.mouseInput = new Vector2(); // Clear previous input
-    singleton.canHighlight = new bool[4] { Weapons.SHOTGUN.canEquip, Weapons.MACHINE_GUN.canEquip, Weapons.SNIPER_RIFLE.canEquip, Weapons.GRENADE_LAUNCHER.canEquip };
-
-    for (int i = 0; i < 4; i++) {
-      if (singleton.canHighlight[i]) {
-        singleton.weaponUiItems[i].enable();
-        if (i == currentlyHighlighted.index) singleton.weaponUiItems[i].highlight();
-        else singleton.weaponUiItems[i].unhighlight();
-      }
-      else singleton.weaponUiItems[i].disable();
-    }
-
-    singleton.instructionText.enabled = false;
-    singleton.controlsText.enabled = false;
-  }
-
-  public static Weapon endHighlight() {
-    if (singleton == null || singleton.mode != Mode.HIGHLIGHT) throw new UnityException("Must call startHighlight() before endHighlight().");
-
-    singleton.mode = Mode.NONE;
-    singleton.gameObject.SetActive(false);
-
-    if (singleton.canHighlight[singleton.currentlyHighlightedWeapon.index]) return singleton.currentlyHighlightedWeapon;
-    else return singleton.initiallyHighlightedWeapon;
-  }
-
-  public static void select(int min, int max, string message, SelectionCallback callback) {
-    singleton.mouseInput = new Vector2(); // Clear previous input
-    singleton.canHighlight = new bool[4] { Weapons.SHOTGUN.canEquip, Weapons.MACHINE_GUN.canEquip, Weapons.SNIPER_RIFLE.canEquip, Weapons.GRENADE_LAUNCHER.canEquip };
-
-    for (int i = 0; i < 4; i++) {
-      if (singleton.canHighlight[i]) {
-        singleton.weaponUiItems[i].enable();
-        singleton.weaponUiItems[i].unhighlight();
-      }
-      else singleton.weaponUiItems[i].disable();
-    }
-
-    singleton.instructionText.enabled = true;
-    singleton.instructionText.text = message;
-    singleton.controlsText.enabled = true;
-
-    WeaponSelectParticles.initialize();
-    singleton.updateCanConfirm();
-  }
-
-  private void completeSelection(List<Weapon> selectedWeapons) {
-    WeaponSelectParticles.stop();
-    foreach (WeaponSelectItem item in weaponUiItems) {
-      item.deselect();
-    }
-    mode = Mode.NONE;
-    gameObject.SetActive(false);
-    selectionCallback.Invoke(selectedWeapons);
-  }
-
-  private void updateCanConfirm() {
-    if ((selectedWeapons.Count >= minWeaponSelections && selectedWeapons.Count <= maxWeaponSelections) != canConfirmSelection) {
-      canConfirmSelection = !canConfirmSelection;
-      controlsText.text = canConfirmSelection ? "[Jump] to confirm" : "[Fire] to select";
-    }
-  }
-}
- */

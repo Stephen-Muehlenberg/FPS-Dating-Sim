@@ -11,28 +11,41 @@ public class Player : MonoBehaviour {
     SINGLETON = this;
 	}
 
+  /**
+   * Smoothly move the player to the destination over the course of the duration.
+   */
+  public Coroutine smoothMove(Vector3 destination, float duration) {
+    return StartCoroutine(_smoothMove(destination, duration));
+  }
+
+  /**
+   * Rotate player to face the direction over the course of the duration.
+   */
+  public Coroutine setLookDirection(Vector3 direction, float duration) {
+    return StartCoroutine(_setLookDirection(direction, duration));
+  }
+
+  /**
+   * Set the player's camera height over the couse of the duration.
+   * Useful for e.g. causing the player to crouch.
+   */
   public Coroutine setCrouchHeight(float height, float duration) {
     return StartCoroutine(_setCrouchHeight(height, duration));
   }
 
-  private IEnumerator _setCrouchHeight(float height, float duration) {
-    var player = Player.SINGLETON;
-    var headbob = player.GetComponent<FirstPersonModule.FirstPersonController>().headbob;
-    var baseHeadHeight = headbob.baseHeadHeight;
-    var camera = Camera.main;
+  private IEnumerator _smoothMove(Vector3 destination, float duration) {
+    Vector3 velocity = Vector3.zero;
+
     var t = 0f;
     var timeMultiplier = 1f / duration;
-
     while (t < 1) {
-      headbob.setBaseHeadHeight(Mathf.SmoothStep(baseHeadHeight, height, t));
+      transform.position = new Vector3(
+        Mathf.SmoothStep(transform.position.x, destination.x, t),
+        Mathf.SmoothStep(transform.position.y, destination.y, t),
+        Mathf.SmoothStep(transform.position.z, destination.z, t));
       t += Time.deltaTime * timeMultiplier;
       yield return null;
     }
-    headbob.baseHeadHeight = height;
-  }
-
-  public Coroutine setLookDirection(Vector3 direction, float duration) {
-    return StartCoroutine(_setLookDirection(direction, duration));
   }
 
   private IEnumerator _setLookDirection(Vector3 direction, float duration) {
@@ -50,22 +63,18 @@ public class Player : MonoBehaviour {
     }
   }
 
-  public Coroutine smoothMove(Vector3 destination, float duration) {
-    return StartCoroutine(_smoothMove(destination, duration));
-  }
-
-  private IEnumerator _smoothMove(Vector3 destination, float duration) {
-    Vector3 velocity = Vector3.zero;
-
+  private IEnumerator _setCrouchHeight(float height, float duration) {
+    var headbob = SINGLETON.firstPersonController.headbob;
+    var baseHeadHeight = headbob.baseHeadHeight;
+    var camera = Camera.main;
     var t = 0f;
     var timeMultiplier = 1f / duration;
+
     while (t < 1) {
-      transform.position = new Vector3(
-        Mathf.SmoothStep(transform.position.x, destination.x, t),
-        Mathf.SmoothStep(transform.position.y, destination.y, t),
-        Mathf.SmoothStep(transform.position.z, destination.z, t));
+      headbob.setBaseHeadHeight(Mathf.SmoothStep(baseHeadHeight, height, t));
       t += Time.deltaTime * timeMultiplier;
       yield return null;
     }
+    headbob.baseHeadHeight = height;
   }
 }

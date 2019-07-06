@@ -8,6 +8,33 @@ public class ScreenFade : MonoBehaviour {
   private static Callback callback;
   private static float fadeDuration = 0.75f; // TODO make this adjustable and/or have multiple different durations to choose from
 
+  // -----------------------------------
+  // WORK IN PROGRESS
+  // todo figure out how to best to use this? then remove from Quest_Introduction
+  // Respect timescale? gameplay? dialog?
+  // Behind text? / depth
+  // duration
+  private static void foo() {
+    var screenFill = new GameObject("Screen fill");
+    var fillImage = screenFill.AddComponent<Image>();
+    fillImage.color = Color.black;
+    screenFill.transform.SetParent(MainCanvas.transform);
+    var rectTransform = screenFill.transform as RectTransform;
+    rectTransform.anchorMin = new Vector2(0, 0);
+    rectTransform.anchorMax = new Vector2(1, 1);
+    rectTransform.offsetMin = new Vector2(0, 0);
+    rectTransform.offsetMax = new Vector2(0, 0);
+  }
+
+  private IEnumerator fade(Graphic image, float alpha, float fadeDuration, bool destroyImageOnComplete) {
+    while (image.color.a != alpha) {
+      image.CrossFadeAlpha(alpha, fadeDuration, false);
+      yield return null;
+    }
+    if (destroyImageOnComplete) GameObject.Destroy(image.gameObject);
+  }
+  // -----------------------------------
+
   private static void lazyIntitialize() {
     scrimCanvas = Instantiate(Resources.Load<GameObject>("UI/Fade Canvas"));
     scrim = scrimCanvas.GetComponentInChildren<Image>();
