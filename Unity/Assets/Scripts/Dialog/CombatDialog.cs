@@ -17,10 +17,10 @@ public class CombatDialog {
 
   public abstract class Action {
     public class ShowMessage : Action {
-      public Speaker speaker;
+      public Character speaker;
       public string message;
       public Conversation.Speed speed;
-      public ShowMessage(Speaker speaker, string message, Conversation.Speed speed) {
+      public ShowMessage(Character speaker, string message, Conversation.Speed speed) {
         this.speaker = speaker;
         this.message = message;
         this.speed = speed;
@@ -58,12 +58,12 @@ public class CombatDialog {
 
   // ==== BUILDER ====
 
-  public CombatDialog message(Speaker speaker, string message) {
+  public CombatDialog message(Character speaker, string message) {
     actions.Add(new Action.ShowMessage(speaker, message, Conversation.Speed.NORMAL));
     return this;
   }
 
-  public CombatDialog message(Speaker speaker, string message, Conversation.Speed speed) {
+  public CombatDialog message(Character speaker, string message, Conversation.Speed speed) {
     actions.Add(new Action.ShowMessage(speaker, message, speed));
     return this;
   }

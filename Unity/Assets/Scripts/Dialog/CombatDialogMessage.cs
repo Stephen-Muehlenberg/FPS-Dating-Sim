@@ -20,11 +20,10 @@ public class CombatDialogMessage : MonoBehaviour {
   private float velocity;
   private bool hasMoved = false;
   private bool revealInProgress;
-  private float timeToLive;
   private float age = 0;
   private bool fadeInComplete = false;
 
-  public static CombatDialogMessage show(CombatDialog.Speaker speaker,
+  public static CombatDialogMessage show(Character speaker,
                                          string text,
                                          float revealSpeedMultiplier,
                                          int yPosition,
@@ -37,16 +36,15 @@ public class CombatDialogMessage : MonoBehaviour {
     transform.SetParent(MainCanvas.transform);
     instance.setSize(HEIGHT_LARGE, PORTRAIT_LARGE, FONT_LARGE);
     transform.anchoredPosition = new Vector2(0, -HEIGHT_LARGE / 2); // Set a negative y position so it initially animates up into place
-    
-    instance.image.sprite = Resources.Load<Sprite>("Textures/" + speaker.resourceName);
 
-    instance.uiText.GetComponent<Outline>().effectColor = speaker.outlineColour;
+    instance.image.sprite = Resources.Load<Sprite>(speaker.portraitResource);
+
+    instance.uiText.GetComponent<Outline>().effectColor = speaker.combatTextOutline;
 
     instance.textRevealer = textRevealer;
     instance.revealInProgress = true;
     instance.textRevealer.set(instance.uiText, text, revealSpeedMultiplier, () => {
       instance.revealInProgress = false;
-      instance.timeToLive = MESSAGE_LIFETIME;
       revealFinishedCallback?.Invoke();
     });
 

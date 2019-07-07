@@ -5,17 +5,15 @@
   public bool canEquip;
   public bool equipped;
   public WeaponController controller;
-  public Conversation.Speaker conversationSpeaker;
-  public CombatDialog.Speaker combatSpeaker;
+  public Character character;
 
-  public Weapon(string name, string weaponName, int index, bool canEquip, bool equipped, Conversation.Speaker conversationSpeaker, CombatDialog.Speaker combatSpeaker) {
+  public Weapon(string name, string weaponName, int index, bool canEquip, bool equipped, Character character) {
     this.name = name;
     this.weaponName = weaponName;
     this.index = index;
     this.canEquip = canEquip;
     this.equipped = equipped;
-    this.conversationSpeaker = conversationSpeaker;
-    this.combatSpeaker = combatSpeaker;
+    this.character = character;
   }
 
   public void equip() { Weapons.setEquipped(this, true, true); }

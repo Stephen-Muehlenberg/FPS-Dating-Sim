@@ -59,54 +59,54 @@ public class Quest_BedStore : Quest {
 
     new Conversation()
       .wait(2f)
-      .text(Conversation.Speaker.MC_NARRATION, "<i>I stagger back into the café with four guns that each hop off and transform back into women.</i>")
+      .text(Character.MC_NARRATION, "<i>I stagger back into the café with four guns that each hop off and transform back into women.</i>")
       .wait(0.3f)
       .performAction(() => {
-        Actors.getFizzy().setPosition(new Vector3(0.3787175f, 0, -5.961192f))
+        Character.FIZZY.getProp().setPosition(new Vector3(0.3787175f, 0, -5.961192f))
         .GetComponent<ParticleSystem>().Play();
       })
       .wait(0.4f)
       .performAction(() => {
-        Actors.getRose().setPosition(new Vector3(-1.23f, 0, -6.918f))
+        Character.ROSE.getProp().setPosition(new Vector3(-1.23f, 0, -6.918f))
         .GetComponent<ParticleSystem>().Play();
       })
       .wait(0.4f)
       .performAction(() => {
-        Actors.getMay().setPosition(new Vector3(-0.5890785f, 0, -6.104723f))
+        Character.MAY.getProp().setPosition(new Vector3(-0.5890785f, 0, -6.104723f))
 .GetComponent<ParticleSystem>().Play();
       })
       .wait(0.4f)
       .performAction(() => {
-        Actors.getVanessa().setPosition(new Vector3(1.156008f, 0, -6.55563f))
+        Character.VANESSA.getProp().setPosition(new Vector3(1.156008f, 0, -6.55563f))
 .GetComponent<ParticleSystem>().Play();
       })
       .wait(0.9f)
       .text("<i>Because apparently that is my life now.</i>")
       .wait(0.2f)
-      .text(Conversation.Speaker.MAY, "Ugh. I'm glad Mission Time is done with.")
-      .text(Conversation.Speaker.MC, "Mission Time, eh? So that was our first official mission?")
-      .text(Conversation.Speaker.FIZZY, "Sure was! Did you have fun? I had fun!")
-      .text(Conversation.Speaker.VANESSA, "I did not, particularly. But what's done is done.")
+      .text(Character.MAY, "Ugh. I'm glad Mission Time is done with.")
+      .text(Character.MC, "Mission Time, eh? So that was our first official mission?")
+      .text(Character.FIZZY, "Sure was! Did you have fun? I had fun!")
+      .text(Character.VANESSA, "I did not, particularly. But what's done is done.")
       .text("The sun's going down; let's take a moment to eat some food and then sleep for the night.")
       .speed(Conversation.Speed.FAST)
-      .text(Conversation.Speaker.FIZZY, "I'll grab the food!")
+      .text(Character.FIZZY, "I'll grab the food!")
       .speed(Conversation.Speed.NORMAL)
       .text("Raiding fridges is my favorite pasttime.")
-      .text(Conversation.Speaker.VANESSA, "I can fetch the blankets and such.")
+      .text(Character.VANESSA, "I can fetch the blankets and such.")
       .text("Where do you keep them, MC? In the back?")
       .speed(Conversation.Speed.SLOW)
-      .text(Conversation.Speaker.MC, "...Um.")
+      .text(Character.MC, "...Um.")
       .speed(Conversation.Speed.NORMAL)
-      .text(Conversation.Speaker.VANESSA, "Hmm?")
-      .text(Conversation.Speaker.MC, "...It's a café. Why would we have blankets?")
-      .text(Conversation.Speaker.VANESSA, "...Is there not a deluge of homeless people inhabiting your lounge every night?")
-      .text(Conversation.Speaker.FIZZY, "Uhh. Vanessa, I think you've heard some weird things about city life.")
-      .text(Conversation.Speaker.VANESSA, "That is entirely possible.")
+      .text(Character.VANESSA, "Hmm?")
+      .text(Character.MC, "...It's a café. Why would we have blankets?")
+      .text(Character.VANESSA, "...Is there not a deluge of homeless people inhabiting your lounge every night?")
+      .text(Character.FIZZY, "Uhh. Vanessa, I think you've heard some weird things about city life.")
+      .text(Character.VANESSA, "That is entirely possible.")
       .text("This is embarrassing.")
-      .text(Conversation.Speaker.ROSE, "Wait, there's no blankets? No pillows?")
-      .text(Conversation.Speaker.MAY, "Is there anything, like, next door? Somewhere we can get that stuff?")
-      .text(Conversation.Speaker.MC, "Um, there's a home furnishing store like two blocks from here.")
-      .text(Conversation.Speaker.MAY, "Goddammit. <i>Mission Time's back on!</i>")
+      .text(Character.ROSE, "Wait, there's no blankets? No pillows?")
+      .text(Character.MAY, "Is there anything, like, next door? Somewhere we can get that stuff?")
+      .text(Character.MC, "Um, there's a home furnishing store like two blocks from here.")
+      .text(Character.MAY, "Goddammit. <i>Mission Time's back on!</i>")
       .wait(0.4f)
       .show(() => setState(10));
   }
@@ -127,7 +127,7 @@ public class Quest_BedStore : Quest {
       HighlightMonsters.clearHighlights();
       new CombatDialog()
         .wait(2.5f)
-        .message(CombatDialog.Speaker.MAY, "Ok I guess that's safe enough.")
+        .message(Character.MAY, "Ok I guess that's safe enough.")
         .show(CombatDialog.Priority.HIGH, () => { setState(30); });
     });
   }
@@ -145,12 +145,12 @@ public class Quest_BedStore : Quest {
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
       Weapons.currentlyEquipped.unequip();
-      
+
       // Position actors
-      Actors.getRose().setPosition(girlConversationPositionA);
-      Actors.getMay().setPosition(girlConversationPositionB);
-      Actors.getVanessa().setPosition(girlConversationPositionC);
-      Actors.getFizzy().setPosition(girlConversationPositionD);
+      Character.ROSE.getProp().setPosition(girlConversationPositionA);
+      Character.MAY.getProp().setPosition(girlConversationPositionB);
+      Character.VANESSA.getProp().setPosition(girlConversationPositionC);
+      Character.FIZZY.getProp().setPosition(girlConversationPositionD);
 
       // Reposition, reset, and restrict the player
       var player = Player.SINGLETON;
@@ -165,15 +165,15 @@ public class Quest_BedStore : Quest {
         new Conversation()
           .wait(1.5f)
           // TODO have girl who likes you most say "good job", restoring your health
-          .text(Conversation.Speaker.MAY, "Alright, MC can stay out here and defend the store.")
+          .text(Character.MAY, "Alright, MC can stay out here and defend the store.")
           .text("But two of us should go in to pick out some stuff and carry it out.")
-          .text(Conversation.Speaker.MC, "Pick out some stuff? Just get the first five pillows and blankets you find.")
-          .text(Conversation.Speaker.ROSE, "I'm not using one of those scratchy-ass wool blankets. Those things are bullshit.")
-          .text(Conversation.Speaker.MC, "Oh, yeah, that kind of stiff shit? That's fair, actually, those are pretty bullshit.")
-          .text(Conversation.Speaker.FIZZY, "I don't want one of those pillows stuffed with feathers!")
+          .text(Character.MC, "Pick out some stuff? Just get the first five pillows and blankets you find.")
+          .text(Character.ROSE, "I'm not using one of those scratchy-ass wool blankets. Those things are bullshit.")
+          .text(Character.MC, "Oh, yeah, that kind of stiff shit? That's fair, actually, those are pretty bullshit.")
+          .text(Character.FIZZY, "I don't want one of those pillows stuffed with feathers!")
           .text("I just stay up all night picking out the feathers through the pillowcase.")
-          .text(Conversation.Speaker.ROSE, "I don't want Fizzy to have one of those either, 'cause then I have to listen to it all night.")
-          .text(Conversation.Speaker.VANESSA, "Yes, yes. Can we resume the mission?")
+          .text(Character.ROSE, "I don't want Fizzy to have one of those either, 'cause then I have to listen to it all night.")
+          .text(Character.VANESSA, "Yes, yes. Can we resume the mission?")
           .text("MC, choose two of us to defend the store with, and the other two will scrounge through the store.")
           .show(() => {
             // TODO fluidly rotate it to face the girls.
@@ -190,7 +190,7 @@ public class Quest_BedStore : Quest {
               selection[1].canEquip = true;
 
               new Conversation()
-                .text(Conversation.Speaker.MAY, "Ok, see you in a bit!")
+                .text(Character.MAY, "Ok, see you in a bit!")
                 .show(() => { setState(40); });
             });
           });
@@ -205,10 +205,10 @@ public class Quest_BedStore : Quest {
       Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>().enableAllInput();
       Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(false);
       Player.SINGLETON.GetComponent<GunSwitch>().equip(Weapons.randomEquipableWeapon());
-      GameObject.Destroy(Actors.getRose().gameObject);
-      GameObject.Destroy(Actors.getMay().gameObject);
-      GameObject.Destroy(Actors.getVanessa().gameObject);
-      GameObject.Destroy(Actors.getFizzy().gameObject);
+      GameObject.Destroy(Character.ROSE.getProp().gameObject);
+      GameObject.Destroy(Character.MAY.getProp().gameObject);
+      GameObject.Destroy(Character.VANESSA.getProp().gameObject);
+      GameObject.Destroy(Character.FIZZY.getProp().gameObject);
       GameObject.Find("HordeToggle").GetComponent<EnableGameObjects>().enableAll();
       CurrentQuestMessage.set("Defend the store");
 
@@ -226,20 +226,20 @@ public class Quest_BedStore : Quest {
       var weapon = Weapons.currentlyEquipped;
 
       if (weapon == Weapons.SHOTGUN) {
-        dialog = dialog.message(weapon.combatSpeaker, "Bam!")
-          .message(weapon.combatSpeaker, "Alright, let's get back to the girls.");
+        dialog = dialog.message(weapon.character, "Bam!")
+          .message(weapon.character, "Alright, let's get back to the girls.");
       }
       else if (weapon == Weapons.MACHINE_GUN) {
-        dialog = dialog.message(weapon.combatSpeaker, "Woo, gotcha!")
-          .message(weapon.combatSpeaker, "Good work, MC. Now back to the store.");
+        dialog = dialog.message(weapon.character, "Woo, gotcha!")
+          .message(weapon.character, "Good work, MC. Now back to the store.");
       }
       else if (weapon == Weapons.SNIPER_RIFLE) {
-        dialog = dialog.message(weapon.combatSpeaker, "Ah, that's the last of them.")
-          .message(weapon.combatSpeaker, "Excellent. Let's rejoin the others.");
+        dialog = dialog.message(weapon.character, "Ah, that's the last of them.")
+          .message(weapon.character, "Excellent. Let's rejoin the others.");
       }
       else {
-        dialog = dialog.message(weapon.combatSpeaker, "Haha! <i>Boom!<i>")
-          .message(weapon.combatSpeaker, "Okey dokey, guess that's the last of 'em.");
+        dialog = dialog.message(weapon.character, "Haha! <i>Boom!<i>")
+          .message(weapon.character, "Okey dokey, guess that's the last of 'em.");
       }
 
       dialog.show(CombatDialog.Priority.MAX, () => { setState(50); });
@@ -261,10 +261,10 @@ public class Quest_BedStore : Quest {
       // Position actors based on whether they fought or scrounged
       var defenders = new List<Actor>();
       var scroungers = new List<Actor>();
-      if (Weapons.SHOTGUN.canEquip) { defenders.Add(Actors.getRose()); } else { scroungers.Add(Actors.getRose()); }
-      if (Weapons.MACHINE_GUN.canEquip) { defenders.Add(Actors.getMay()); } else { scroungers.Add(Actors.getMay()); }
-      if (Weapons.SNIPER_RIFLE.canEquip) { defenders.Add(Actors.getVanessa()); } else { scroungers.Add(Actors.getVanessa()); }
-      if (Weapons.GRENADE_LAUNCHER.canEquip) { defenders.Add(Actors.getFizzy()); } else { scroungers.Add(Actors.getFizzy()); }
+      if (Weapons.SHOTGUN.canEquip) { defenders.Add(Character.ROSE.getProp()); } else { scroungers.Add(Character.ROSE.getProp()); }
+      if (Weapons.MACHINE_GUN.canEquip) { defenders.Add(Character.MAY.getProp()); } else { scroungers.Add(Character.MAY.getProp()); }
+      if (Weapons.SNIPER_RIFLE.canEquip) { defenders.Add(Character.VANESSA.getProp()); } else { scroungers.Add(Character.VANESSA.getProp()); }
+      if (Weapons.GRENADE_LAUNCHER.canEquip) { defenders.Add(Character.FIZZY.getProp()); } else { scroungers.Add(Character.FIZZY.getProp()); }
 
       var firstDefenderOnLeft = Random.Range(0, 2) == 1;
       defenders[0].setPosition(firstDefenderOnLeft ? girlConversationPositionA : girlConversationPositionD);
@@ -285,8 +285,8 @@ public class Quest_BedStore : Quest {
       ScreenFade.fadeIn(() => {
         var weaponA = Weapons.randomNonEquipableWeapon();
         var weaponB = Weapons.randomEquipableWeapon();
-        var scrounger = Weapons.randomNonEquipableWeapon().conversationSpeaker;
-        var defender = Weapons.randomEquipableWeapon().conversationSpeaker;
+        var scrounger = Weapons.randomNonEquipableWeapon().character;
+        var defender = Weapons.randomEquipableWeapon().character;
 
         new Conversation()
           .wait(1.5f)
@@ -319,27 +319,27 @@ public class Quest_BedStore : Quest {
         var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
         firstPersonController.move.inputDisabled = true;
         firstPersonController.jump.inputDisabled = true;
-        Actors.getFizzy().setPosition(new Vector3(0.3787175f, 0, -5.961192f));
-        Actors.getRose().setPosition(new Vector3(-1.23f, 0, -6.918f));
-        Actors.getMay().setPosition(new Vector3(-0.5890785f, 0, -6.104723f));
-        Actors.getVanessa().setPosition(new Vector3(1.156008f, 0, -6.55563f));
+        Character.FIZZY.getProp().setPosition(new Vector3(0.3787175f, 0, -5.961192f));
+        Character.ROSE.getProp().setPosition(new Vector3(-1.23f, 0, -6.918f));
+        Character.MAY.getProp().setPosition(new Vector3(-0.5890785f, 0, -6.104723f));
+        Character.VANESSA.getProp().setPosition(new Vector3(1.156008f, 0, -6.55563f));
       },
       () => {
         // TODO choose who says what based on affinity
-        Conversation.Speaker antagonist = Weapons.randomWeapon().conversationSpeaker;
-        Conversation.Speaker protagonist;
+        Character antagonist = Weapons.randomWeapon().character;
+        Character protagonist;
         do {
-          protagonist = Weapons.randomWeapon().conversationSpeaker;
+          protagonist = Weapons.randomWeapon().character;
         } while (antagonist == protagonist); // Re-roll until we get two different girls
 
         new Conversation()
           .wait(1.25f)
-          .text(Conversation.Speaker.MAY, "Okay, for real now.")
+          .text(Character.MAY, "Okay, for real now.")
           .text("No more Mission Time.")
           .text("Now it's Sleep Time.")
-          .text(Conversation.Speaker.FIZZY, "What if we make it our mission to have a good night's sleep?")
-          .text(Conversation.Speaker.MAY, "I do <i>not</i> have enough energy to play these games, woman.")
-          .text(Conversation.Speaker.MC, "Okay, so should we set up in front here...?")
+          .text(Character.FIZZY, "What if we make it our mission to have a good night's sleep?")
+          .text(Character.MAY, "I do <i>not</i> have enough energy to play these games, woman.")
+          .text(Character.MC, "Okay, so should we set up in front here...?")
           .variableText(antagonist,
             new string[] { "Excuse me? 'We'?", "How about <i>you</i> take the front and <i>we'll</i> hang out in the back?" },
             new string[] { "Haah, <i>wait</i> a second.", "We just met, and all.", "No offense, but maybe you should sleep in the front and we'll take the back?" },
@@ -358,8 +358,8 @@ public class Quest_BedStore : Quest {
             new string[] { "I suppose that's true.", "Apologies, MC." },
             new string[] { "That is one hundred percent fair.", "Sorry, MC! I wasn't really thinking." }
           )
-          .text(Conversation.Speaker.MC, "Plus, I have to leave room for all the homeless people.")
-          .text(Conversation.Speaker.VANESSA, "Oh, very funny.")
+          .text(Character.MC, "Plus, I have to leave room for all the homeless people.")
+          .text(Character.VANESSA, "Oh, very funny.")
           .show(() => { SceneTransition.fadeTo("main_menu"); });
       });
   }
@@ -368,41 +368,41 @@ public class Quest_BedStore : Quest {
 
   private void eventWrongWay1() {
     new CombatDialog()
-      .message(CombatDialog.Speaker.MAY, "Left or right?")
-      .message(CombatDialog.Speaker.MC, "Right. I think.")
+      .message(Character.MAY, "Left or right?")
+      .message(Character.MC, "Right. I think.")
       .show(CombatDialog.Priority.MEDIUM);
   }
 
   private void eventWrongWay2() {
     new CombatDialog()
-      .message(CombatDialog.Speaker.MC, "Yeah no, definitely the other way.")
+      .message(Character.MC, "Yeah no, definitely the other way.")
       .show(CombatDialog.Priority.MEDIUM);
   }
 
   private void eventFireComment() {
     new CombatDialog()
-      .message(CombatDialog.Speaker.FIZZY, "Woah!")
+      .message(Character.FIZZY, "Woah!")
       .wait(3f)
-      .message(CombatDialog.Speaker.ROSE, "Damn, what a mess.")
-      .message(CombatDialog.Speaker.VANESSA, "Now I see why you cut through that side street, MC.")
-      .message(CombatDialog.Speaker.VANESSA, "The road is completely blocked.")
+      .message(Character.ROSE, "Damn, what a mess.")
+      .message(Character.VANESSA, "Now I see why you cut through that side street, MC.")
+      .message(Character.VANESSA, "The road is completely blocked.")
       .show(CombatDialog.Priority.LOW);
   }
 
   private void eventNiceCar() {
     new CombatDialog()
-      .message(CombatDialog.Speaker.MAY, "That's a nice car.")
-      .message(CombatDialog.Speaker.FIZZY, "How can you even tell?")
-      .message(CombatDialog.Speaker.FIZZY, "<i>They all look the same!</i>")
+      .message(Character.MAY, "That's a nice car.")
+      .message(Character.FIZZY, "How can you even tell?")
+      .message(Character.FIZZY, "<i>They all look the same!</i>")
       .show(CombatDialog.Priority.TRIVIAL);
   }
 
   private void eventNicePark() {
     new CombatDialog()
-      .message(CombatDialog.Speaker.VANESSA, "This is pleasant.")
-      .message(CombatDialog.Speaker.FIZZY, "The park, or the monster killing?")
-      .message(CombatDialog.Speaker.VANESSA, "The park.")
-      .message(CombatDialog.Speaker.VANESSA, "Well, mostly the park.")
+      .message(Character.VANESSA, "This is pleasant.")
+      .message(Character.FIZZY, "The park, or the monster killing?")
+      .message(Character.VANESSA, "The park.")
+      .message(Character.VANESSA, "Well, mostly the park.")
       .show(CombatDialog.Priority.LOW);
   }
 
@@ -413,13 +413,13 @@ public class Quest_BedStore : Quest {
     if (state == 10) {
       if (MonstersController.monstersNear(new Vector3(156, 0, 96), 35f) > 0) {
         new CombatDialog()
-          .message(CombatDialog.Speaker.MC, "This is the place.")
-          .message(CombatDialog.Speaker.MAY, "Great, but before we go in, let's finish off any nearby monsters.")
+          .message(Character.MC, "This is the place.")
+          .message(Character.MAY, "Great, but before we go in, let's finish off any nearby monsters.")
           .show(CombatDialog.Priority.MAX, () => { setState(20); });
       }
       else {
         new CombatDialog()
-          .message(CombatDialog.Speaker.MC, "This is the place.")
+          .message(Character.MC, "This is the place.")
           .show(CombatDialog.Priority.MAX, () => { setState(30); });
       }
     }
@@ -431,23 +431,23 @@ public class Quest_BedStore : Quest {
     Weapon randomWeapon = Weapons.randomEquipableWeapon();
 
     if (randomWeapon == Weapons.SHOTGUN) {
-      dialog = dialog.message(CombatDialog.Speaker.ROSE, "Yo, we should probably stay near the store.")
-        .message(CombatDialog.Speaker.ROSE, "Can't let the monsters interrupt Pillow Time, can we?");
+      dialog = dialog.message(Character.ROSE, "Yo, we should probably stay near the store.")
+        .message(Character.ROSE, "Can't let the monsters interrupt Pillow Time, can we?");
     }
     else if (randomWeapon == Weapons.MACHINE_GUN) {
-      dialog = dialog.message(CombatDialog.Speaker.MAY, "Hold on there, stud.")
-        .message(CombatDialog.Speaker.MAY, "Let's keep the killing <i>near</i> the store.")
-        .message(CombatDialog.Speaker.MAY, "As fun as this is, we have a job to do.");
+      dialog = dialog.message(Character.MAY, "Hold on there, stud.")
+        .message(Character.MAY, "Let's keep the killing <i>near</i> the store.")
+        .message(Character.MAY, "As fun as this is, we have a job to do.");
     }
     else if (randomWeapon == Weapons.SNIPER_RIFLE) {
-      dialog = dialog.message(CombatDialog.Speaker.VANESSA, "I feel I should point out we're rather far from the store.")
-        .message(CombatDialog.Speaker.VANESSA, "I'm sure the girls are capable of handling themselves...")
-        .message(CombatDialog.Speaker.VANESSA, "...but I suppose we <i>ought</i> to stay close.");
+      dialog = dialog.message(Character.VANESSA, "I feel I should point out we're rather far from the store.")
+        .message(Character.VANESSA, "I'm sure the girls are capable of handling themselves...")
+        .message(Character.VANESSA, "...but I suppose we <i>ought</i> to stay close.");
     }
     else {
-      dialog = dialog.message(CombatDialog.Speaker.FIZZY, "Hahaa! Hey girls, did you see...")
-        .message(CombatDialog.Speaker.FIZZY, "Oh shoot, I forgot, they're totally in the store.")
-        .message(CombatDialog.Speaker.FIZZY, "We should probably stay near them.");
+      dialog = dialog.message(Character.FIZZY, "Hahaa! Hey girls, did you see...")
+        .message(Character.FIZZY, "Oh shoot, I forgot, they're totally in the store.")
+        .message(Character.FIZZY, "We should probably stay near them.");
     }
 
     dialog.show(CombatDialog.Priority.HIGH);

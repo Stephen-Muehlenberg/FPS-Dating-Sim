@@ -3,10 +3,10 @@
 public class Weapons {
   public delegate void EquipEvent(Weapon selection);
 
-  public static Weapon SHOTGUN = new Weapon("Rose", "Shotgun", 0, true, false, Conversation.Speaker.ROSE, CombatDialog.Speaker.ROSE);
-  public static Weapon MACHINE_GUN = new Weapon("May", "Machine Gun", 1, true, false, Conversation.Speaker.MAY, CombatDialog.Speaker.MAY);
-  public static Weapon SNIPER_RIFLE = new Weapon("Vanessa", "Sniper Rifle", 2, true, false, Conversation.Speaker.VANESSA, CombatDialog.Speaker.VANESSA);
-  public static Weapon GRENADE_LAUNCHER = new Weapon("Fizzy", "Grenade Launcher", 3, true, false, Conversation.Speaker.FIZZY, CombatDialog.Speaker.FIZZY);
+  public static Weapon SHOTGUN = new Weapon("Rose", "Shotgun", 0, true, false, Character.ROSE);
+  public static Weapon MACHINE_GUN = new Weapon("May", "Machine Gun", 1, true, false, Character.MAY);
+  public static Weapon SNIPER_RIFLE = new Weapon("Vanessa", "Sniper Rifle", 2, true, false, Character.VANESSA);
+  public static Weapon GRENADE_LAUNCHER = new Weapon("Fizzy", "Grenade Launcher", 3, true, false, Character.FIZZY);
 
   public static Weapon[] array = new Weapon[] { SHOTGUN, MACHINE_GUN, SNIPER_RIFLE, GRENADE_LAUNCHER };
   public static Weapon currentlyEquipped;

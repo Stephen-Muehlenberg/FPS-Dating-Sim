@@ -36,8 +36,8 @@ public class Quest_Tutorial : Quest {
       },
       () => {
         new Conversation()
-          .text(Conversation.Speaker.MC_NARRATION, "So here I am, sneaking out the back door, loaded up with guns who also happen to be girls.")
-          .text(Conversation.Speaker.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
+          .text(Character.MC_NARRATION, "So here I am, sneaking out the back door, loaded up with guns who also happen to be girls.")
+          .text(Character.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
           .show(() => {
             CurrentQuestMessage.set("Escape through the back alleys");
             Player.SINGLETON.firstPersonController.move.inputDisabled = false;
@@ -68,9 +68,9 @@ public class Quest_Tutorial : Quest {
     yield return new WaitForSeconds(1.2f);
 
     new CombatDialog()
-      .message(CombatDialog.Speaker.MC, "So much for escaping undetected.\nLadies? Little help?")
+      .message(Character.MC, "So much for escaping undetected.\nLadies? Little help?")
       .performAction(() => { Weapons.MACHINE_GUN.equip(); })
-      .message(CombatDialog.Speaker.MAY, "Gotcha covered. Just point and shoot.")
+      .message(Character.MAY, "Gotcha covered. Just point and shoot.")
       .performAction(() => { CurrentQuestMessage.set("[Left mouse] fires a burst, [Right mouse] fires full auto"); })
       .show(CombatDialog.Priority.MAX);
   }
@@ -90,7 +90,7 @@ public class Quest_Tutorial : Quest {
       CurrentQuestMessage.clear();
 
       new CombatDialog()
-        .message(CombatDialog.Speaker.MAY, "[Left mouse] to fire a burst, and [Right mouse] for full auto fire.")
+        .message(Character.MAY, "[Left mouse] to fire a burst, and [Right mouse] for full auto fire.")
         .show(CombatDialog.Priority.HIGH, () => {
           CurrentQuestMessage.set("Fight your way through the back alleys");
         });
@@ -104,8 +104,8 @@ public class Quest_Tutorial : Quest {
       // TODO wait until the monster is killed
 //      .message(CombatDialog.Speaker.MAY, "Urgh, sorry, I'm no good with these blind corners.")
   //    .message(CombatDialog.Speaker.ROSE, "Yo, MC, lemme handle this.")
-      .message(CombatDialog.Speaker.MC, "<i>TO DO: FINISH OFF THIS TUTORIAL</i>")
-      .message(CombatDialog.Speaker.MC, "<i>NOW SKIPPING TO THE NEXT MISSION...</i>")
+      .message(Character.NONE, "<i>TO DO: FINISH OFF THIS TUTORIAL</i>")
+      .message(Character.NONE, "<i>NOW SKIPPING TO THE NEXT MISSION...</i>")
       .performAction(() => {
         //    Player.SINGLETON.firstPersonController.move.inputDisabled = true;
 

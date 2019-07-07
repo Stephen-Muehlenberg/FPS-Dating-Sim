@@ -19,7 +19,7 @@ public class ConversationManager : MonoBehaviour {
   private bool textRevealInProgress = false;
   private bool choiceInProgress = false;
   private float waitRemaining = 0f; // Used to indicate a pause in the dialog
-  private Conversation.Speaker currentSpeaker;
+  private Character currentSpeaker;
 
   public static bool conversationInProgress() { return conversation != null; }
 
@@ -116,28 +116,24 @@ public class ConversationManager : MonoBehaviour {
     else finishConversation();
   }
 
-  private void setSpeaker(Conversation.Speaker speaker) {
+  // TODO
+
+  private void setSpeaker(Character speaker) {
     if (speaker == SINGLETON.currentSpeaker) return;
 
     // Return previous speaker to normal
-    if (SINGLETON.currentSpeaker == Conversation.Speaker.ROSE) Actors.getRose().transform.localScale = new Vector3(1, 1, 1);
-    else if (SINGLETON.currentSpeaker == Conversation.Speaker.MAY) Actors.getMay().transform.localScale = new Vector3(1, 1, 1);
-    else if (SINGLETON.currentSpeaker == Conversation.Speaker.VANESSA) Actors.getVanessa().transform.localScale = new Vector3(1, 1, 1);
-    else if (SINGLETON.currentSpeaker == Conversation.Speaker.FIZZY) Actors.getFizzy().transform.localScale = new Vector3(1, 1, 1);
+    if (SINGLETON.currentSpeaker != null && SINGLETON.currentSpeaker.hasProp) SINGLETON.currentSpeaker.getProp().transform.localScale = new Vector3(1, 1, 1);
 
     // Enlarge the current speaker
-    if (speaker == Conversation.Speaker.ROSE) Actors.getRose().transform.localScale = new Vector3(1.05f, 1.05f, 1.05f);
-    else if (speaker == Conversation.Speaker.MAY) Actors.getMay().transform.localScale = new Vector3(1.05f, 1.05f, 1.05f);
-    else if (speaker == Conversation.Speaker.VANESSA) Actors.getVanessa().transform.localScale = new Vector3(1.05f, 1.05f, 1.05f);
-    else if (speaker == Conversation.Speaker.FIZZY) Actors.getFizzy().transform.localScale = new Vector3(1.05f, 1.05f, 1.05f);
+    if (speaker.hasProp) speaker.getProp().transform.localScale = new Vector3(1.05f, 1.05f, 1.05f);
 
     SINGLETON.currentSpeaker = speaker;
 
     // Set dialog box appearance
     this.speaker.text = speaker.name;
-    this.speaker.GetComponent<Outline>().effectColor = speaker.outlineColour;
-    this.message.GetComponent<Outline>().effectColor = speaker.outlineColour;
-    this.message.color = speaker.fillColour;
+    this.speaker.GetComponent<Outline>().effectColor = speaker.dialogTextOutline;
+    this.message.GetComponent<Outline>().effectColor = speaker.dialogTextOutline;
+    this.message.color = speaker.dialogTextFill;
   }
 
   private void overrideSpeakerName(string name) {
@@ -199,7 +195,7 @@ public class ConversationManager : MonoBehaviour {
     }
 
     else if (choiceInProgress) {
-      // TODO handle choice
+      return; // Choice is handled elsewhere
     }
 
     // Wait for click before showing the next message.

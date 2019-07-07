@@ -70,7 +70,7 @@ public class CombatDialogManager : MonoBehaviour {
     var action = dialog.actions[currentActionIndex];
 
     if (action is CombatDialog.Action.ShowMessage) {
-      showMessage((action as CombatDialog.Action.ShowMessage));
+      showMessage(action as CombatDialog.Action.ShowMessage);
       return;
     }
     if (action is CombatDialog.Action.Wait) {
@@ -99,7 +99,7 @@ public class CombatDialogManager : MonoBehaviour {
                              action.message,
                              textSpeed,
                              0,
-                             textRevealer, 
+                             textRevealer,
                              null);
 
     // Move all existing messages up to accommodate this new message

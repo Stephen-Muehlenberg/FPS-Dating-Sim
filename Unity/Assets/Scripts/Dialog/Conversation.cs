@@ -9,8 +9,8 @@ public class Conversation {
 
   public abstract class Action {
     public class SetSpeaker : Action {
-      public Speaker speaker;
-      public SetSpeaker(Speaker speaker) { this.speaker = speaker; }
+      public Character speaker;
+      public SetSpeaker(Character speaker) { this.speaker = speaker; }
     }
 
     public class OverrideName : Action {
@@ -56,29 +56,6 @@ public class Conversation {
 
   // ===== ENUMS =====
 
-  public struct Speaker {
-    public string name;
-    public Color outlineColour;
-    public Color fillColour;
-
-    public Speaker(string name, Color outlineColour, Color fillColour) {
-      this.name = name;
-      this.outlineColour = outlineColour;
-      this.fillColour = fillColour;
-    }
-
-    public static bool operator ==(Speaker a, Speaker b) { return a.Equals(b); }
-    public static bool operator !=(Speaker a, Speaker b) { return !a.Equals(b); }
-
-    public static Speaker MC = new Speaker("MC", new Color(0.25f, 0.25f, 0.25f), Color.white);
-    public static Speaker MC_NARRATION = new Speaker("MC", new Color(0.35f, 0.35f, 0.35f), new Color(0.8f, 0.8f, 0.8f));
-    public static Speaker NONE= new Speaker("", new Color(0.35f, 0.35f, 0.35f), new Color(0.8f, 0.8f, 0.8f));
-    public static Speaker ROSE = new Speaker("Rose", new Color(1, 0, 0, 0.5f), new Color(1, 0.9333f, 0.9333f, 1));
-    public static Speaker MAY = new Speaker("May", new Color(0, 0.5f, 0, 0.5f), new Color(0.9333f, 1, 0.9333f, 1));
-    public static Speaker VANESSA = new Speaker("Vanessa", new Color(0, 0.5f, 1, 0.5f), new Color(0.9333f, 0.9333f, 1, 1));
-    public static Speaker FIZZY = new Speaker("Fizzy", new Color(0.85f, 0.508f, 0.11f, 0.5f), new Color(1, 1, 0.9333f, 1));
-  }
-
   public struct Speed {
     public float multiplier;
 
@@ -102,24 +79,19 @@ public class Conversation {
     return this;
   }
 
-  public Conversation text(Speaker speaker, string message) {
+  public Conversation text(Character speaker, params string[] messages) {
     actions.Add(new Action.SetSpeaker(speaker));
-    actions.Add(new Action.SetText(message));
-    return this;
-  }
-
-  public Conversation text(Speaker speaker, string[] messages) {
-    actions.Add(new Action.SetSpeaker(speaker));
+    if (messages.Length < 1) throw new UnityException("Conversation.text() must include at least 1 message");
     foreach (string message in messages) actions.Add(new Action.SetText(message));
     return this;
   }
 
-  public Conversation speaker(Speaker speaker) {
+  public Conversation speaker(Character speaker) {
     actions.Add(new Action.SetSpeaker(speaker));
     return this;
   }
 
-  public Conversation speaker(Speaker speaker, string nameOverride) {
+  public Conversation speaker(Character speaker, string nameOverride) {
     actions.Add(new Action.SetSpeaker(speaker));
     // nameOverride might be null if we ever need to do some logic to determine what name to display.
     if (nameOverride != null) actions.Add(new Action.OverrideName(nameOverride));
@@ -134,11 +106,11 @@ public class Conversation {
   /**
    * Displays only the messages from the selected Speaker. Convenience method for dialog where one of several girls could speak.
    */
-  public Conversation variableText(Speaker speaker, string[] roseMessages, string[] mayMessages, string[] vanessaMessages, string[] fizzyMessages) {
-    if (speaker == Speaker.ROSE) return text(speaker, roseMessages);
-    else if (speaker == Speaker.MAY) return text(speaker, mayMessages);
-    else if (speaker == Speaker.VANESSA) return text(speaker, vanessaMessages);
-    else if (speaker == Speaker.FIZZY) return text(speaker, fizzyMessages);
+  public Conversation variableText(Character speaker, string[] roseMessages, string[] mayMessages, string[] vanessaMessages, string[] fizzyMessages) {
+    if (speaker == Character.ROSE) return text(speaker, roseMessages);
+    else if (speaker == Character.MAY) return text(speaker, mayMessages);
+    else if (speaker == Character.VANESSA) return text(speaker, vanessaMessages);
+    else if (speaker == Character.FIZZY) return text(speaker, fizzyMessages);
     else throw new UnityException("Unexpected speaker " + speaker.name);
   }
 
