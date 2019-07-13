@@ -3,13 +3,13 @@
 public class CollisionTrigger : MonoBehaviour
 {
   public string eventName;
-  public bool triggerOnce = true;
+  public bool destroyOnTrigger = true;
 
   private void OnTriggerEnter(Collider other)
   {
     if (other.name == "Player")
     {
-      if (triggerOnce) Destroy(this.gameObject);
+      if (destroyOnTrigger) Destroy(this.gameObject);
       QuestManager.currentQuest.handleEvent(eventName, gameObject);
     }
   }

@@ -39,4 +39,11 @@ public class MonstersController : MonoBehaviour {
 
     return nearbyMonsters;
   }
+
+  public static Monster findByName(string name) {
+    foreach (Monster monster in monsters) {
+      if (monster.name.Equals(name)) return monster;
+    }
+    return null;
+  }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class CombatDialog {
   public enum Priority {
     TRIVIAL = 1, // Filler dialog, only if there's nothing more interesting happening
-    LOW = 2,     // Banter
+    LOW = 2,     // Banter, maybe minor character building
     MEDIUM = 3,  // Hints and soft directions
     HIGH = 4,    // Important gameplay feedback, e.g. weapon getting tired
     MAX = 5      // Quest updates
@@ -25,6 +25,11 @@ public class CombatDialog {
         this.message = message;
         this.speed = speed;
       }
+    }
+
+    public class SetPriority : Action {
+      public Priority priority;
+      public SetPriority(Priority priority) { this.priority = priority; }
     }
 
     public class Wait : Action {
@@ -65,6 +70,15 @@ public class CombatDialog {
 
   public CombatDialog message(Character speaker, string message, Conversation.Speed speed) {
     actions.Add(new Action.ShowMessage(speaker, message, speed));
+    return this;
+  }
+
+  /**
+   * Changes the dialog's priority once it reaches this point.
+   * Useful if e.g. the opening lines are important, but the later lines can be interrupted.
+   */
+  public CombatDialog setPriority(Priority priority) {
+    actions.Add(new Action.SetPriority(priority));
     return this;
   }
 

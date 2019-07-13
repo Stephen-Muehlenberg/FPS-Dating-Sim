@@ -14,7 +14,7 @@ public class CombatDialogManager : MonoBehaviour {
   private Callback callback;
   private int currentActionIndex;
 
-  static List<CombatDialogMessage> messages = new List<CombatDialogMessage>();
+  private List<CombatDialogMessage> messages = new List<CombatDialogMessage>();
   private TextRevealer textRevealer = new TextRevealer();
   private float timeTillNextMessage;
 
@@ -33,7 +33,7 @@ public class CombatDialogManager : MonoBehaviour {
     }
 
     // Move all existing messages up a bit to make it visually clear this is a new dialog.
-    foreach (CombatDialogMessage message in messages) message.moveUp(CombatDialogMessage.MessageMoveDistance.SPACE);
+    foreach (CombatDialogMessage message in SINGLETON.messages) message.moveUp(CombatDialogMessage.MessageMoveDistance.SPACE);
 
     SINGLETON.dialog = dialog;
     SINGLETON.callback = callback;
@@ -42,12 +42,12 @@ public class CombatDialogManager : MonoBehaviour {
   }
 
   public static void remove(CombatDialogMessage message) {
-    messages.Remove(message);
+    SINGLETON.messages.Remove(message);
   }
 
   public static void clearAllMessages() {
-    foreach (CombatDialogMessage message in messages) Destroy(message.gameObject);
-    messages = new List<CombatDialogMessage>();
+    foreach (CombatDialogMessage message in SINGLETON.messages) Destroy(message.gameObject);
+    SINGLETON.messages = new List<CombatDialogMessage>();
     SINGLETON.dialog = null; // TODO might need to make use of the message finished callbacks?
   }
 
@@ -63,6 +63,7 @@ public class CombatDialogManager : MonoBehaviour {
     // Figure out how best to handle things like whitespace, punctuation
     // Stop it from writing the rest of its message
 
+    foreach (CombatDialogMessage message in SINGLETON.messages) message.abort();
     finishCurrentDialog();
   }
 
@@ -71,18 +72,19 @@ public class CombatDialogManager : MonoBehaviour {
 
     if (action is CombatDialog.Action.ShowMessage) {
       showMessage(action as CombatDialog.Action.ShowMessage);
-      return;
     }
-    if (action is CombatDialog.Action.Wait) {
+    else if (action is CombatDialog.Action.SetPriority) {
+      dialog.priority = (action as CombatDialog.Action.SetPriority).priority;
+      finishCurrentAction();
+    }
+    else if (action is CombatDialog.Action.Wait) {
       timeTillNextMessage = (action as CombatDialog.Action.Wait).duration;
-      return;
     }
-    if (action is CombatDialog.Action.PerformAction) {
+    else if (action is CombatDialog.Action.PerformAction) {
       (action as CombatDialog.Action.PerformAction).callback.Invoke();
       finishCurrentAction();
     }
-    else
-      throw new UnityException("Unhandled CombatDialog.Action " + action);
+    else throw new UnityException("Unhandled CombatDialog.Action " + action);
   }
 
   private void finishCurrentAction() {

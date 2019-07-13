@@ -82,6 +82,11 @@ public class CombatDialogMessage : MonoBehaviour {
     }
   }
 
+  // Ends the message prematurely
+  public void abort() {
+    revealInProgress = false;
+  }
+
   public void Update() {
     if (TimeUtils.dialogPaused) return;
 

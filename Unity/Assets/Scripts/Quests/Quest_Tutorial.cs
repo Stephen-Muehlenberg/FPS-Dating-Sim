@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Quest_Tutorial : Quest {
   public static string NAME = "Tutorial";
@@ -28,8 +27,8 @@ public class Quest_Tutorial : Quest {
 
     SceneTransition.fadeTo("mission_tutorial",
       () => {
-        Player.SINGLETON.firstPersonController.move.inputDisabled = true;
-        Player.SINGLETON.firstPersonController.jump.inputDisabled = true;
+        Player.SINGLETON.firstPersonController.move.inputEnabled = false;
+        Player.SINGLETON.firstPersonController.jump.inputEnabled = false;
         Player.SINGLETON.GetComponent<GunSwitch>().enabled = false;
         MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().alpha = 0;
         MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().alpha = 0;
@@ -40,7 +39,8 @@ public class Quest_Tutorial : Quest {
           .text(Character.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
           .show(() => {
             CurrentQuestMessage.set("Escape through the back alleys");
-            Player.SINGLETON.firstPersonController.move.inputDisabled = false;
+            Player.SINGLETON.firstPersonController.move.inputEnabled = true;
+            Player.SINGLETON.firstPersonController.jump.inputEnabled = true;
             Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().fade(1, 1.5f));
             Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().fade(1, 1.5f));
           });
@@ -48,79 +48,102 @@ public class Quest_Tutorial : Quest {
     );
   }
 
-  private void encounterFirstEnemies() {
+  public override void handleEvent(string eventName, GameObject trigger) {
+    if (eventName == "1st enemy trigger") trigger1stEnemyGroup();
+    else if (eventName == "2nd enemy trigger") trigger2ndEnemyGroup();
+    else if (eventName == "3rd enemy trigger") trigger3rdEnemyGroup();
+    else if (eventName == "End tutorial") endTutorial();
+  }
+
+  private void trigger1stEnemyGroup() {
     Player.SINGLETON.StartCoroutine(encounterFirstEnemiesEvent());
   }
 
   private IEnumerator encounterFirstEnemiesEvent() {
+    var monsters = new Monster[] {
+      MonstersController.findByName("Group 1 Torch 1"),
+      MonstersController.findByName("Group 1 Torch 2")
+    };
+    foreach (Monster monster in monsters) {
+      monster.GetComponent<FollowPlayer>().enabled = true;
+    }
+
     // TODO play monster roar
-
-    // TODO all this find game object is disgusting, improve it
-    GameObject torch1, torch3, torch4;
-    torch1 = GameObject.Find("Torch (1)");
-    torch3 = GameObject.Find("Torch (3)");
-    torch4 = GameObject.Find("Torch (4)");
-
-    torch1.GetComponent<FollowPlayer>().enabled = true;
-    torch3.GetComponent<FollowPlayer>().enabled = true;
-    torch4.GetComponent<FollowPlayer>().enabled = true;
 
     yield return new WaitForSeconds(1.2f);
 
     new CombatDialog()
       .message(Character.MC, "So much for escaping undetected.\nLadies? Little help?")
-      .performAction(() => { Weapons.MACHINE_GUN.equip(); })
+      .performAction(() => {
+        Weapons.MACHINE_GUN.equip();
+        Player.SINGLETON.StartCoroutine(showObjectiveWithDelay());
+      })
       .message(Character.MAY, "Gotcha covered. Just point and shoot.")
-      .performAction(() => { CurrentQuestMessage.set("[Left mouse] fires a burst, [Right mouse] fires full auto"); })
+      .setPriority(CombatDialog.Priority.HIGH)
+      .message(Character.MAY, "Primary fire's a burst. Alt fire's full auto.")
+      .message(Character.MAY, "Try not to use that one too much?")
+      .message(Character.MAY, "It's, uh. Tiring.")
       .show(CombatDialog.Priority.MAX);
   }
 
-  private void onWeaponEquipped(Weapon weapon) {
-    if (weapon == Weapons.MACHINE_GUN) {
-      Weapons.equipEvents -= onWeaponEquipped;
+  // Wait a bit before updating the objective, to make it coincide with the dialog
+  private IEnumerator showObjectiveWithDelay() {
+    float time = 0f;
+    while (time < 1.6f) {
+      if (!TimeUtils.gameplayPaused) time += Time.deltaTime;
+      yield return null;
+    }
 
-      TimeUtils.gameplayPaused = false;
-      Player.SINGLETON.firstPersonController.move.inputDisabled = false;
+    CurrentQuestMessage.set("[Left mouse]: Primary fire, [Right mouse]: Alt fire");
+  }
 
-      GameObject.Find("Torch (1)").GetComponent<NavMeshAgent>().isStopped = false;
-      GameObject.Find("Torch (2)").GetComponent<NavMeshAgent>().isStopped = false;
-      GameObject.Find("Torch (3)").GetComponent<NavMeshAgent>().isStopped = false;
-      GameObject.Find("Torch (4)").GetComponent<NavMeshAgent>().isStopped = false;
-
-      CurrentQuestMessage.clear();
-
-      new CombatDialog()
-        .message(Character.MAY, "[Left mouse] to fire a burst, and [Right mouse] for full auto fire.")
-        .show(CombatDialog.Priority.HIGH, () => {
-          CurrentQuestMessage.set("Fight your way through the back alleys");
-        });
+  private void trigger2ndEnemyGroup() {
+    var monsters = new Monster[] {
+      MonstersController.findByName("Group 2 Torch 1"),
+      MonstersController.findByName("Group 2 Torch 2"),
+      MonstersController.findByName("Group 2 Torch 3"),
+      MonstersController.findByName("Group 2 Torch 4"),
+      MonstersController.findByName("Group 2 Torch 5")
+    };
+    foreach (Monster monster in monsters) {
+      monster.GetComponent<Awareness>().enabled = true;
+      monster.GetComponent<IdleBehaviour>().enabled = true;
     }
   }
 
-  private void triggerThirdEnemies() {
-    GameObject.Find("Torch (7)").GetComponent<FollowPlayer>().enabled = true;
-    GameObject.Find("Torch (6)").GetComponent<FollowPlayer>().enabled = true;
+  private void trigger3rdEnemyGroup() {
+    var monsters = new Monster[] {
+      MonstersController.findByName("Group 3 Hellhound 1"),
+  //    MonstersController.findByName("Group 3 Hellhound 2"),
+     // MonstersController.findByName("Group 3 Hellhound 3"),
+    //  MonstersController.findByName("Group 3 Hellhound 4"),
+      MonstersController.findByName("Group 3 Torch 1"),
+      MonstersController.findByName("Group 3 Torch 2"),
+      MonstersController.findByName("Group 3 Torch 3"),
+      MonstersController.findByName("Group 3 Torch 4")
+    };
+    foreach (Monster monster in monsters) {
+      monster.GetComponent<Awareness>().enabled = true;
+      monster.GetComponent<IdleBehaviour>().enabled = true;
+    }
+    
     new CombatDialog()
-      // TODO wait until the monster is killed
-//      .message(CombatDialog.Speaker.MAY, "Urgh, sorry, I'm no good with these blind corners.")
-  //    .message(CombatDialog.Speaker.ROSE, "Yo, MC, lemme handle this.")
-      .message(Character.NONE, "<i>TO DO: FINISH OFF THIS TUTORIAL</i>")
-      .message(Character.NONE, "<i>NOW SKIPPING TO THE NEXT MISSION...</i>")
       .performAction(() => {
-        //    Player.SINGLETON.firstPersonController.move.inputDisabled = true;
-
-        //     CurrentQuestMessage.set("Hold [Middle mouse] or [Q] to select weapon");
-        // TODO have the player equip rose
-        //        Weapons.SHOTGUN.setEquipped(true, true);
-        //        CurrentQuestMessage.set("[Left mouse] : Single shot\n[Right mouse] : double shot");
-        QuestManager.start(Quest_BedStore.NAME);
+        Weapons.SHOTGUN.equip();
       })
-  //    .message(CombatDialog.Speaker.ROSE, "Let's go get 'em, MC.")
+      .message(Character.ROSE, "Yo, I want some of that action.")
+      .setPriority(CombatDialog.Priority.HIGH)
+      .message(Character.ROSE, "Primary fire will mince anything at close range.")
+      .message(Character.ROSE, "And if there's something you want <i>extra</i> dead, use alt fire.")
       .show(CombatDialog.Priority.MAX);
   }
 
-  public override void handleEvent(string eventName, GameObject trigger) {
-    if (eventName == "First enemy trigger") encounterFirstEnemies();
-    else if (eventName == "Third enemy trigger") triggerThirdEnemies();
+  private void endTutorial() {
+    new CombatDialog()
+      .message(Character.MC, "That's as far as this tutorial mission goes.")
+      .message(Character.MC, "Now returning to the cafe...")
+      .show(CombatDialog.Priority.MAX, () => {
+        QuestManager.start(Quest_BedStore.NAME);
+      });
   }
 }

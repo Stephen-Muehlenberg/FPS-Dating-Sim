@@ -53,8 +53,8 @@ public class Quest_BedStore : Quest {
   private void startConversation() {
     // Disable player movement
     var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
-    firstPersonController.move.inputDisabled = true;
-    firstPersonController.jump.inputDisabled = true;
+    firstPersonController.move.inputEnabled = false;
+    firstPersonController.jump.inputEnabled = false;
     Weapons.unequip();
 
     new Conversation()
@@ -158,8 +158,8 @@ public class Quest_BedStore : Quest {
       player.transform.rotation = Quaternion.identity; // Identity just happens to be facing the direction we want
       var firstPersonController = player.GetComponent<FirstPersonModule.FirstPersonController>();
       firstPersonController.reset();
-      firstPersonController.move.inputDisabled = true;
-      firstPersonController.jump.inputDisabled = true;
+      firstPersonController.move.inputEnabled = false;
+      firstPersonController.jump.inputEnabled = false;
 
       ScreenFade.fadeIn(() => {
         new Conversation()
@@ -177,11 +177,11 @@ public class Quest_BedStore : Quest {
           .text("MC, choose two of us to defend the store with, and the other two will scrounge through the store.")
           .show(() => {
             // TODO fluidly rotate it to face the girls.
-            firstPersonController.look.inputDisabled = true;
+            firstPersonController.look.inputEnabled = false;
             player.transform.rotation = Quaternion.identity;
 
             WeaponSelectMenu.select(2, 2, "Choose 2 girls to help defend the store", (selection) => {
-              firstPersonController.look.inputDisabled = false;
+              firstPersonController.look.inputEnabled = true;
 
               foreach (Weapon weapon in Weapons.array) {
                 weapon.canEquip = false;
@@ -279,8 +279,8 @@ public class Quest_BedStore : Quest {
       player.transform.rotation = Quaternion.identity; // Identity just happens to be facing the direction we want
       var firstPersonController = player.GetComponent<FirstPersonModule.FirstPersonController>();
       firstPersonController.reset();
-      firstPersonController.move.inputDisabled = true;
-      firstPersonController.jump.inputDisabled = true;
+      firstPersonController.move.inputEnabled = false;
+      firstPersonController.jump.inputEnabled = false;
 
       ScreenFade.fadeIn(() => {
         var weaponA = Weapons.randomNonEquipableWeapon();
@@ -317,8 +317,8 @@ public class Quest_BedStore : Quest {
     SceneTransition.fadeTo("cafe",
       () => {
         var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
-        firstPersonController.move.inputDisabled = true;
-        firstPersonController.jump.inputDisabled = true;
+        firstPersonController.move.inputEnabled = false;
+        firstPersonController.jump.inputEnabled = false;
         Character.FIZZY.getProp().setPosition(new Vector3(0.3787175f, 0, -5.961192f));
         Character.ROSE.getProp().setPosition(new Vector3(-1.23f, 0, -6.918f));
         Character.MAY.getProp().setPosition(new Vector3(-0.5890785f, 0, -6.104723f));

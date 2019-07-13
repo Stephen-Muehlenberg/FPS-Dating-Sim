@@ -52,31 +52,31 @@ namespace FirstPersonModule {
     }
 
     public void enableAllInput() {
-      look.inputDisabled = false;
-      move.inputDisabled = false;
-      jump.inputDisabled = false;
+      look.inputEnabled = true;
+      move.inputEnabled = true;
+      jump.inputEnabled = true;
     }
 
     public void disableAllInput() {
-      look.inputDisabled = true;
-      move.inputDisabled = true;
-      jump.inputDisabled = true;
+      look.inputEnabled = false;
+      move.inputEnabled = false;
+      jump.inputEnabled = false;
     }
 
     public void enableAll() {
-      look.completelyDisabled = false;
-      move.completelyDisabled = false;
-      jump.completelyDisabled = false;
-      headbob.completelyDisabled = false;
-      gravity.completelyDisabled = false;
+      look.enabled = true;
+      move.enabled = true;
+      jump.enabled = true;
+      headbob.enabled = true;
+      gravity.enabled = true;
     }
 
     public void disableAll() {
-      look.completelyDisabled = true;
-      move.completelyDisabled = true;
-      jump.completelyDisabled = true;
-      headbob.completelyDisabled = true;
-      gravity.completelyDisabled = true;
+      look.enabled = false;
+      move.enabled = false;
+      jump.enabled = false;
+      headbob.enabled = false;
+      gravity.enabled = false;
     }
 
     /**
@@ -96,8 +96,8 @@ namespace FirstPersonModule {
   public abstract class ComponentModule {
     [HideInInspector]
     public FirstPersonController controller;
-    public bool inputDisabled; // If disabled, user can't take new actions, but existing actions will still be resolved, e.g. finishing the current foot step
-    public bool completelyDisabled; // If disabled, module won't update at all
+    public bool enabled; // If false, module won't update at all
+    public bool inputEnabled; // If false, user can't take new actions, but existing actions will still be resolved, e.g. completing a jump
 
     public virtual void init(FirstPersonController controller) {
       this.controller = controller;
@@ -182,7 +182,7 @@ namespace FirstPersonModule {
     }
 
     public override void update() {
-      if (completelyDisabled) return;
+      if (!enabled) return;
 
       // MINIMUM Y POSITION
       if (lockMinHeight && controller.transform.position.y < minHeight) {
@@ -196,10 +196,10 @@ namespace FirstPersonModule {
       currentProfile = running ? runProfile : walkProfile;
 
       // INPUT
-      if (inputDisabled) movementInput = Vector3.zero;
-      else movementInput =
+      if (inputEnabled) movementInput =
         (controller.transform.forward * Input.GetAxis("Vertical")) +
         (controller.transform.right * Input.GetAxis("Horizontal"));
+      else movementInput = Vector3.zero;
 
       moving = movementInput != Vector3.zero;
 
@@ -278,7 +278,7 @@ namespace FirstPersonModule {
     private float verticalRotation;
 
     public override void update() {
-      if (completelyDisabled || inputDisabled) return;
+      if (!enabled || !inputEnabled) return;
       
       input = Input.GetAxis("Mouse X");
       if (input != 0) controller.gameObject.transform.Rotate(0, input * sensitivity * Time.deltaTime, 0);
@@ -332,7 +332,7 @@ namespace FirstPersonModule {
     }
 
     public override void update() {
-      if (completelyDisabled) return;
+      if (!enabled) return;
 
       if (controller.inAir && !leftTheGround) {
         leftTheGround = true;
@@ -343,7 +343,7 @@ namespace FirstPersonModule {
         leftTheGround = false;
       }
 
-      if (inputDisabled) return;
+      if (!inputEnabled) return;
 
       if (Input.GetButtonDown("Jump")) {
         // Double jump
@@ -429,7 +429,7 @@ namespace FirstPersonModule {
     }
     
     public override void update() {
-      if (completelyDisabled) return;
+      if (!enabled) return;
 
       if (controller.inAir) {
         if (controller.cameraPivot.localPosition.y != baseHeadHeight) {

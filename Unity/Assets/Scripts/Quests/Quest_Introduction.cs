@@ -139,8 +139,8 @@ public class Quest_Introduction : Quest {
     var player = Player.SINGLETON;
     var fpController = player.GetComponent<FirstPersonModule.FirstPersonController>();
     fpController.enableAllInput();
-    fpController.move.inputDisabled = true;
-    fpController.jump.inputDisabled = true;
+    fpController.move.inputEnabled = false;
+    fpController.jump.inputEnabled = false;
     CurrentQuestMessage.set("Use the mouse to look around");
     player.StartCoroutine(waitForPlayerToLookAround(player.transform));
   }
@@ -149,7 +149,7 @@ public class Quest_Introduction : Quest {
     state = 20;
 
     var player = Player.SINGLETON;
-    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputDisabled = false;
+    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputEnabled = true;
     CurrentQuestMessage.set("Use WASD to move");
     player.StartCoroutine(waitForPlayerToMoveAround(player.transform));
   }
@@ -158,7 +158,7 @@ public class Quest_Introduction : Quest {
     state = 30;
 
     var player = Player.SINGLETON;
-    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputDisabled = false;
+    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputEnabled = true;
     CurrentQuestMessage.set("Find some detergent or something");
 
     var resource = Resources.Load("Props/Cleaning Bottle");
@@ -184,8 +184,8 @@ public class Quest_Introduction : Quest {
 
     var player = Player.SINGLETON;
     var fpController = player.GetComponent<FirstPersonModule.FirstPersonController>();
-    fpController.look.inputDisabled = true;
-    fpController.move.inputDisabled = true;
+    fpController.look.inputEnabled = false;
+    fpController.move.inputEnabled = false;
 
     // TOOD fix this
     player.setCrouchHeight(0.7f, 1.5f);
@@ -195,7 +195,7 @@ public class Quest_Introduction : Quest {
     new Conversation()
       .wait(1.5f)
       .performAction(() => {
-        fpController.look.inputDisabled = false;
+        fpController.look.inputEnabled = true;
         fpController.look.restrictCameraToDirection(Vector3.zero, 0); // TODO
       })
       .speaker(Character.MC_NARRATION, "")
@@ -232,12 +232,12 @@ public class Quest_Introduction : Quest {
         Character.MAY.getProp().walk(new Vector3(MAY_X, 0, MAY_END_Z), MAY_WALK_TIME);
         
         player.setCrouchHeight(0.95f, 1f);
-        fpController.look.inputDisabled = true;
+        fpController.look.inputEnabled = false;
         player.setLookDirection(new Vector3(-10, 235, 0), 1f);
       })
       .wait(1.3f)
       .performAction(() => {
-        fpController.look.inputDisabled = false;
+        fpController.look.inputEnabled = true;
       })
       .text("They're not aliens, surprisingly.")
       .text("Well, they could be. I don't know enough about aliens to say they don't all look like college-aged women covered in blood.")
@@ -258,7 +258,7 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("They haven't noticed me yet, but the one up front is getting closer. Probably getting ready to hop up onto the counter and grab the pastries.")
       .performAction(() => {
-        fpController.look.inputDisabled = true;
+        fpController.look.inputEnabled = false;
         player.setLookDirection(new Vector3(-14, 255, 0), 1f);
       })
       .choice("Well, I've gotta say <i>something</i>…",
@@ -289,7 +289,7 @@ public class Quest_Introduction : Quest {
       .performAction(() => {
         player.setCrouchHeight(1.7f, 0.3f);
         player.setLookDirection(new Vector3(2, 255, 0), 0.3f);
-        player.firstPersonController.look.inputDisabled = false;
+        player.firstPersonController.look.inputEnabled = true;
       })
       .speaker(Character.MC)
       .text(greetingText)
@@ -421,7 +421,7 @@ public class Quest_Introduction : Quest {
       .text(Character.VANESSA, "I'm afraid she's right. We've no choice but to make a stand here, defensible or not.")
       .text(Character.MAY, "Shit. I'm sorry guys, I should have found somewhere safer for us to rest.")
       .performAction(() => {
-        player.firstPersonController.look.inputDisabled = true;
+        player.firstPersonController.look.inputEnabled = false;
         player.setLookDirection(new Vector3(2, 255, 0), 0.3f);
       })
       .speaker(Character.FIZZY)
@@ -435,7 +435,7 @@ public class Quest_Introduction : Quest {
         }
       )
       .performAction(() => {
-        player.firstPersonController.look.inputDisabled = false;
+        player.firstPersonController.look.inputEnabled = true;
       })
       .variableText(
         dialogChoice_help == 0 ? Character.ROSE : dialogChoice_help == 1 ? Character.FIZZY : dialogChoice_help == 2 ? Character.VANESSA : Character.MAY,
