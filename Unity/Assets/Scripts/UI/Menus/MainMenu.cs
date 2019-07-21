@@ -3,38 +3,64 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour {
   public Button resumeButton;
-  private bool actionSelected = false; // Ignore subsequent actions after clicking New or Load
+  public Button loadButton;
+  public bool interactable = true;
 
   public void Start() {
     Cursor.visible = true;
     Cursor.lockState = CursorLockMode.Confined;
+
     resumeButton.interactable = false; // Disable immediately, so we don't wait for a disk operation
-    resumeButton.interactable = SaveManager.savedGameExists();
+    loadButton.interactable = false;
+    resumeButton.interactable = SaveManager.savedGamesExist();
+    loadButton.interactable = resumeButton.interactable;
+  }
+
+  public void resumeGame() {
+    if (!interactable) return;
+    interactable = false;
+
+    ScreenFade.fadeOut(() => {
+      GameData? data = SaveManager.loadMostRecent();
+
+      if (data.HasValue) GameData.apply(data.Value);
+      else ScreenFade.fadeIn(() => {
+        interactable = true;
+        // TODO display some sort of "load failed" message
+      });
+    });
   }
 
   public void newGame() {
-    if (actionSelected) return;
-    actionSelected = true;
+    if (!interactable) return;
+    interactable = false;
 
-    QuestManager.start(new Quest_Introduction());
+    GameData.apply(GameData.NEW_GAME);
   }
 
-  public void resume() {
-    if (actionSelected) return;
-    actionSelected = true;
+  public void load() {
+    if (!interactable) return;
 
-//    SaveManager.LoadGame();
-    QuestManager.start(new Quest_BedStore());
+    SaveLoadMenu.showLoadMenu(onSaveLoadClosed);
+  }
+
+  private void onSaveLoadClosed() {
+    // Check if there are still any save files. If not, disable the load/resume buttons.
+    resumeButton.interactable = false; // Disable immediately, so we don't wait for a disk operation
+    loadButton.interactable = false;
+    resumeButton.interactable = SaveManager.savedGamesExist();
+    loadButton.interactable = resumeButton.interactable;
   }
 
   public void settings() {
-    if (actionSelected) return;
+    if (!interactable) return;
 
     SettingsMenu.show();
   }
 
   public void exit() {
-    if (actionSelected) return;
+    if (!interactable) return;
+    interactable = false;
 
 #if UNITY_EDITOR
     UnityEditor.EditorApplication.isPlaying = false;

@@ -10,7 +10,7 @@ public class Settings {
 
   public static float volume; // Decibels, from -80 to 0
   public static float mouseSensitivity; // 0.5 to 7
-  public static float textSpeed; // Number of characters revealed per second, from 0.07 to 0.005
+  public static float textSpeed; // Number of characters revealed per second, from 0.07 (14/s) to 0.005 (200/s)
 
   public static void resetToDefault() {
     volume = 0f;
@@ -25,10 +25,11 @@ public class Settings {
   }
 
   public static Settings.SaveData compileSaveData() {
-    SaveData settings = new SaveData();
-    settings.volume = volume;
-    settings.mouseSensitivity = mouseSensitivity;
-    settings.textSpeed = textSpeed;
+    SaveData settings = new SaveData {
+      volume = volume,
+      mouseSensitivity = mouseSensitivity,
+      textSpeed = textSpeed
+    };
     return settings;
   }
 }

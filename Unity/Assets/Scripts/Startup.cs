@@ -17,7 +17,10 @@ public class Startup : MonoBehaviour {
   void Start () {
     if (settingsInitialized) return; // Only initialize settings first time a scene loads
 
-    SaveManager.LoadSettings();
+    Settings.SaveData savedSettings = SaveManager.loadSettings();
+    if (savedSettings == null) Settings.resetToDefault();
+    else Settings.set(savedSettings);
+
     mixer.SetFloat("MasterVolume", Settings.volume);
     settingsInitialized = true;
     Destroy(this);

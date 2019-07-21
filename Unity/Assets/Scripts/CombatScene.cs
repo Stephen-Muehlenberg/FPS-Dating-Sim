@@ -15,6 +15,6 @@ public class CombatScene : MonoBehaviour {
   }
 
   void Update() {
-    if (Input.GetKeyUp(KeyCode.Escape) && !PauseMenu.visible) PauseMenu.show();
+    if (Input.GetKeyUp(KeyCode.Escape) && !TimeUtils.dialogPaused) PauseMenu.show();
   }
 }

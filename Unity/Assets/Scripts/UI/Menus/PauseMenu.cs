@@ -3,11 +3,11 @@ using UnityEngine;
 using FirstPersonModule;
 
 public class PauseMenu : MonoBehaviour {
-  public static bool visible;
-
-  private bool actionSelected = false; // Ignore subsequent actions after clicking Load
+  public bool interactable = true; // False while menu cannot be interacted with, e.g. while another menu is open on top
 
   public static void show() {
+    TimeUtils.pauseDialog();
+
     // Create menu
     var prefab = Resources.Load<GameObject>("UI/PauseMenu");
     var instance = Instantiate(prefab);
@@ -24,22 +24,25 @@ public class PauseMenu : MonoBehaviour {
 
     if (Player.SINGLETON != null && Player.SINGLETON.GetComponent<FirstPersonController>() != null)
       Player.SINGLETON.GetComponent<FirstPersonController>().enabled = false;
-    
-    TimeUtils.pauseDialog();
+  }
 
-    visible = true;
+  // Called after navigating away from a sub-menu
+  private void resume() {
+    interactable = true;
   }
 
   public void save() {
-    // TODO show some kind of visual indication that the save was successful
-    SaveManager.SaveGame();
+    if (!interactable) return;
+    interactable = false;
+
+    SaveLoadMenu.showSaveMenu(resume);
   }
 
   public void load() {
-    if (actionSelected) return;
-    actionSelected = true;
+    if (!interactable) return;
+    interactable = false;
 
-    SaveManager.LoadGame();
+    SaveLoadMenu.showLoadMenu(resume);
   }
 
   public void showSettings() {
@@ -49,7 +52,6 @@ public class PauseMenu : MonoBehaviour {
 
   public void exitToMainMenu() {
     SceneTransition.fadeTo("main_menu", () => {
-      visible = false;
       TimeUtils.resumeDialog();
       TimeUtils.resumeGameplay();
     });
@@ -80,7 +82,6 @@ public class PauseMenu : MonoBehaviour {
     Cursor.visible = false;
 
     Destroy(this.gameObject);
-    visible = false;
 
     TimeUtils.resumeDialog();
     Player.SINGLETON.GetComponent<FirstPersonController>().enabled = true;

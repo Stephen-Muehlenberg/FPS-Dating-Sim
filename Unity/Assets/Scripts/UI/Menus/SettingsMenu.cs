@@ -32,7 +32,7 @@ public class SettingsMenu : MonoBehaviour {
   }
 
   public void setVolume(float volume) {
-    var dbs = displayVolumetToDb(volume);
+    var dbs = displayVolumeToDb(volume);
     mixer.SetFloat("MasterVolume", dbs);
     Settings.volume = dbs;
   }
@@ -46,7 +46,7 @@ public class SettingsMenu : MonoBehaviour {
   }
 
   public void dismiss() {
-    SaveManager.SaveSettings();
+    SaveManager.saveSettings();
     if (showPauseMenuOnDismiss) PauseMenu.show();
     Destroy(this.gameObject);
   }
@@ -56,7 +56,7 @@ public class SettingsMenu : MonoBehaviour {
   }
 
   // Slider returns linear values, but perception of dbs is exponential; map from the former to the latter
-  private static float displayVolumetToDb(float displayVolume) {
+  private static float displayVolumeToDb(float displayVolume) {
     var unscaledVolume = Mathf.Pow(displayVolume, 0.25f);
     return (unscaledVolume - 1f) * 80f;
   }
