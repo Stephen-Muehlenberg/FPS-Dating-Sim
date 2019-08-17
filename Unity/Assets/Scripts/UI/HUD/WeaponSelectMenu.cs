@@ -8,6 +8,7 @@ public class WeaponSelectMenu : MonoBehaviour {
   private static WeaponSelectMenu singleton;
   private const float MAX_MOUSE_SELECTION_OFFSET = 5f;
 
+  public RectTransform highlightTransform;
   [SerializeField]
   public WeaponSelectItem[] weaponUiItems;
   [SerializeField]
@@ -28,6 +29,7 @@ public class WeaponSelectMenu : MonoBehaviour {
   private bool canConfirmSelection = false; // Current selection is valid and can be confirmed
 
   private Vector2 mouseInput; // Cached for re-use
+  private Vector2 mousePositionInCircle; // Mouse x/y position around the center of the screen, bounded within a unit circle.
   private float absX, absY; // Cached for re-use
 
   private static void initializeSingleton() {
@@ -57,7 +59,19 @@ public class WeaponSelectMenu : MonoBehaviour {
     for (int i = 0; i < 4; i++) {
       if (singleton.canHighlight[i]) {
         singleton.weaponUiItems[i].enable();
-        if (currentlyHighlighted != null && i == currentlyHighlighted.index) singleton.weaponUiItems[i].highlight();
+        if (currentlyHighlighted != null && i == currentlyHighlighted.index) {
+          singleton.weaponUiItems[i].highlight();
+
+          // Set initial highlight rotation
+          float rotation = i == 0 ? 180 : i == 1 ? 0 : i == 2 ? 90 : 270;
+          singleton.highlightTransform.localRotation = Quaternion.Euler(0, 0, 270);
+
+          // Provide a small initial mouse offset in the direction of the currently selected weapon,
+          // so that minor mouse jitter doesn't cause it to swing rapidly back and forth like if it 
+          // were initially centered around 0,0.
+          singleton.mouseInput = new Vector2(i == 0 ? -0.1f : i == 1 ? 0.1f : 0,
+                                             i == 2 ? -0.1f : i == 3 ? 0.1f : 0);
+        }
         else singleton.weaponUiItems[i].unhighlight();
       }
       else singleton.weaponUiItems[i].disable();
@@ -126,10 +140,14 @@ public class WeaponSelectMenu : MonoBehaviour {
   }
 
   private void updateHighlight() {
-    // Smooth the mouse input over time, so selection doesn't flicker back and forth between frames.
-    // Also cap the maximum distance the "cursor" can go, so you never have to move the mouse too far back.
-    mouseInput = new Vector2(Mathf.Clamp(mouseInput.x + Input.GetAxis("Mouse X"), -MAX_MOUSE_SELECTION_OFFSET, MAX_MOUSE_SELECTION_OFFSET),
-                             Mathf.Clamp(mouseInput.y + Input.GetAxis("Mouse Y"), -MAX_MOUSE_SELECTION_OFFSET, MAX_MOUSE_SELECTION_OFFSET));
+    // Add mouse movement to the previous mouse position.
+    mouseInput += new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * Time.deltaTime * 10;
+    // Restrain mouse position to the unit circle - it's hypotenuse cannot be greater than 1.
+    // This provides a small amount of buffer against minor mouse jitter, so the cursor dousn't instantly dart
+    // about, but it's small enough that you can still quickly swap from one side of the circle to the other.
+    if (mouseInput.sqrMagnitude > 1) mouseInput = mouseInput.normalized;
+
+    highlightTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(-mouseInput.y, mouseInput.x) * Mathf.Rad2Deg);
 
     absX = Mathf.Abs(mouseInput.x);
     absY = Mathf.Abs(mouseInput.y);
