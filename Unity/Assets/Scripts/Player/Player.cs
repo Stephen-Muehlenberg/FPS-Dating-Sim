@@ -11,6 +11,13 @@ public class Player : MonoBehaviour {
     SINGLETON = this;
 	}
 
+  public void setInConversation(bool inConversation) { setInConversation(inConversation, false); }
+  public void setInConversation(bool inConversation, bool forceDisableJump) {
+    firstPersonController.move.inputEnabled = !inConversation;
+    firstPersonController.jump.inputEnabled = !inConversation && !forceDisableJump;
+    if (inConversation) Weapons.unequip();
+  }
+
   /**
    * Smoothly move the player to the destination over the course of the duration.
    */

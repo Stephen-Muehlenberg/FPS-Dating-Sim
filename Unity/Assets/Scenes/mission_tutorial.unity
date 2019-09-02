@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4839536, g: 0.45633504, b: 0.47396407, a: 1}
+  m_IndirectSpecularColor: {r: 0.47610196, g: 0.44800755, b: 0.4683592, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7129,7 +7129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questToInitialize: Tutorial
-  state: 10
+  state: 0
 --- !u!1001 &1279378988
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7731,6 +7731,7 @@ MonoBehaviour:
   volumetricShadowDimmer: 1
   shadowFadeDistance: 10000
   contactShadows: 0
+  shadowTint: {r: 0, g: 0, b: 0, a: 1}
   viewBiasMin: 0.2
   viewBiasMax: 100
   viewBiasScale: 1
@@ -7754,10 +7755,6 @@ MonoBehaviour:
   shadowAlgorithm: 0
   shadowVariant: 0
   shadowPrecision: 0
-  shadowData:
-    format: 0
-    data: 
-  shadowDatas: []
 --- !u!114 &1462307813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7770,8 +7767,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 4
-  m_Version: 4
+  version: 5
+  m_Version: 5
   directionalIntensity: 3.1415927
   punctualIntensity: 600
   areaIntensity: 200
@@ -7781,8 +7778,6 @@ MonoBehaviour:
   lightDimmer: 1
   m_VolumetricDimmer: 1
   lightUnit: 2
-  sunDiskSize: 1
-  sunHaloSize: 0.1
   fadeDistance: 10000
   affectDiffuse: 1
   affectSpecular: 1
@@ -7803,11 +7798,14 @@ MonoBehaviour:
   displayAreaLightEmissiveMesh: 0
   areaLightCookie: {fileID: 0}
   areaLightShadowCone: 120
+  useScreenSpaceShadows: 0
   evsmExponent: 15
   evsmLightLeakBias: 0
   evsmVarianceBias: 0.00001
   evsmBlurPasses: 0
   lightLayers: 1
+  lightlayersMask: 1
+  linkShadowLayers: 1
   shadowNearPlane: 0.1
   shadowSoftness: 0.5
   blockerSampleCount: 24

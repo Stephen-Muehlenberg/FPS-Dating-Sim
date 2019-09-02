@@ -16,6 +16,13 @@ public class MainMenu : MonoBehaviour {
     loadButton.interactable = resumeButton.interactable;
   }
 
+  public void Update() {
+    if (Input.GetKeyUp(KeyCode.Alpha1)) QuestManager.start(QuestManager.QUEST_1);
+    else if (Input.GetKeyUp(KeyCode.Alpha2)) QuestManager.start(QuestManager.QUEST_2);
+    else if (Input.GetKeyUp(KeyCode.Alpha3)) QuestManager.start(QuestManager.QUEST_3);
+    else if (Input.GetKeyUp(KeyCode.Alpha4)) QuestManager.start(QuestManager.QUEST_4);
+  }
+
   public void resumeGame() {
     if (!interactable) return;
     interactable = false;

@@ -143,7 +143,7 @@ public class Quest_Tutorial : Quest {
       .message(Character.MC, "That's as far as this tutorial mission goes.")
       .message(Character.MC, "Now returning to the cafe...")
       .show(CombatDialog.Priority.MAX, () => {
-        QuestManager.start(Quest_BedStore.NAME);
+        QuestManager.start(Quest_CafeBreak1.NAME);
       });
   }
 }

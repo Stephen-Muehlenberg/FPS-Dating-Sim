@@ -25,11 +25,11 @@ public class SceneTransition {
 
   private static void fadeoutOnSceneLoad(Scene scene, LoadSceneMode mode) {
     SceneManager.sceneLoaded -= fadeoutOnSceneLoad;
-    if (transitionComplete != null) transitionComplete();
+    transitionComplete?.Invoke();
 
     ScreenFade.fadeIn(() => {
       transitionInProgress = false;
-      if (fadeComplete != null) fadeComplete();
+      fadeComplete?.Invoke();
     });
   }
 
