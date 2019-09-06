@@ -129,7 +129,7 @@ public class Quest_CafeBreak1 : Quest {
       .text(Character.MAY, "I'm cool with whatever.")
       .text(Character.MC, "Every barista's favourite order. Rose?")
       .text(Character.ROSE, "Something girly. Any judgment will be balled up and returned to sender via your throat.")
-      .text(Character.MC, "I don't know what that means. Fizzy? Something Fizzy?")
+      .text(Character.MC, "I don't know what that means. Fizzy? Something fizzy?")
         .speed(Conversation.Speed.FAST)
       .text(Character.FIZZY, "Cherry Coke, please! With the silliest straw you have!")
       .text(Character.FIZZY, "Ooh! What if you gave me <i>eight</i> straws? That'd be super-silly. Like it was made for an octopus!")
@@ -178,7 +178,7 @@ public class Quest_CafeBreak1 : Quest {
         conversation
           .text(Character.MC_NARRATION, "<i>I walk away from this strange anarchist ritual, not totally sure if she's serious or not.</i>")
           .text(Character.MC_NARRATION, "<i>Still. I feel an odd kinship.</i>")
-          .show(() => { Player.SINGLETON.setInConversation(false, true); });
+          .show(onDrinkConversationEnded);
       });
 
       Character.MAY.getProp().setInteraction("Give drink", (mayTarget) => {
@@ -187,7 +187,7 @@ public class Quest_CafeBreak1 : Quest {
 
         new Conversation()
         .text(Character.MAY, "Wait I have dialog in this demo? Sweeeet.")
-        .show(() => { Player.SINGLETON.setInConversation(false, true); });
+        .show(onDrinkConversationEnded);
       });
 
       Character.VANESSA.getProp().setInteraction("Give drink", (vanessaTarget) => {
@@ -221,7 +221,7 @@ public class Quest_CafeBreak1 : Quest {
             .text(Character.MC, "And yet, I am still walking away.");
         }
 
-        conversation.show(() => { Player.SINGLETON.setInConversation(false, true); });
+        conversation.show(onDrinkConversationEnded);
       });
 
       Character.FIZZY.getProp().setInteraction("Give drink", (fizzyTarget) => {
@@ -240,8 +240,13 @@ public class Quest_CafeBreak1 : Quest {
         .text(Character.MC, "Yeah. I thought that was <i>kind</i> of silly.")
         .speed(Conversation.Speed.FAST)
         .text(Character.FIZZY, "Aww, geez. I appreciate you doing your best to make up for your serious straws! I'll leave you a good Yelp review.")
-        .show(() => { Player.SINGLETON.setInConversation(false, true); });
+        .show(onDrinkConversationEnded);
       });
     });
+  }
+
+  private void onDrinkConversationEnded() {
+    if (drinksRemaining > 0) Player.SINGLETON.setInConversation(false, true);
+    else QuestManager.start(new Quest_BedStore());
   }
 }

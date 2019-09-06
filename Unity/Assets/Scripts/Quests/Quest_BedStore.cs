@@ -3,11 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Quest_BedStore : Quest {
-  private Vector3 playerConversationPosition = new Vector3(156, 0, 95.5f);
-  private Vector3 girlConversationPositionA = new Vector3(155, 0.2f, 97);
-  private Vector3 girlConversationPositionB = new Vector3(155.6f, 0.2f, 97.5f);
-  private Vector3 girlConversationPositionC = new Vector3(156.4f, 0.2f, 97.4f);
-  private Vector3 girlConversationPositionD = new Vector3(157, 0.2f, 97);
+  private static readonly Vector3 INTRO_POS_MC = new Vector3(0, 0, -8.5f),
+                                  INTRO_POS_ROSE = new Vector3(-1.23f, 0, -6.918f),
+                                  INTRO_POS_MAY = new Vector3(-0.58908f, 0, -6.104723f),
+                                  INTRO_POS_VANESSA = new Vector3(1.156008f, 0, -6.55563f),
+                                  INTRO_POS_FIZZY = new Vector3(0.378718f, 0, -5.961192f);
+  private static readonly Vector3 STORE_POS_MC = new Vector3(156, 0, 95.5f),
+                                  STORE_POS_A = new Vector3(155, 0.2f, 97),
+                                  STORE_POS_B = new Vector3(155.6f, 0.2f, 97.5f),
+                                  STORE_POS_C = new Vector3(156.4f, 0.2f, 97.4f),
+                                  STORE_POS_D = new Vector3(157, 0.2f, 97);
 
   public static string NAME = "BedStore";
   public override string name => NAME;
@@ -51,43 +56,13 @@ public class Quest_BedStore : Quest {
 
   // -- 0 --
   private void startConversation() {
-    // Disable player movement
-    var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
-    firstPersonController.move.inputEnabled = false;
-    firstPersonController.jump.inputEnabled = false;
-    Weapons.unequip();
+    Character.setPositions(INTRO_POS_MC, Quaternion.identity, INTRO_POS_ROSE, INTRO_POS_MAY, INTRO_POS_VANESSA, INTRO_POS_FIZZY);
+    Player.SINGLETON.setInConversation(true);
 
     new Conversation()
       .wait(2f)
-      .text(Character.MC_NARRATION, "<i>I stagger back into the café with four guns that each hop off and transform back into women.</i>")
-      .wait(0.3f)
-      .performAction(() => {
-        Character.FIZZY.getProp().setPosition(new Vector3(0.3787175f, 0, -5.961192f))
-        .GetComponent<ParticleSystem>().Play();
-      })
-      .wait(0.4f)
-      .performAction(() => {
-        Character.ROSE.getProp().setPosition(new Vector3(-1.23f, 0, -6.918f))
-        .GetComponent<ParticleSystem>().Play();
-      })
-      .wait(0.4f)
-      .performAction(() => {
-        Character.MAY.getProp().setPosition(new Vector3(-0.5890785f, 0, -6.104723f))
-.GetComponent<ParticleSystem>().Play();
-      })
-      .wait(0.4f)
-      .performAction(() => {
-        Character.VANESSA.getProp().setPosition(new Vector3(1.156008f, 0, -6.55563f))
-.GetComponent<ParticleSystem>().Play();
-      })
-      .wait(0.9f)
-      .text("<i>Because apparently that is my life now.</i>")
-      .wait(0.2f)
-      .text(Character.MAY, "Ugh. I'm glad Mission Time is done with.")
-      .text(Character.MC, "Mission Time, eh? So that was our first official mission?")
-      .text(Character.FIZZY, "Sure was! Did you have fun? I had fun!")
-      .text(Character.VANESSA, "I did not, particularly. But what's done is done.")
-      .text("The sun's going down; let's take a moment to eat some food and then sleep for the night.")
+      .text(Character.NONE, "<i>Some dialog goes here.</i>")
+      .text(Character.VANESSA, "The sun's going down; let's take a moment to eat some food and then sleep for the night.")
       .speed(Conversation.Speed.FAST)
       .text(Character.FIZZY, "I'll grab the food!")
       .speed(Conversation.Speed.NORMAL)
@@ -147,14 +122,14 @@ public class Quest_BedStore : Quest {
       Weapons.currentlyEquipped.unequip();
 
       // Position actors
-      Character.ROSE.getProp().setPosition(girlConversationPositionA);
-      Character.MAY.getProp().setPosition(girlConversationPositionB);
-      Character.VANESSA.getProp().setPosition(girlConversationPositionC);
-      Character.FIZZY.getProp().setPosition(girlConversationPositionD);
+      Character.ROSE.getProp().setPosition(STORE_POS_A);
+      Character.MAY.getProp().setPosition(STORE_POS_B);
+      Character.VANESSA.getProp().setPosition(STORE_POS_C);
+      Character.FIZZY.getProp().setPosition(STORE_POS_D);
 
       // Reposition, reset, and restrict the player
       var player = Player.SINGLETON;
-      player.transform.position = playerConversationPosition;
+      player.transform.position = STORE_POS_MC;
       player.transform.rotation = Quaternion.identity; // Identity just happens to be facing the direction we want
       var firstPersonController = player.GetComponent<FirstPersonModule.FirstPersonController>();
       firstPersonController.reset();
@@ -267,15 +242,15 @@ public class Quest_BedStore : Quest {
       if (Weapons.GRENADE_LAUNCHER.canEquip) { defenders.Add(Character.FIZZY.getProp()); } else { scroungers.Add(Character.FIZZY.getProp()); }
 
       var firstDefenderOnLeft = Random.Range(0, 2) == 1;
-      defenders[0].setPosition(firstDefenderOnLeft ? girlConversationPositionA : girlConversationPositionD);
-      defenders[1].setPosition(firstDefenderOnLeft ? girlConversationPositionD : girlConversationPositionA);
+      defenders[0].setPosition(firstDefenderOnLeft ? STORE_POS_A : STORE_POS_D);
+      defenders[1].setPosition(firstDefenderOnLeft ? STORE_POS_D : STORE_POS_A);
       var firstScroungerOnLeft = Random.Range(0, 2) == 1;
-      scroungers[0].setPosition(firstScroungerOnLeft ? girlConversationPositionB : girlConversationPositionC);
-      scroungers[1].setPosition(firstScroungerOnLeft ? girlConversationPositionC : girlConversationPositionB);
+      scroungers[0].setPosition(firstScroungerOnLeft ? STORE_POS_B : STORE_POS_C);
+      scroungers[1].setPosition(firstScroungerOnLeft ? STORE_POS_C : STORE_POS_B);
 
       // Reposition, reset, and restrict the player
       var player = Player.SINGLETON;
-      player.transform.position = playerConversationPosition;
+      player.transform.position = STORE_POS_MC;
       player.transform.rotation = Quaternion.identity; // Identity just happens to be facing the direction we want
       var firstPersonController = player.GetComponent<FirstPersonModule.FirstPersonController>();
       firstPersonController.reset();

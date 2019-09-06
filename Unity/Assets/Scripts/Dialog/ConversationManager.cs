@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class ConversationManager : MonoBehaviour {
   public GameObject textbox;
@@ -82,7 +83,6 @@ public class ConversationManager : MonoBehaviour {
 
   private void processCurrentAction() {
     var action = conversation.actions[currentConversationIndex];
-
     if (action is Conversation.Action.SetSpeaker) setSpeaker((action as Conversation.Action.SetSpeaker).speaker);
     else if (action is Conversation.Action.OverrideName) overrideSpeakerName((action as Conversation.Action.OverrideName).name);
     else if (action is Conversation.Action.SetSpeed) setSpeed((action as Conversation.Action.SetSpeed).speed);
@@ -99,6 +99,12 @@ public class ConversationManager : MonoBehaviour {
       choiceInProgress = true;
       setText((action as Conversation.Action.Choice).messageText);
       return; // Don't immediately finish this action
+    }
+    else if (action is Conversation.Action.DynamicInsert) {
+      List<Conversation.Action> newActions = (action as Conversation.Action.DynamicInsert).callback.Invoke().actions;
+      for (int i = 0; i < newActions.Count; i++) {
+        conversation.actions.Insert(i + 1 + currentConversationIndex, newActions[i]);
+      }
     }
     else throw new UnityException("Unidentified Conversation.Action " + action);
 

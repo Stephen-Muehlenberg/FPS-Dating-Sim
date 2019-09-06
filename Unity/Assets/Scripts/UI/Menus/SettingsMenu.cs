@@ -8,11 +8,11 @@ public class SettingsMenu : MonoBehaviour {
   public Slider sensitivitySlider;
   public Slider textSpeedSlider;
 
-  private bool showPauseMenuOnDismiss;
+  private Callback onClosedCallback;
 
-  public static void show() { show(false); }
+  public static void show() { show(null); }
 
-  public static void show(bool showPauseMenuOnDismiss) {
+  public static void show(Callback onClosed) {
     // Create menu
     var prefab = Resources.Load<GameObject>("UI/SettingsMenu");
     var instance = Instantiate(prefab);
@@ -25,7 +25,7 @@ public class SettingsMenu : MonoBehaviour {
 
     // Load settings
     var menu = instance.GetComponent<SettingsMenu>();
-    menu.showPauseMenuOnDismiss = showPauseMenuOnDismiss;
+    menu.onClosedCallback = onClosed;
     menu.volumeSlider.value = dbToDisplayVolume(Settings.volume);
     menu.sensitivitySlider.value = Settings.mouseSensitivity;
     menu.textSpeedSlider.value = inverseTextSpeed(Settings.textSpeed);
@@ -47,8 +47,8 @@ public class SettingsMenu : MonoBehaviour {
 
   public void dismiss() {
     SaveManager.saveSettings();
-    if (showPauseMenuOnDismiss) PauseMenu.show();
     Destroy(this.gameObject);
+    onClosedCallback?.Invoke();
   }
 
   void Update() {

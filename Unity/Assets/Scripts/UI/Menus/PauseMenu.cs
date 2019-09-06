@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using FirstPersonModule;
 
 public class PauseMenu : MonoBehaviour {
   public bool interactable = true; // False while menu cannot be interacted with, e.g. while another menu is open on top
@@ -22,8 +21,7 @@ public class PauseMenu : MonoBehaviour {
     Cursor.lockState = CursorLockMode.Confined;
     Cursor.visible = true;
 
-    if (Player.SINGLETON != null && Player.SINGLETON.GetComponent<FirstPersonController>() != null)
-      Player.SINGLETON.GetComponent<FirstPersonController>().enabled = false;
+    if (Player.SINGLETON != null) Player.SINGLETON.firstPersonController.enabled = false;
   }
 
   // Called after navigating away from a sub-menu
@@ -46,8 +44,10 @@ public class PauseMenu : MonoBehaviour {
   }
 
   public void showSettings() {
-    SettingsMenu.show(true);
-    Destroy(this.gameObject);
+    if (!interactable) return;
+    interactable = false;
+
+    SettingsMenu.show(resume);
   }
 
   public void exitToMainMenu() {
@@ -84,6 +84,6 @@ public class PauseMenu : MonoBehaviour {
     Destroy(this.gameObject);
 
     TimeUtils.resumeDialog();
-    Player.SINGLETON.GetComponent<FirstPersonController>().enabled = true;
+    if (Player.SINGLETON != null) Player.SINGLETON.firstPersonController.enabled = true;
   }
 }

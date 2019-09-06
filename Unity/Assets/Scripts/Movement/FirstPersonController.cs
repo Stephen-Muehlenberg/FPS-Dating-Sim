@@ -267,8 +267,6 @@ namespace FirstPersonModule {
 
   [System.Serializable]
   public class LookModule : ComponentModule {
-    public float sensitivity = 100f;
-
     public void restrictCameraToDirection(Vector3 direction, float maxRotation) {
       // TODO
     }
@@ -281,7 +279,7 @@ namespace FirstPersonModule {
       if (!enabled || !inputEnabled) return;
       
       input = Input.GetAxis("Mouse X");
-      if (input != 0) controller.gameObject.transform.Rotate(0, input * sensitivity * Time.deltaTime, 0);
+      if (input != 0) controller.gameObject.transform.Rotate(0, input * Settings.mouseSensitivity * Time.deltaTime, 0);
 
       input = Input.GetAxis("Mouse Y");
       if (input != 0) {
@@ -302,7 +300,7 @@ namespace FirstPersonModule {
           }
         }
 
-        controller.cameraPivot.Rotate(input * sensitivity * Time.deltaTime, 0, 0);
+        controller.cameraPivot.Rotate(input * Settings.mouseSensitivity * Time.deltaTime, 0, 0);
       }
     }
   }

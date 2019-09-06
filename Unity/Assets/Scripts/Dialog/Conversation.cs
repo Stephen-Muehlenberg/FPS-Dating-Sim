@@ -2,6 +2,8 @@
 using UnityEngine;
 
 public class Conversation {
+  public delegate Conversation DynamicConversation();
+
   public List<Action> actions = new List<Action>();
   public Callback callback;
 
@@ -28,6 +30,11 @@ public class Conversation {
       public SetText(string text) { this.text = text; }
     }
 
+    public class DynamicInsert : Action {
+      public DynamicConversation callback;
+      public DynamicInsert(DynamicConversation callback) { this.callback = callback; }
+    }
+    
     public class Wait : Action {
       public float seconds;
       public Wait(float seconds) { this.seconds = seconds; }
@@ -100,6 +107,17 @@ public class Conversation {
 
   public Conversation overrideSpeakerName(string name) {
     actions.Add(new Action.OverrideName(name));
+    return this;
+  }
+
+  /**
+   * Takes a function which generates a new Conversation. When this action is called, it runs the function
+   * and inserts the generated conversation into the parent conversation.
+   * Useful for dynamically inserting chunks of dialog based on variables that aren't known until the 
+   * dialog happens, e.g. reacting to player choices.
+   */
+  public Conversation dynamicallyInsert(DynamicConversation callback) {
+    actions.Add(new Action.DynamicInsert(callback));
     return this;
   }
 

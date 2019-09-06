@@ -201,7 +201,7 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("I'm not <i>totally</i> sure why I'm here.")
         .wait(0.5f)
-        .text("Maybe because I've been gunning for Employee of the Month for a while now, and I can't stop <i>now</i>.")
+        .text("Maybe because I've been gunning for Employee of the Month for a while, and I can't stop <i>now</i>.")
         .text("This kind of dedication would look pretty good to any secret shoppers that showed up.")
         .wait(0.5f)
         .text("Maybe because I don't want to give corporate any excuse to keep my next paystub from me.")
@@ -212,7 +212,7 @@ public class Quest_Introduction : Quest {
         .text("Maybe I just like the routine. If I'm going to get devoured by aliens, I might as well keep doing my job until it happens.")
         .text("Not like I have much else going on.")
       .wait(1.5f)
-      .text(Character.NONE, "*<i>Doorbell rings</i>*")
+      .text(Character.NONE, "*<i>Door chime rings</i>*")
       .text("*<i>Footsteps</i>*")
       .performAction(() => {
         Character.ROSE.getProp().transform.position = new Vector3(ROSE_X, 0, ROSE_START_Z);
@@ -403,7 +403,7 @@ public class Quest_Introduction : Quest {
       // TODO May falls towards Fizzy as she transforms with an orange hue.Fizzy quickly grabs her by the barrel and hoists her into firing position, revealing her to be an assault rifle.
       // Fizzy wastes no time in firing wildly through the windows and door with a wide grin on her face, shattering the glass entirely.Guess I don't have to clean it anymore. 
       .text(Character.MC_NARRATION, "May falls towards Fizzy as she transforms with a green hue. Fizzy quickly snatches the glowing assault rifle out of the air and hoists her into firing poisition.")
-      .text("She wastes no time firing a burst through the nearby window, wide grin across her face as the glass shatteres entirely. Guess I don't have to clean it anymore.")
+      .text("She wastes no time firing a burst through the nearby window, wide grin across her face as the glass shatters entirely. Guess I don't have to clean it anymore.")
       .text(Character.VANESSA, "Could we not attract more attention than we need to? I swore we were in here specifically to stop fighting for a spell.")
       .text(Character.ROSE, "Yeahg, Ihm mnot domm mmy mmffn.")
       .text(Character.FIZZY, "Yeah, yeah. C'mon, your turn, Vanessa!")
@@ -432,26 +432,43 @@ public class Quest_Introduction : Quest {
         "Well, I guess I'd be a lot safer with a bunch of sentient gun ladies.",
         (selection, _) => {
           dialogChoice_help = selection;
+          // TODO it was determined that this approach DOESNT WORK. The problem being that variableText
+          // is compiled at the start of the dialog, and changes to the value don't effect the compiled 
+          // dialog. Need to change state, save the response value, and start a new dialog.
         }
       )
       .performAction(() => {
         player.firstPersonController.look.inputEnabled = true;
       })
-      .variableText(
-        dialogChoice_help == 0 ? Character.ROSE : dialogChoice_help == 1 ? Character.FIZZY : dialogChoice_help == 2 ? Character.VANESSA : Character.MAY,
-        new string[] {"Heck yeah it's awesome! Let's do this!"},
-        new string[] {"Exactly, safety in numbers and all that.", "But we should really get moving."},
-        new string[] {"<i>Giggle.</i> Careful Fizzy, this gentlemen appears to have a wit to match your own.", "After you, MC."},
-        new string[] {"Oh, you're actually game? Woo! This'll be fun."}
-      )
+      .dynamicallyInsert(() => {
+        switch(dialogChoice_help) {
+          case 0:
+            return new Conversation().text(Character.ROSE, "Heck yeah it's awesome!");
+          case 1:
+            return new Conversation().text(Character.FIZZY, "Oh, you're actually game? Woo!");
+          case 2:
+            return new Conversation().text(Character.VANESSA, "<i>Giggle.</i> Careful Fizzy, this gentlemen appears to have a wit to match your own.");
+          case 3:
+            return new Conversation().text(Character.MAY, "Exactly, safety in numbers and all that.", "But we should really get moving.");
+          default:
+            throw new UnityException("dialogChoice_help was " + dialogChoice_help + ", which is invalid.");
+        }
+      })
       .text(Character.MC, "Alright, let's go. There's a back door through the kitchen, leads onto some side streets away from the main road. Might have a better chance of escaping undetected through there.")
-      .variableText(
-        dialogChoice_help == 0 ? Character.MAY : dialogChoice_help == 1 ? Character.VANESSA : dialogChoice_help == 2 ? Character.FIZZY : Character.ROSE,
-        new string[] {"Let's do this."},
-        new string[] {"Lead the way."},
-        new string[] {"After you, MC."},
-        new string[] {"This'll be fun!"}
-      )
+      .dynamicallyInsert(() => {
+        switch(dialogChoice_help) {
+          case 0:
+            return new Conversation().text(Character.ROSE, "Let's do this.");
+          case 1:
+            return new Conversation().text(Character.FIZZY, "This'll be fun!");
+          case 2:
+            return new Conversation().text(Character.VANESSA, "After you, MC.");
+          case 3:
+            return new Conversation().text(Character.MAY, "Lead the way.");
+          default:
+            throw new UnityException("dialogChoice_help was " + dialogChoice_help + ", which is invalid.");
+        }
+      })
       .show(() => { QuestManager.start(new Quest_Tutorial()); });
   }
 
