@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2287391706433311515}
   - component: {fileID: 7002148816462714909}
   m_Layer: 5
-  m_Name: LoadMenuListItem
+  m_Name: FileMenuListItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,8 +185,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -110, y: 0}
-  m_SizeDelta: {x: -220, y: 0}
+  m_AnchoredPosition: {x: -130, y: 0}
+  m_SizeDelta: {x: -260, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &127438121256338804
 CanvasRenderer:

@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/mission_bed_store.unity
     guid: fa43f2c041e323249be08b2b5b2d710e
+  - enabled: 1
+    path: Assets/Scenes/suburbia.unity
+    guid: 8ccc278f3cb2f4c46938075144702d96
   m_configObjects: {}

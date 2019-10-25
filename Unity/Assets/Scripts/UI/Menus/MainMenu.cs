@@ -17,10 +17,19 @@ public class MainMenu : MonoBehaviour {
   }
 
   public void Update() {
-    if (Input.GetKeyUp(KeyCode.Alpha1)) QuestManager.start(QuestManager.QUEST_1);
-    else if (Input.GetKeyUp(KeyCode.Alpha2)) QuestManager.start(QuestManager.QUEST_2);
-    else if (Input.GetKeyUp(KeyCode.Alpha3)) QuestManager.start(QuestManager.QUEST_3);
-    else if (Input.GetKeyUp(KeyCode.Alpha4)) QuestManager.start(QuestManager.QUEST_4);
+    if (!interactable) return;
+
+    if (Input.GetKeyUp(KeyCode.Alpha1)) startQuest(QuestManager.QUEST_1);
+    else if (Input.GetKeyUp(KeyCode.Alpha2)) startQuest(QuestManager.QUEST_2);
+    else if (Input.GetKeyUp(KeyCode.Alpha3)) startQuest(QuestManager.QUEST_3);
+    else if (Input.GetKeyUp(KeyCode.Alpha4)) startQuest(QuestManager.QUEST_4);
+    else if (Input.GetKeyUp(KeyCode.Alpha5)) startQuest(QuestManager.QUEST_5);
+    else if (Input.GetKeyUp(KeyCode.Alpha6)) startQuest(QuestManager.QUEST_6);
+  }
+
+  private void startQuest(string quest) {
+    interactable = false;
+    QuestManager.start(quest);
   }
 
   public void resumeGame() {

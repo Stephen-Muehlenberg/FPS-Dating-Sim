@@ -8,7 +8,7 @@ public class MachineGun : WeaponController {
   public LineRenderer lineRenderer;
 
   private const float RANGE = 300f;
-  private const int DAMAGE_MIN = 80, DAMAGE_MAX = 100;
+  private const int DAMAGE_MIN = 85, DAMAGE_MAX = 105;
   private const float SCATTER_RADIANS_FULL_AUTO = 5f * Mathf.Deg2Rad, SCATTER_RADIANS_BURST = 0.5f * Mathf.Deg2Rad;
   private const int BURST_SHOTS = 3;
   private const float BURST_PAUSE = 0.33f;

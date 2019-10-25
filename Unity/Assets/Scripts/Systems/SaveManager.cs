@@ -41,7 +41,7 @@ public class SaveManager {
       string filename = file.Name.Substring(0, file.Name.Length - SAVE_EXTENSION.Length);
       GameData? data = load(filename);
       if (data.HasValue) {
-        saveInfo.Add(new SaveFileInfo(filename, data.Value.playtime.ToString(), "todo"));
+        saveInfo.Add(new SaveFileInfo(filename, data.Value.playtime.ToString(), data.Value.lastPlayed));
       }
     }
 
@@ -66,7 +66,6 @@ public class SaveManager {
       }
 
       // Write to file
-      data.lastPlayed = DateTime.Now;
       var formatter = new BinaryFormatter();
       formatter.Serialize(file, data);
 
@@ -221,9 +220,9 @@ public class SaveManager {
 public struct SaveFileInfo {
   public string name;
   public string playtime;
-  public string lastPlayed;
+  public DateTime lastPlayed;
 
-  public SaveFileInfo(string name, string playtime, string lastPlayed) {
+  public SaveFileInfo(string name, string playtime, DateTime lastPlayed) {
     this.name = name;
     this.playtime = playtime;
     this.lastPlayed = lastPlayed;

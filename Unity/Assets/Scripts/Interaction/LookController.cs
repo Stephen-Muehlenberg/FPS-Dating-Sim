@@ -33,6 +33,7 @@ public class LookController : MonoBehaviour {
 
   void Update() {
     if (!active) return;
+    if (TimeUtils.gameplayPaused) return;
 
     // TODO ignore UI layer?
     rayHitSomething = Physics.Raycast(transform.position, transform.forward, out hitInfo, MAX_LOOK_RANGE, layerMask);

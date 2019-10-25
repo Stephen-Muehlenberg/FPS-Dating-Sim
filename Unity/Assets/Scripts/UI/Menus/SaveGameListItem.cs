@@ -13,8 +13,17 @@ public class SaveGameListItem : MonoBehaviour {
     this.menu = menu;
     this.info = info;
     title.text = info.name;
-    playtime.text = info.playtime;
-    lastPlayed.text = info.lastPlayed;
+
+    int playtimeSeconds = int.Parse(info.playtime);
+    int hours = Mathf.FloorToInt(playtimeSeconds / 3600);
+    int minutes = Mathf.FloorToInt((playtimeSeconds % 3600) / 60);
+    int seconds = Mathf.FloorToInt(playtimeSeconds % 60);
+    string playtimeText = seconds + "s";
+    if (minutes > 0 || hours > 0) playtimeText = minutes + "m " + playtimeText;
+    if (hours > 0) playtimeText = hours + "h " + playtimeText;
+
+    playtime.text = playtimeText;
+    lastPlayed.text = info.lastPlayed.ToShortDateString() + "  " + info.lastPlayed.ToShortTimeString();
   }
 
   public void onClick() {

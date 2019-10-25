@@ -1,58 +1,36 @@
 ﻿using System.Collections;
-using UnityEngine;
 
-public class Quest_CafeBreak1 : Quest {
-  public static string NAME = "CafeBreak1";
+public class Quest_CafeBreak2 : Quest {
+  public static string NAME = "CafeBreak2";
   public override string name => NAME;
-
-  private static readonly Vector3 OPENING_MC_POS = new Vector3(0, 0, -8.5f),
-                                  OPENING_ROSE_POS = new Vector3(-1.23f, 0, -6.918f),
-                                  OPENING_MAY_POS = new Vector3(-0.58908f, 0, -6.104723f),
-                                  OPENING_VANESSA_POS = new Vector3(1.156008f, 0, -6.55563f),
-                                  OPENING_FIZZY_POS = new Vector3(0.378718f, 0, -5.961192f);
-  private static readonly Vector3 INTERLUDE_MC_POS = new Vector3(2.2f, 0, 4.9f),
-                                  INTERLUDE_ROSE_POS = new Vector3(-3.12f, 0, 10.74f),
-                                  INTERLUDE_MAY_POS = new Vector3(-2.17f, 0, -8f),
-                                  INTERLUDE_VANESSA_POS = new Vector3(-2.37f, 0, 4.29f),
-                                  INTERLUDE_FIZZY_POS = new Vector3(2.8f, 0, 12.7f);
-
-  private static readonly string CHOICE_ENJOY_0 = "[FUN]",
-                                 CHOICE_ENJOY_1 = "[SCARY]",
-                                 CHOICE_ENJOY_2 = "[NEUTRAL]",
-                                 CHOICE_ENJOY_3 = "[TIRING]";
-
-  private int choiceEnjoy = -1; // TODO make the player's choice effect affinity
-  private bool deliveredRosesDrink, deliveredMaysDrink, deliveredVanessasDrink, deliveredFizzysDrink;
-  private int drinksRemaining {
-    get { return (deliveredRosesDrink ? 0 : 1) + (deliveredMaysDrink ? 0 : 1) + (deliveredVanessasDrink ? 0 : 1) + (deliveredFizzysDrink ? 0 : 1); }
-  }
 
   public override void start(Hashtable args) {
     state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-    deliveredRosesDrink = (bool) args.getOrDefault("R", false);
-    deliveredMaysDrink = (bool) args.getOrDefault("M", false);
-    deliveredVanessasDrink = (bool) args.getOrDefault("V", false);
-    deliveredFizzysDrink = (bool) args.getOrDefault("F", false);
     setState(state);
   }
 
   public override Hashtable save() {
     return new Hashtable {
-      { Quest.KEY_STATE, state },
-      { "R", deliveredRosesDrink },
-      { "M", deliveredMaysDrink },
-      { "V", deliveredVanessasDrink },
-      { "F", deliveredFizzysDrink }
+      { Quest.KEY_STATE, state }
     };
   }
 
   private void setState(int state) {
     this.state = state;
 
-    if (state == 0) openingConversationPart1();
-    else if (state == 20) openingConversationPart3();
-    else throw new UnityException("Unknown state " + state);
+    if (state == 0) conversation1();
   }
+
+  private void conversation1() {
+    SceneTransition.fadeTo("Cafe", () => {
+      // TODO set lighting
+      // TODO add sleeping bags and stuff to cafe back room
+      // TODO have some conversation / dialog
+    });
+  }
+}
+
+/*
 
   private void openingConversationPart1() {
     SceneTransition.fadeTo("Cafe", () => {
@@ -248,3 +226,5 @@ public class Quest_CafeBreak1 : Quest {
     else QuestManager.start(new Quest_BedStore());
   }
 }
+
+ */

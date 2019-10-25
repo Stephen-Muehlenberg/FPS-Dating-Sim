@@ -6,7 +6,7 @@ public class MachineGunFatigue_Basic : WeaponFatigue {
   private const float MIN_FATIGUE_COOLDOWN = 80; // Once exhausted, can't fire until fatigue drops to MIN_FATIGUE_COOLDOWN
 
   private const float FATIGUE_PER_BURST_SHOT = 0.35f;
-  private const float FATIGUE_PER_AUTO_SHOT = 0.68f;
+  private const float FATIGUE_PER_AUTO_SHOT = 0.8f;
   private const float MIN_FATIGUE_BEFORE_PENALTY = 7; // No bonus delay applied while fatigue less than this
 
   private const float MIN_REST_UNTIL_RECOVERY_STARTS = 1.5f;

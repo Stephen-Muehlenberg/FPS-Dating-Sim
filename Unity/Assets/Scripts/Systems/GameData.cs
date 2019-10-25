@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 /**
  * Serializable collection of all data necessary to represent a saved game.
@@ -14,6 +15,7 @@ public struct GameData {
   public float affinityFizzy;
 
   public string currentQuestName;
+  public Hashtable currentQuestArgs;
   // TODO save args hashtable
 
   public static GameData NEW_GAME = new GameData {
@@ -22,7 +24,8 @@ public struct GameData {
     affinityMay = 0,
     affinityVanessa = 0,
     affinityFizzy = 0,
-    currentQuestName = Quest_Introduction.NAME
+    currentQuestName = Quest_Introduction.NAME,
+    currentQuestArgs = null
   };
 
   /**
@@ -31,13 +34,15 @@ public struct GameData {
   public static GameData compile() {
     return new GameData {
       playtime = Playtime.getCount(),
+      lastPlayed = DateTime.Now,
       
       affinityRose = Affinity.Rose,
       affinityMay = Affinity.May,
       affinityVanessa = Affinity.Vanessa,
       affinityFizzy = Affinity.Fizzy,
 
-      currentQuestName = QuestManager.currentQuest.name
+      currentQuestName = QuestManager.currentQuest.name,
+      currentQuestArgs = QuestManager.currentQuest.save()
     };
   }
 
@@ -52,6 +57,6 @@ public struct GameData {
     Affinity.Vanessa = data.affinityVanessa;
     Affinity.Fizzy = data.affinityFizzy;
 
-    QuestManager.resume(data.currentQuestName, null);
+    QuestManager.resume(data.currentQuestName, data.currentQuestArgs);
   }
 }
