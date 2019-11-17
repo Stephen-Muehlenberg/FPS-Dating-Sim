@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Quest_TestKillEnemies : Quest {
   public static string NAME = "TestKillEnemies";
@@ -12,28 +11,16 @@ public class Quest_TestKillEnemies : Quest {
 
   private int monstersKilled = 0;
 
-  public override void start(Hashtable args) {
-    state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-    SceneTransition.fadeTo(sceneForState(state), () => { setState(state); });
+  protected override string getSceneForState(int state) {
+    return state == 20 ? "suburbia" : "cafe";
   }
 
-  public override Hashtable save() {
-    return new Hashtable {
-      { Quest.KEY_STATE, state }
-    };
-  }
-
-  public void setState(int state) {
-    this.state = state;
+  protected override void handleState(int state) {
     if (state == 0) setupScene();
     else if (state == 10) onQuestObtained();
     else if (state == 20) setupSuburbia();
     else if (state == 100) failureReturnToCafe();
     else if (state == 200) successfullyReturnToCafe();
-  }
-
-  private string sceneForState(int sceneState) {
-    return sceneState == 20 ? "suburbia" : "cafe";
   }
 
   private void setupOtherActors() {

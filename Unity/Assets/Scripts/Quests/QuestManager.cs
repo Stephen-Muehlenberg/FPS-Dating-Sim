@@ -28,8 +28,8 @@ public class QuestManager {
       currentQuest.stop();
     }
     currentQuest = getQuest(questName);
-    if (args == null) args = new Hashtable();
-    currentQuest.start(args);
+    if (args == null) currentQuest.start();
+    else currentQuest.resume(args);
   }
 
   private static Quest getQuest(string name) {

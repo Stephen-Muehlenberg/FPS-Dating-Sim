@@ -5,19 +5,12 @@ public class Quest_Tutorial : Quest {
   public static string NAME = "Tutorial";
   public override string name => NAME;
 
-  public override void start(Hashtable args) {
-    state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-
-    setState(state);
+  protected override string getSceneForState(int state) {
+    // Manually handle the state 0 transition
+    return state == 0 ? null : "mission_tutorial";
   }
 
-  public override Hashtable save() {
-    return new Hashtable {
-      { Quest.KEY_STATE, state }
-    };
-  }
-
-  private void setState(int state) {
+  protected override void handleState(int state) {
     if (state == 0) setupScene();
     else throw new UnityException("Unknown state " + state);
   }
@@ -114,9 +107,6 @@ public class Quest_Tutorial : Quest {
   private void trigger3rdEnemyGroup() {
     var monsters = new Monster[] {
       MonstersController.findByName("Group 3 Hellhound 1"),
-  //    MonstersController.findByName("Group 3 Hellhound 2"),
-     // MonstersController.findByName("Group 3 Hellhound 3"),
-    //  MonstersController.findByName("Group 3 Hellhound 4"),
       MonstersController.findByName("Group 3 Torch 1"),
       MonstersController.findByName("Group 3 Torch 2"),
       MonstersController.findByName("Group 3 Torch 3"),

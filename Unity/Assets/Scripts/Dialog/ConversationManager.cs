@@ -163,7 +163,7 @@ public class ConversationManager : MonoBehaviour {
 
     if (choiceInProgress) {
       var choice = conversation.actions[currentConversationIndex] as Conversation.Action.Choice;
-      ConversationChoice.show(choice.options, (selection, text) => {
+      SelectionMenu.showDialogChoice(choice.options, (selection, text) => {
         choiceInProgress = false;
         var conversationBeforeCallback = conversation;
         choice.callback.Invoke(selection, text);

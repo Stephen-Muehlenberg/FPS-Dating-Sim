@@ -1,21 +1,21 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Audio;
-using System.Collections;
 using UnityEngine.UI;
 
 public class Quest_Introduction : Quest {
-  private const string KEY_CHOICE_GREETING = "greeting", KEY_CHOICE_PROFICIENCY = "proficiency", KEY_CHOICE_HELP = "help";
+//  private const string KEY_PLAYER_POSITION 
+  private const string KEY_CHOICE_GREETING = "greeting";
+  private const string KEY_CHOICE_PROFICIENCY = "proficiency";
+  private const string KEY_CHOICE_HELP = "help";
 
-  private const string GREETING_0 = "Hey there! My name's MC. Please don't eat me.";
-  private const string GREETING_1 = "Hi. Don't freak out. I'm trying my best not to pop out and scare you, but it was hard to know when to… you know. Say hi.";
-  private const string GREETING_2 = "Welcome! What can I getcha?";
-  private const string GREETING_3 = "BOO!";
+  // TODO move this to some other scene
+  private const string PROFICIENCY_0 = "[Challenging]\nI've used a paintball gun. That counts, right?";
+  private const string PROFICIENCY_1 = "[Challenging]\nNo, but I've played a bunch of first person shooters.";
+  private const string PROFICIENCY_2 = "[Difficult]\nI spend some time on the firing range, yeah.";
+  private const string PROFICIENCY_3 = "[Easy]\nNot really, but did any of you before this morning?";
 
-  private const string PROFICIENCY_0 = "I know how to use a paintball gun. That counts, right?";
-  private const string PROFICIENCY_1 = "No, but I've played a bunch of first person shooters.";
-  private const string PROFICIENCY_2 = "I've been to the firing range a few times, yeah.";
-  private const string PROFICIENCY_3 = "Not really, but did any of you before this morning?";
-
+  private readonly PlayerState PLAYER_START = new PlayerState(0.3375727f, 0, -9.60523f, -1, -157.117f, false, false, false);
   private const float ROSE_X = 1.3f,      ROSE_START_Z = -7.35f,   ROSE_END_Z = -2.55f,   ROSE_WALK_TIME = 8.7f;
   private const float VANESSA_X = 0.668f, VANESSA_START_Z = -8.2f, VANESSA_END_Z = -3.5f, VANESSA_WALK_TIME = 9.1f;
   private const float FIZZY_X = 0.78f,    FIZZY_START_Z = -9.07f,  FIZZY_END_Z = -4.47f,  FIZZY_WALK_TIME = 9.45f,  FIZZY_BOB_HEIGHT = 0.25f, FIZZY_BOB_FREQUENCY = 4.5f;
@@ -28,44 +28,40 @@ public class Quest_Introduction : Quest {
   private int dialogChoice_proficiency = -1;
   private int dialogChoice_help = -1;
 
-  public override void start(Hashtable args) {
-    state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-    dialogChoice_greeting = (int) args.getOrDefault(KEY_CHOICE_GREETING, -1);
-    dialogChoice_proficiency = (int) args.getOrDefault(KEY_CHOICE_PROFICIENCY, -1);
-    dialogChoice_help = (int) args.getOrDefault(KEY_CHOICE_HELP, -1);
-
-    setState(state);
+  protected override string getSceneForState(int state) {
+    return state == 0 ? null : "cafe"; // Handle state 0's transition manually.
   }
 
-  public override Hashtable save() {
-    return new Hashtable {
-      { Quest.KEY_STATE, state },
-      { KEY_CHOICE_GREETING, dialogChoice_greeting },
-      { KEY_CHOICE_PROFICIENCY, dialogChoice_proficiency },
-      { KEY_CHOICE_HELP, dialogChoice_help }
-    };
+  protected override void setupState(int state, Hashtable args) {
+    dialogChoice_greeting = (int) args[KEY_CHOICE_GREETING];
+    dialogChoice_proficiency = (int) args[KEY_CHOICE_PROFICIENCY];
+    dialogChoice_help = (int) args[KEY_CHOICE_HELP];
+
+    if (state == 100) Player.SINGLETON.setState(PLAYER_START);
   }
 
-  private void setState(int state) {
-    if (state == 0) initialMonologue();
-    else if (state == 10) lookTutorial();
-    else if (state == 20) moveTutorial();
-    else if (state == 30) interactTutorial();
-    else if (state == 40) secondMonologue();
-    else if (state == 50) greetRose();
+  protected override void saveArgs(Hashtable args) {
+    args.Add(KEY_CHOICE_GREETING, dialogChoice_greeting);
+    args.Add(KEY_CHOICE_PROFICIENCY, dialogChoice_proficiency);
+    args.Add(KEY_CHOICE_HELP, dialogChoice_help);
+  }
+
+  protected override void handleState(int state) {
+    if (state == 0) s0_initialMonologue();
+    else if (state == 100) s100_lookTutorial();
+    else if (state == 110) s110_moveTutorial();
+    else if (state == 120) s120_interactTutorial();
+    else if (state == 300) s300_secondMonologue();
+    else if (state == 310) s310_greetRose();
     else throw new UnityException("Unknown state " + state);
   }
 
-  private void initialMonologue() {
-    state = 0;
-
+  private void s0_initialMonologue() {
     ScreenFade.fadeOut(() => {
       SceneTransition.swapTo("cafe", () => {
         var player = Player.SINGLETON;
-        player.transform.position = new Vector3(0.3375727f, 0f, -9.60523f);
-        player.transform.rotation = Quaternion.Euler(-1, -157.117f, 0);
+        player.setState(PLAYER_START);
         player.camera.fieldOfView = 6f;
-        player.camera.transform.localRotation = Quaternion.Euler(-1, 0, 0);
         player.GetComponent<FirstPersonModule.FirstPersonController>().disableAllInput();
 
         // Add a black screen fill BEHIND the conversation UI (the fade fill is always in front of everything).
@@ -125,7 +121,7 @@ public class Quest_Introduction : Quest {
                     player.StopCoroutine(slowZoomCoroutine);
                     player.StartCoroutine(player.camera.zoomDamp(75, 1));
                   }
-                  setState(10);
+                  setState(100);
                 });
             });
         });
@@ -133,32 +129,21 @@ public class Quest_Introduction : Quest {
     });
   }
 
-  private void lookTutorial() {
-    state = 10;
-
+  private void s100_lookTutorial() {
     var player = Player.SINGLETON;
-    var fpController = player.GetComponent<FirstPersonModule.FirstPersonController>();
-    fpController.enableAllInput();
-    fpController.move.inputEnabled = false;
-    fpController.jump.inputEnabled = false;
+    player.firstPersonController.setState(lookEnabled: true, moveEnabled: false, jumpEnabled: false);
     CurrentQuestMessage.set("Use the mouse to look around");
     player.StartCoroutine(waitForPlayerToLookAround(player.transform));
   }
 
-  private void moveTutorial() {
-    state = 20;
-
+  private void s110_moveTutorial() {
     var player = Player.SINGLETON;
-    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputEnabled = true;
+    player.firstPersonController.setState(lookEnabled: true, moveEnabled: true, jumpEnabled: false);
     CurrentQuestMessage.set("Use WASD to move");
     player.StartCoroutine(waitForPlayerToMoveAround(player.transform));
   }
 
-  private void interactTutorial() {
-    state = 30;
-
-    var player = Player.SINGLETON;
-    player.GetComponent<FirstPersonModule.FirstPersonController>().move.inputEnabled = true;
+  private void s120_interactTutorial() {
     CurrentQuestMessage.set("Find some detergent or something");
 
     var resource = Resources.Load("Props/Cleaning Bottle");
@@ -175,17 +160,14 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("…")
       .wait(0.5f)
-      .show(() => { setState(40); });
+      .show(() => { setState(300); });
     });
   }
 
-  private void secondMonologue() {
-    state = 40;
-
+  private void s300_secondMonologue() {
     var player = Player.SINGLETON;
-    var fpController = player.GetComponent<FirstPersonModule.FirstPersonController>();
-    fpController.look.inputEnabled = false;
-    fpController.move.inputEnabled = false;
+    player.firstPersonController.look.inputEnabled = false;
+    player.firstPersonController.move.inputEnabled = false;
 
     // TOOD fix this
     player.setCrouchHeight(0.7f, 1.5f);
@@ -195,8 +177,8 @@ public class Quest_Introduction : Quest {
     new Conversation()
       .wait(1.5f)
       .performAction(() => {
-        fpController.look.inputEnabled = true;
-        fpController.look.restrictCameraToDirection(Vector3.zero, 0); // TODO
+        player.firstPersonController.look.inputEnabled = true;
+        player.firstPersonController.look.restrictCameraToDirection(Vector3.zero, 0); // TODO
       })
       .speaker(Character.MC_NARRATION, "")
       .text("I'm not <i>totally</i> sure why I'm here.")
@@ -232,12 +214,12 @@ public class Quest_Introduction : Quest {
         Character.MAY.getProp().walk(new Vector3(MAY_X, 0, MAY_END_Z), MAY_WALK_TIME);
         
         player.setCrouchHeight(0.95f, 1f);
-        fpController.look.inputEnabled = false;
+        player.firstPersonController.look.inputEnabled = false;
         player.setLookDirection(new Vector3(-10, 235, 0), 1f);
       })
       .wait(1.3f)
       .performAction(() => {
-        fpController.look.inputEnabled = true;
+        player.firstPersonController.look.inputEnabled = true;
       })
       .text("They're not aliens, surprisingly.")
       .text("Well, they could be. I don't know enough about aliens to say they don't all look like college-aged women covered in blood.")
@@ -258,27 +240,28 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("They haven't noticed me yet, but the one up front is getting closer. Probably getting ready to hop up onto the counter and grab the pastries.")
       .performAction(() => {
-        fpController.look.inputEnabled = false;
+        player.firstPersonController.look.inputEnabled = false;
         player.setLookDirection(new Vector3(-14, 255, 0), 1f);
       })
       .choice("Well, I've gotta say <i>something</i>…",
-        GREETING_0, GREETING_1, GREETING_2, GREETING_3,
+              "Hey there! My name's MC. Please don't eat me.",
+              "Hi. Don't freak out. I'm trying my best not to pop out and scare you, but it was hard to know when to… you know. Say hi.",
+              "Welcome! What can I getcha?",
+              "BOO!",
         (selection, text) => {
           dialogChoice_greeting = selection;
-          greetRose();
+          setState(310);
         }
       )
       .show();
   }
 
-  private void greetRose() {
-    state = 50;
-
+  private void s310_greetRose() {
     string greetingText;
     if (dialogChoice_greeting == 0) greetingText = "Hey th—";
     else if (dialogChoice_greeting == 1) greetingText = "Hi—";
     else if (dialogChoice_greeting == 2) greetingText = "Welco—";
-    else if (dialogChoice_greeting == 3) greetingText = GREETING_3;
+    else if (dialogChoice_greeting == 3) greetingText = "BOO!";
     else throw new UnityException("greetingSelection must have been set between 0 and 3 before this point.");
 
     Player player = Player.SINGLETON;
@@ -512,12 +495,12 @@ public class Quest_Introduction : Quest {
       || (playerTransform.rotation.eulerAngles.y < 330 && playerTransform.rotation.eulerAngles.y > 30)) {
       yield return null;
     }
-    setState(20);
+    setState(110);
   }
 
   private IEnumerator waitForPlayerToMoveAround(Transform playerTransform) {
     while (playerTransform.position.z < -3) yield return null;
-    setState(30);
+    setState(120);
   }
 
   private IEnumerator fadeVolume(float targetVolume, float fadeDuration, params AudioSource[] audioSources) {

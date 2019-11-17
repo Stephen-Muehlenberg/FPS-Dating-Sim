@@ -21,17 +21,61 @@ public class Character {
     this.prop = null;
   }
 
-//  public static bool operator ==(Character a, Character b) { return a == null ? b == null : a.Equals(b); }
-  //public static bool operator !=(Character a, Character b) { return a == null ? b != null : !a.Equals(b); }
-
-  public static Character MC = new Character("MC", null, new Color(0.25f, 0.25f, 0.25f), Color.white, new Color(0.42f, 0.42f, 0.42f), false);
-  public static Character MC_NARRATION = new Character("MC", null, new Color(0.35f, 0.35f, 0.35f), new Color(0.8f, 0.8f, 0.8f), Color.yellow, false);
-  // NONE is used for text not originating from any characers, e.g. onomatopoeia or non-diagetic text.
-  public static Character NONE = new Character("", null, new Color(0.35f, 0.35f, 0.35f), new Color(0.8f, 0.8f, 0.8f), Color.white, false);
-  public static Character ROSE = new Character("Rose", Weapons.SHOTGUN, new Color(1, 0, 0, 0.5f), new Color(1, 0.9333f, 0.9333f, 1), new Color(1, 0, 0), true);
-  public static Character MAY = new Character("May", Weapons.MACHINE_GUN, new Color(0, 0.5f, 0, 0.5f), new Color(0.9333f, 1, 0.9333f, 1), new Color(0, 0.72f, 0.06f), true);
-  public static Character VANESSA = new Character("Vanessa", Weapons.SNIPER_RIFLE, new Color(0, 0.5f, 1, 0.5f), new Color(0.9333f, 0.9333f, 1, 1), new Color(0.5f, 0.5f, 1), true);
-  public static Character FIZZY = new Character("Fizzy", Weapons.GRENADE_LAUNCHER, new Color(0.85f, 0.508f, 0.11f, 0.5f), new Color(1, 1, 0.9333f, 1), new Color(0.87f, 0.63f, 0.24f), true);
+  public static Character NONE = new Character( // NONE is for onomatopoeia, non-diagetic text, etc.
+    name:              "",
+    weapon:            null,
+    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
+    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
+    combatTextOutline: Color.white,
+    hasProp:           false
+  );
+  public static Character MC = new Character(
+    name:              "MC",
+    weapon:            null,
+    dialogTextOutline: new Color(0.25f, 0.25f, 0.25f),
+    dialogTextFill:    Color.white,
+    combatTextOutline: new Color(0.42f, 0.42f, 0.42f),
+    hasProp:           false
+  );
+  public static Character MC_NARRATION = new Character(
+    name:              "MC",
+    weapon:            null,
+    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
+    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
+    combatTextOutline: Color.yellow,
+    hasProp:           false
+  );
+  public static Character ROSE = new Character(
+    name:              "Rose",
+    weapon:            Weapons.SHOTGUN,
+    dialogTextOutline: new Color(1, 0, 0, 0.5f),
+    dialogTextFill:    new Color(1, 0.9333f, 0.9333f, 1),
+    combatTextOutline: new Color(1, 0, 0),
+    hasProp:           true
+  );
+  public static Character MAY = new Character(
+    name:              "May",
+    weapon:            Weapons.MACHINE_GUN,
+    dialogTextOutline: new Color(0, 0.5f, 0, 0.5f),
+    dialogTextFill:    new Color(0.9333f, 1, 0.9333f, 1),
+    combatTextOutline: new Color(0, 0.72f, 0.06f),
+    hasProp:           true
+  );
+  public static Character VANESSA = new Character(
+    name:              "Vanessa",
+    weapon:            Weapons.SNIPER_RIFLE,
+    dialogTextOutline: new Color(0, 0.5f, 1, 0.5f),
+    dialogTextFill:    new Color(0.9333f, 0.9333f, 1, 1),
+    combatTextOutline: new Color(0.5f, 0.5f, 1),
+    hasProp:           true
+  );
+  public static Character FIZZY = new Character(
+    name:              "Fizzy", 
+    weapon:            Weapons.GRENADE_LAUNCHER,
+    dialogTextOutline: new Color(0.85f, 0.508f, 0.11f, 0.5f),
+    dialogTextFill:    new Color(1, 1, 0.9333f, 1),
+    combatTextOutline: new Color(0.87f, 0.63f, 0.24f),
+    hasProp:           true);
   
   public static void setPositions(Vector3? mcPos, Quaternion? mcRot) { setPositions(mcPos, mcRot, null, null, null, null); }
   public static void setPositions(Vector3? rosePos, Vector3? mayPos, Vector3? vanessaPos, Vector3? fizzyPos) { setPositions(null, null, rosePos, mayPos, vanessaPos, fizzyPos); }

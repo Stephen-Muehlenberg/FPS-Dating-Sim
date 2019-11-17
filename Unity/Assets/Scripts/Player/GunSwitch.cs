@@ -21,7 +21,7 @@ public class GunSwitch : MonoBehaviour {
     if (TimeUtils.gameplayPaused) return;
 
     if (Input.GetButtonDown("SelectWeapon")) startWeaponSelection();
-    else if (Input.GetButtonUp("SelectWeapon")) endWeaponSelection();
+   // else if (Input.GetButtonUp("SelectWeapon")) endWeaponSelection();
 
     else if (Input.GetKeyUp(KeyCode.Alpha1)) equip(Weapons.SHOTGUN, true);
     else if (Input.GetKeyUp(KeyCode.Alpha2)) equip(Weapons.MACHINE_GUN, true);
@@ -34,16 +34,17 @@ public class GunSwitch : MonoBehaviour {
   //  postProcessing.depthOfField.enabled = true;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = false;
 
-    WeaponSelectMenu.startHighlight(Weapons.currentlyEquipped);
+    SelectionMenu.showWeaponChoice(
+      options: Weapons.equipableOptions(),
+      initialSelection: Weapons.currentlyEquipped == null ? -1 : Weapons.currentlyEquipped.index,
+      callback: endWeaponSelection);
   }
 
-  private void endWeaponSelection() {
+  private void endWeaponSelection(int selection, string _) {
     TimeUtils.clearTimeScale();
 //    postProcessing.depthOfField.enabled = false;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = true;
-
-    var selectedWeapon = WeaponSelectMenu.endHighlight();
-    equip(selectedWeapon, true);
+    equip(Weapons.array[selection], true);
   }
 
   public void equip(Weapon newWeapon) { equip(newWeapon, false); }

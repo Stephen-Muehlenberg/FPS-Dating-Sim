@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class Quest_BedStore : Quest {
@@ -17,31 +16,25 @@ public class Quest_BedStore : Quest {
   public static string NAME = "BedStore";
   public override string name => NAME;
 
-  public override void start(Hashtable args) {
-    state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-    setState(state);
+  protected override string getSceneForState(int state) {
+    if (state >= 100 && state < 500) return "mission_bed_store";
+    else return "cafe";
   }
 
-  public override Hashtable save() {
-    return new Hashtable {
-      { Quest.KEY_STATE, state }
-    };
+  protected override void handleState(int state) {
+    this.state = state;
+    if (state == 0) s000_startConversation();
+    else if (state == 100) s100_setupLevel(); // TODO probably show some sort of text once you load, directing you
+    else if (state == 110) s110_setupClearNearbyEnemies();
+    else if (state == 200) s200_setupOutsideDialog();
+    else if (state == 300) s300_setupDefend();
+    else if (state == 400) s400_endMission();
+    else if (state == 500) s500_returnToCafe();
+    else throw new UnityException("Unhandled quest state " + state);
   }
 
   public override void stop() {
     LocationMarker.clear();
-  }
-
-  public void setState(int state) {
-    this.state = state;
-    if (state == 0) SceneTransition.fadeTo("cafe", () => { startConversation(); });
-    else if (state == 10) SceneTransition.fadeTo("mission_bed_store", () => { setupLevel(); }); // TODO probably show some sort of text once you load, directing you
-    else if (state == 20) setupClearNearbyEnemies();
-    else if (state == 30) setupOutsideDialog();
-    else if (state == 40) setupDefend();
-    else if (state == 50) endMission();
-    else if (state == 60) returnToCafe();
-    else throw new UnityException("Unhandled quest state " + state);
   }
 
   public override void handleEvent(string eventName, GameObject trigger) {
@@ -53,9 +46,8 @@ public class Quest_BedStore : Quest {
     else if (eventName == "Approach store") eventApproachStore();
     else if (eventName == "Dont leave") eventDontLeaveStore();
   }
-
-  // -- 0 --
-  private void startConversation() {
+  
+  private void s000_startConversation() {
     Character.setPositions(INTRO_POS_MC, Quaternion.identity, INTRO_POS_ROSE, INTRO_POS_MAY, INTRO_POS_VANESSA, INTRO_POS_FIZZY);
     Player.SINGLETON.setInConversation(true);
 
@@ -83,32 +75,29 @@ public class Quest_BedStore : Quest {
       .text(Character.MC, "Um, there's a home furnishing store like two blocks from here.")
       .text(Character.MAY, "Goddammit. <i>Mission Time's back on!</i>")
       .wait(0.4f)
-      .show(() => setState(10));
+      .show(() => setState(100));
   }
-
-  // -- 10 --
-  private void setupLevel() {
+  
+  private void s100_setupLevel() {
     var locationMarkerTransform = new GameObject("Bed Store Marker").transform;
     locationMarkerTransform.position = new Vector3(156, 2.5f, 95);
     LocationMarker.add(locationMarkerTransform);
     CurrentQuestMessage.set("Head to the furniture store");
     Weapons.MACHINE_GUN.equip();
   }
-
-  // -- 20 --
-  private void setupClearNearbyEnemies() {
+  
+  private void s110_setupClearNearbyEnemies() {
     CurrentQuestMessage.set("Clear the area of monsters");
     HighlightMonsters.highlightNear(new Vector3(156, 2.5f, 95), 50f, () => {
       HighlightMonsters.clearHighlights();
       new CombatDialog()
         .wait(2.5f)
         .message(Character.MAY, "Ok I guess that's safe enough.")
-        .show(CombatDialog.Priority.HIGH, () => { setState(30); });
+        .show(CombatDialog.Priority.HIGH, () => { setState(200); });
     });
   }
-
-  // -- 30 --
-  private void setupOutsideDialog() {
+  
+  private void s200_setupOutsideDialog() {
     // Make player invincible so they don't die during fade, e.g. from stray projectiles
     Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(true);
 
@@ -155,7 +144,8 @@ public class Quest_BedStore : Quest {
             firstPersonController.look.inputEnabled = false;
             player.transform.rotation = Quaternion.identity;
 
-            WeaponSelectMenu.select(2, 2, "Choose 2 girls to help defend the store", (selection) => {
+            // TODO
+            /*WeaponSelectMenu.select(2, 2, "Choose 2 girls to help defend the store", (selection) => {
               firstPersonController.look.inputEnabled = true;
 
               foreach (Weapon weapon in Weapons.array) {
@@ -166,16 +156,14 @@ public class Quest_BedStore : Quest {
 
               new Conversation()
                 .text(Character.MAY, "Ok, see you in a bit!")
-                .show(() => { setState(40); });
-            });
+                .show(() => { setState(300); });
+            });*/
           });
       });
     });
   }
-
-  // -- 40 --
-
-  private void setupDefend() {
+  
+  private void s300_setupDefend() {
     ScreenFade.fadeOut(() => {
       Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>().enableAllInput();
       Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(false);
@@ -217,13 +205,11 @@ public class Quest_BedStore : Quest {
           .message(weapon.character, "Okey dokey, guess that's the last of 'em.");
       }
 
-      dialog.show(CombatDialog.Priority.MAX, () => { setState(50); });
+      dialog.show(CombatDialog.Priority.MAX, () => { setState(400); });
     }
   }
-
-  // -- 50 --
-
-  private void endMission() {
+  
+  private void s400_endMission() {
     // Make player invincible so they don't die during fade, e.g. from stray projectiles
     Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(true);
 
@@ -281,14 +267,12 @@ public class Quest_BedStore : Quest {
             new string[] {"Oh.", "Sweet!"},
             new string[] {"Ah.", "Let's carry on then."},
             new string[] {"Ooh, nice!", "Alright, then let's go!"})
-          .show(() => { setState(60); });
+          .show(() => { setState(500); });
       });
     });
   }
-
-  // -- 60 --
-
-  private void returnToCafe() {
+  
+  private void s500_returnToCafe() {
     SceneTransition.fadeTo("cafe",
       () => {
         var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
@@ -385,17 +369,17 @@ public class Quest_BedStore : Quest {
     LocationMarker.clear();
     CurrentQuestMessage.clear();
 
-    if (state == 10) {
+    if (state == 100) {
       if (MonstersController.monstersNear(new Vector3(156, 0, 96), 35f) > 0) {
         new CombatDialog()
           .message(Character.MC, "This is the place.")
           .message(Character.MAY, "Great, but before we go in, let's finish off any nearby monsters.")
-          .show(CombatDialog.Priority.MAX, () => { setState(20); });
+          .show(CombatDialog.Priority.MAX, () => { setState(110); });
       }
       else {
         new CombatDialog()
           .message(Character.MC, "This is the place.")
-          .show(CombatDialog.Priority.MAX, () => { setState(30); });
+          .show(CombatDialog.Priority.MAX, () => { setState(200); });
       }
     }
   }

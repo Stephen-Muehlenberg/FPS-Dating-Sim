@@ -4,29 +4,18 @@ public class Quest_CafeBreak2 : Quest {
   public static string NAME = "CafeBreak2";
   public override string name => NAME;
 
-  public override void start(Hashtable args) {
-    state = (int) args.getOrDefault(Quest.KEY_STATE, 0);
-    setState(state);
+  protected override string getSceneForState(int state) {
+    return "cafe";
   }
 
-  public override Hashtable save() {
-    return new Hashtable {
-      { Quest.KEY_STATE, state }
-    };
-  }
-
-  private void setState(int state) {
-    this.state = state;
-
+  protected override void handleState(int state) {
     if (state == 0) conversation1();
   }
 
   private void conversation1() {
-    SceneTransition.fadeTo("Cafe", () => {
-      // TODO set lighting
-      // TODO add sleeping bags and stuff to cafe back room
-      // TODO have some conversation / dialog
-    });
+    // TODO set lighting
+    // TODO add sleeping bags and stuff to cafe back room
+    // TODO have some conversation / dialog
   }
 }
 

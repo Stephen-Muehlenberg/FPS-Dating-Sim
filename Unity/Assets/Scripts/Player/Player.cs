@@ -11,6 +11,27 @@ public class Player : MonoBehaviour {
     SINGLETON = this;
 	}
 
+  public PlayerState getState() {
+    return new PlayerState(
+      posX: transform.position.x,
+      posY: transform.position.y,
+      posZ: transform.position.z,
+      rotX: camera.transform.localRotation.x,
+      rotY: transform.rotation.y,
+      look: firstPersonController.look.enabled,
+      move: firstPersonController.move.enabled,
+      jump: firstPersonController.jump.enabled);
+  }
+
+  public void setState(PlayerState state) {
+    transform.position = new Vector3(state.posX, state.posY, state.posZ);
+    transform.rotation = Quaternion.Euler(0, state.rotY, 0);
+    camera.transform.localRotation = Quaternion.Euler(state.rotX, 0, 0);
+    firstPersonController.look.enabled = state.look;
+    firstPersonController.move.enabled = state.move;
+    firstPersonController.jump.enabled = state.jump;
+  }
+
   public void setInConversation(bool inConversation) { setInConversation(inConversation, false); }
   public void setInConversation(bool inConversation, bool forceDisableJump) {
     firstPersonController.move.inputEnabled = !inConversation;

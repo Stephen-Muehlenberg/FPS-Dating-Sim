@@ -63,6 +63,14 @@ namespace FirstPersonModule {
       jump.inputEnabled = false;
     }
 
+    public void setState(bool lookEnabled, bool moveEnabled, bool jumpEnabled) {
+      look.enabled = lookEnabled;
+      move.enabled = moveEnabled;
+      jump.enabled = jumpEnabled;
+      headbob.enabled = moveEnabled;
+      gravity.enabled = moveEnabled;
+    }
+
     public void enableAll() {
       look.enabled = true;
       move.enabled = true;
