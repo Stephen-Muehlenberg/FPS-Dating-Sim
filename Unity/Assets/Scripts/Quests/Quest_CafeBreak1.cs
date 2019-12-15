@@ -47,7 +47,7 @@ public class Quest_CafeBreak1 : Quest {
 
   protected override void handleState(int state) {
     if (state == 0) s000_openingConversationPart1();
-    else if (state == 20) s020_openingConversationPart3();
+    else if (state == 200) s200_openingConversationPart3();
     else throw new UnityException("Unknown state " + state);
   }
 
@@ -129,10 +129,10 @@ public class Quest_CafeBreak1 : Quest {
     .text(Character.MC, "Vanessa, please save me.")
     .text(Character.VANESSA, "I will take a lemonade, mixed with soda water and a splash of grenadine. Oh, and please make sure it's chilled.")
     .text(Character.MC, "That's not saving me. That's not saving me at all.")
-    .show(() => { setState(20); });
+    .show(() => { SceneTransition.fadeTo("cafe", () => { setState(200); }); });
   }
 
-  private void s020_openingConversationPart3() {
+  private void s200_openingConversationPart3() {
     Character.setPositions(INTERLUDE_MC_POS, Quaternion.Euler(0, 270, 0), INTERLUDE_ROSE_POS, INTERLUDE_MAY_POS, INTERLUDE_VANESSA_POS, INTERLUDE_FIZZY_POS);
     Player.SINGLETON.setInConversation(false, true);
 
@@ -236,6 +236,6 @@ public class Quest_CafeBreak1 : Quest {
 
   private void onDrinkConversationEnded() {
     if (drinksRemaining > 0) Player.SINGLETON.setInConversation(false, true);
-    else QuestManager.start(new Quest_BedStore());
+    else QuestManager.start(new Quest_Competition());
   }
 }

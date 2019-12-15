@@ -25,6 +25,7 @@ public class MainMenu : MonoBehaviour {
     else if (Input.GetKeyUp(KeyCode.Alpha4)) startQuest(QuestManager.QUEST_4);
     else if (Input.GetKeyUp(KeyCode.Alpha5)) startQuest(QuestManager.QUEST_5);
     else if (Input.GetKeyUp(KeyCode.Alpha6)) startQuest(QuestManager.QUEST_6);
+    else if (Input.GetKeyUp(KeyCode.Alpha7)) startQuest(QuestManager.QUEST_7);
   }
 
   private void startQuest(string quest) {

@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/mission_tutorial.unity
     guid: f0901fe85c26ede4ea234abd417cb7c8
   - enabled: 1
+    path: Assets/Scenes/mission_competition.unity
+    guid: 52ee64ec2fe26af4baab29d56b91beaa
+  - enabled: 1
     path: Assets/Scenes/mission_bed_store.unity
     guid: fa43f2c041e323249be08b2b5b2d710e
   - enabled: 1
