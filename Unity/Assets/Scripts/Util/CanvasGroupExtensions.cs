@@ -7,8 +7,8 @@ public static class CanvasGroupExtensions {
     float t = 0f;
     while (t < duration) {
       if (!TimeUtils.gameplayPaused) {
-        group.alpha += deltaPerSecond * Time.deltaTime;
-        t += Time.deltaTime;
+        group.alpha += deltaPerSecond * TimeUtils.gameplayDeltaTime;
+        t += TimeUtils.gameplayDeltaTime;
       }
       yield return null;
     }

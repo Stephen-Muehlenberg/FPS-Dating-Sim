@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Quest_TestKillEnemies : Quest {
   public static string NAME = "TestKillEnemies";
@@ -11,8 +12,11 @@ public class Quest_TestKillEnemies : Quest {
 
   private int monstersKilled = 0;
 
-  protected override string getSceneForState(int state) {
-    return state == 20 ? "suburbia" : "cafe";
+  protected override void initialise(int state, Hashtable args) {
+    setUpScene(
+      state: state,
+      scene: state == 20 ? "cafe" : "suburbia"
+    );
   }
 
   protected override void handleState(int state) {
@@ -91,7 +95,7 @@ public class Quest_TestKillEnemies : Quest {
   private void onQuestObtained() {
     GameObject.Find("Front Door").GetComponent<LookTarget>()
       .setInteraction("Exit Cafe", (_) => {
-        SceneTransition.fadeTo("suburbia", () => { setState(20); });
+        SceneTransition.changeTo(scene: "suburbia", onSceneLoaded: () => { setState(20); });
       });
 
     Character.ROSE.getProp()
@@ -116,7 +120,7 @@ public class Quest_TestKillEnemies : Quest {
 
   private void onPlayerDeath() {
     PlayerDeath.onDeath -= onPlayerDeath;
-    SceneTransition.fadeTo("cafe", () => { setState(100); });
+    SceneTransition.changeTo(scene: "cafe", onSceneLoaded: () => { setState(100); });
   }
 
   private void onMonsterChangedListener(Monster monster, bool added, int monsterCount) {
@@ -126,7 +130,7 @@ public class Quest_TestKillEnemies : Quest {
 
     if (monstersKilled == 50) {
       MonstersController.OnMonstersChanged -= onMonsterChangedListener;
-      SceneTransition.fadeTo("cafe", () => { setState(200); });
+      SceneTransition.changeTo(scene: "cafe", onSceneLoaded: () => { setState(200); });
     }
   }
 

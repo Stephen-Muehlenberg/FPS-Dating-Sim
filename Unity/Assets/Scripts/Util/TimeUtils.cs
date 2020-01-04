@@ -1,95 +1,58 @@
 ﻿using UnityEngine;
 
 public class TimeUtils : MonoBehaviour {
-  public delegate void TransitionCallback();
-
-  public static bool gameplayPaused = false;
-  public static bool dialogPaused = false; // Dialog paused implies gameplay also paused
-  private static bool gameplayPreviouslyPaused;
-  private static float previousTimeScale;
-
-  private static TimeUtils SINGLETON;
-  private static float NORMAL_TIME_SCALE = 1f;
-  private static float NORMAL_TIME_STEP = 0.02f;
-
-  private static void lazyInitialize() {
-    SINGLETON = new GameObject().AddComponent<TimeUtils>();
+  /**
+   * GAMEPLAY:  FPS gameplay enabled,  dialog enabled,  menus enabled,  timescale x1.
+   * DIALOG:    FPS gameplay paused,   dialog enabled,  menus enabled,  timescale x1.
+   * PAUSED:    FPS gameplay paused,   dialog paused,   menus enabled,  timescale x0.
+   */
+  public enum TimeMode {
+    GAMEPLAY, DIALOG, PAUSED
   }
 
-  public static void pauseGameplay() {
-    gameplayPaused = true;
-  }
-
-  public static void resumeGameplay() {
-    if (Time.timeScale == 0)
-      throw new UnityException("Can't manually resume gameplay when timescale is 0");
-    gameplayPaused = false;
-  }
-
-  public static void pauseDialog() {
-    gameplayPreviouslyPaused = gameplayPaused;
-    gameplayPaused = true;
-    dialogPaused = true;
-    previousTimeScale = Time.timeScale;
-    Time.timeScale = 0;
-  }
-
-  public static void resumeDialog() {
-    Time.timeScale = previousTimeScale;
-    dialogPaused = false;
-    gameplayPaused = gameplayPreviouslyPaused;
-  }
-
-  public static void setTimeScale(float scale) {
-    Time.timeScale = scale;
-    Time.fixedDeltaTime = NORMAL_TIME_STEP * scale;
-  }
-
-  public static void clearTimeScale() {
-    Time.timeScale = NORMAL_TIME_SCALE;
-    Time.fixedDeltaTime = NORMAL_TIME_STEP;
-    gameplayPaused = false;
-  }
-
-  /* public static void setTimeScale(float scale, float transitionDuration, TransitionCallback callback) {
-     if (scale == Time.timeScale) return;
-     if (SINGLETON == null) lazyInitialize();
-     if (scale == 0) gameplayPaused = true;
-     SINGLETON.fade(scale, transitionDuration, callback);
-   }*/
-
-  /*  public static void clearTimeScale(float transitionDuration, TransitionCallback callback) {
-      if (Time.timeScale == NORMAL_TIME_SCALE) return;
-      if (SINGLETON == null) lazyInitialize();
-      SINGLETON.fade(NORMAL_TIME_SCALE, transitionDuration, callback);
+  private static TimeMode _mode = TimeMode.GAMEPLAY;
+  public static TimeMode mode {
+    get { return _mode; }
+    set {
+      _mode = value;
+      gameplayTimeScale = value == TimeMode.GAMEPLAY ? bulletTimeModifier : 0;
+      Time.timeScale = value == TimeMode.PAUSED ? 0 : bulletTimeModifier;
+      dialogTimeScale = value != TimeMode.PAUSED ? 1 : 0;
     }
+  }
 
-    // Can't start a coroutine from a static method, so need a singleton
-    public void fade(float end, float duration, TransitionCallback callback) {
-      StartCoroutine(fadeTimeScale(Time.timeScale, end, duration, callback));
-    }
+  public static bool gameplayPaused {
+    get { return _mode != TimeMode.GAMEPLAY; }
+  }
+  public static bool dialogPaused {
+    get { return _mode == TimeMode.PAUSED; }
+  }
 
-    private static IEnumerator fadeTimeScale(float start, float end, float duration, TransitionCallback callback)
-    {
-      float timeScaleDelta = end - start;
-      float timeSoFar = 0f;
-      float timeFraction = timeSoFar / duration;
-      float newTimeScale;
+  private static float gameplayTimeScale = 1f; // This value takes into account the bulletTimeModifier
+  private static float dialogTimeScale = 1f;
+  private static float bulletTimeModifier = 1f;
 
-      while (timeSoFar < duration)
-      {
-        newTimeScale = start + (timeScaleDelta * timeFraction);
-        Time.timeScale = newTimeScale >= 0 ? newTimeScale : 0; // Prevent timeScale from being < 0
-        Time.fixedDeltaTime = Time.timeScale * NORMAL_TIME_STEP;
-        timeSoFar += Time.unscaledDeltaTime;
-        timeFraction = timeSoFar / duration;
-        yield return new WaitForFixedUpdate();
-      }
+  public static float gameplayDeltaTime {
+    get { return gameplayTimeScale * Time.deltaTime; }
+  }
 
-      Time.timeScale = end;
-      Time.fixedDeltaTime = end * NORMAL_TIME_STEP;
-      gameplayPaused = end > 0;
+  public static float dialogDeltaTime {
+    get { return dialogTimeScale * Time.unscaledDeltaTime; }
+  }
 
-      if (callback != null) callback.Invoke();
-    }*/
+  /**
+   * Multiplies gameplay time scale by the provided timescale. E.g. 0.5 will halve the speed.
+   */
+  public static void startBulletTime(float timescale) {
+    if (timescale <= 0) throw new UnityException("Bullet time timescale must be a positive value.");
+    bulletTimeModifier = timescale;
+    gameplayTimeScale = _mode == TimeMode.GAMEPLAY ? timescale : 0;
+    Time.timeScale = _mode == TimeMode.PAUSED ? 0 : timescale;
+  }
+  
+  public static void stopBulletTime() {
+    bulletTimeModifier = 1;
+    gameplayTimeScale = _mode == TimeMode.GAMEPLAY ? 1 : 0;
+    Time.timeScale = _mode == TimeMode.PAUSED ? 0 : 1;
+  }
 }

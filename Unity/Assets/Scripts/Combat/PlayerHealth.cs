@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerHealth : Health {
   private bool godMode = false;
@@ -17,6 +18,17 @@ public class PlayerHealth : Health {
     if (godMode) return;
 
     remaining -= damage.amount;
+    if (remaining <= 0) SendMessage("die");
+  }
+
+  public override void takeDamage(List<Damage> damages) {
+    if (remaining <= 0) return;
+
+    DamageDirectionIndicator.show(transform, damages[0].origin);
+
+    if (godMode) return;
+
+    foreach (Damage damage in damages) remaining -= damage.amount;
     if (remaining <= 0) SendMessage("die");
   }
 

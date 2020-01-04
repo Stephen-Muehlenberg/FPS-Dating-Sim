@@ -57,6 +57,6 @@ public struct GameData {
     Affinity.Vanessa = data.affinityVanessa;
     Affinity.Fizzy = data.affinityFizzy;
 
-    QuestManager.resume(data.currentQuestName, data.currentQuestArgs);
+    QuestManager.start(data.currentQuestName, data.currentQuestArgs);
   }
 }

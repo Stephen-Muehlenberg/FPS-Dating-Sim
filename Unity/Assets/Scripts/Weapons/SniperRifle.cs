@@ -71,13 +71,13 @@ public class SniperRifle : WeaponController {
   }
 
   private IEnumerator startBulletTime() {
-    TimeUtils.setTimeScale(BULLETTIME_TIMESCALE);
+    TimeUtils.startBulletTime(BULLETTIME_TIMESCALE);
     yield return new WaitForSeconds(BULLETTIME_DURATION * BULLETTIME_TIMESCALE);
     stopBulletTime();
   }
 
   private void stopBulletTime() {
-    TimeUtils.clearTimeScale();
+    TimeUtils.stopBulletTime();
     bullettimeRoutine = null;
   }
 
@@ -94,7 +94,11 @@ public class SniperRifle : WeaponController {
 
     if (rayHit) {
       // Damage
-      var damage = new Damage(Random.Range(DAMAGE_MIN, DAMAGE_MAX), transform.position, rayHitInfo.point, rayHitInfo.collider);
+      var damage = new Damage(amount: Random.Range(DAMAGE_MIN, DAMAGE_MAX),
+                              origin: transform.position, 
+                              hitPoint: rayHitInfo.point,
+                              source: Weapons.SNIPER_RIFLE,
+                              hitLocation: rayHitInfo.collider);
       rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
 
       // Force

@@ -40,13 +40,13 @@ public class Awareness : MonoBehaviour {
         return;
       }
 
-      timeWithinEventualAlertRadius += Time.deltaTime;
+      timeWithinEventualAlertRadius += TimeUtils.gameplayDeltaTime;
       if (timeWithinEventualAlertRadius >= eventualAlertTime) becomeAlert();
       return;
     }
 
     if (timeWithinEventualAlertRadius > 0) {
-      timeWithinEventualAlertRadius -= Time.deltaTime; // Alertness cools off over time
+      timeWithinEventualAlertRadius -= TimeUtils.gameplayDeltaTime; // Alertness cools off over time
     }
   }
 

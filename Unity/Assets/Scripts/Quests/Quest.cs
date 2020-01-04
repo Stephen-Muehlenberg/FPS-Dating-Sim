@@ -23,76 +23,99 @@ public abstract class Quest {
   public int state = 0;
 
   /**
-   * Starts the Quest from scratch.
+   * Starts the Quest.
+   * If a previousState is provided then it resumes the quest from that point.
    */
-  public void start() {
-    string scene = getSceneForState(0);
-    if (scene == null) setState(0);
-    else SceneTransition.fadeTo(scene, () => { setState(0); });
+  public void start(Hashtable previousState = null) {
+    int state = 0;
+
+    if (previousState == null) previousState = new Hashtable(); // Make hashtable non-null so children don't have to check if it's null
+    else if (previousState.Contains(KEY_STATE)) state = (int) previousState[KEY_STATE];
+
+    initialise(state, previousState);
   }
 
   /**
-   * Starts the Quest from a previously saved state.
+   * Called on quest start or load to handle initialisation.
+   * In most cases, child classes should rely on initialiseScene() to set everything up.
    */
-  public void resume(Hashtable previousState) {
-    state = (int) previousState[KEY_STATE];
-
-    string scene = getSceneForState(state);
-
-    if (scene == null) {
-      if (previousState.ContainsKey(KEY_PLAYER)) {
-        Player.SINGLETON.enabled = true;
-        Player.SINGLETON.setState(previousState[KEY_PLAYER] as PlayerState);
-      }
-      setupState(state, previousState);
-      handleState(state);
-    }
-    else SceneTransition.fadeTo(scene, () => {
-      if (previousState.ContainsKey(KEY_PLAYER)) {
-        Player.SINGLETON.enabled = true;
-        Player.SINGLETON.setState(previousState[KEY_PLAYER] as PlayerState);
-      }
-      // TODO automatically load:
-      // - conversation line (maybe)
-      // - girl positions & states
-      // - weapon / inventory states (e.g. can be equipped)
-
-      setupState(state, previousState);
-      handleState(state);
-    });
-  }
-
-  /**
-   * Returns the scene name required for the current state, or null if the subclass should handle the transition.
-   */
-  protected abstract string getSceneForState(int state);
-
-  /**
-   * Override to provide custom setup logic before resuming a state.
-   * Called after loading the correct scene, but before fading in.
-   */
-  protected virtual void setupState(int state, Hashtable args) {}
+  protected abstract void initialise(int state, Hashtable args);
   
+  protected void setUpScene(int state,
+                            string scene,
+                            bool autoFadeIn = true,
+                            bool gameplayInitiallyPaused = false,
+                            Vector3? mcPosition = null,
+                            Quaternion? mcRotation = null,
+                            Vector3? rosePosition = null,
+                            Vector3? mayPosition = null,
+                            Vector3? vanessaPosition = null,
+                            Vector3? fizzyPosition = null,
+                            bool lookEnabled = true,
+                            bool moveEnabled = true,
+                            bool jumpEnabled = true,
+                            bool combatHudEnabled = false,
+                            Weapon weaponEquipped = null,
+                            string questMessage = null,
+                            bool animateQuestMessageIn = false,
+                            Callback onTransitionComplete = null,
+                            Callback onFadeComplete = null) {
+    // Pause until everything is loaded
+    TimeUtils.mode = TimeUtils.TimeMode.PAUSED;
+
+    SceneTransition.changeTo(
+      scene: scene,
+      fadeOut: true, // Quest should only be changed via menu which handles fade out for us
+      fadeIn: autoFadeIn,
+      onSceneLoaded: () => {
+        Character.setPositions(mcPos: mcPosition,
+                               mcRot: mcRotation,
+                               rosePos: rosePosition,
+                               mayPos: mayPosition,
+                               vanessaPos: vanessaPosition,
+                               fizzyPos: fizzyPosition);
+        Player.SINGLETON.enabled = true;
+        Player.SINGLETON.firstPersonController.setState(lookEnabled: lookEnabled,
+                                                        moveEnabled: moveEnabled,
+                                                        jumpEnabled: jumpEnabled);
+        // TODO load Weapon, or unequip weapon if null
+        CurrentQuestMessage.set(message: questMessage, animateIn: animateQuestMessageIn);
+        // TODO toggle combat HUD
+
+        onTransitionComplete?.Invoke();
+        TimeUtils.mode = gameplayInitiallyPaused ? TimeUtils.TimeMode.DIALOG : TimeUtils.TimeMode.GAMEPLAY;
+      },
+      onFadeComplete: () => {
+        onFadeComplete?.Invoke();
+        setState(state);
+      }
+    );
+  }
+
   /**
    * Updates the overall state of the Quest.
    */
   protected void setState(int state) {
     this.state = state;
+    // TODO asynchronously autosave if state is a checkpoint (multiple of 100)
     handleState(state);
   }
   
   protected abstract void handleState(int state);
 
   public Hashtable save() {
+    // Only states which are multiples of 100 are checkpoints. 
+    int saveState = Mathf.FloorToInt(state / 100f) * 100; // Round down to the nearest multiple of 100
+
     var args = new Hashtable {
-      { Quest.KEY_STATE, Mathf.FloorToInt(state / 100f) * 100 } // Digits and tens are for states that should be repeated on load.
+      { Quest.KEY_STATE, saveState }
     };
 
     if (Player.SINGLETON != null) {
       args.Add(KEY_PLAYER, Player.SINGLETON.getState());
     }
 
-    saveArgs(args);
+    saveArgs(args); // Quest-specific arguments
 
     return args;
   }

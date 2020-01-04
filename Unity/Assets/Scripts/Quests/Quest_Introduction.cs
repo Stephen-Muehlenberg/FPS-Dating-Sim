@@ -15,7 +15,11 @@ public class Quest_Introduction : Quest {
   private const string PROFICIENCY_2 = "[Difficult]\nI spend some time on the firing range, yeah.";
   private const string PROFICIENCY_3 = "[Easy]\nNot really, but did any of you before this morning?";
 
-  private readonly PlayerState PLAYER_START = new PlayerState(0.3375727f, 0, -9.60523f, -1, -157.117f, false, false, false);
+  private readonly Vector3 MC_START_POS = new Vector3(0.3375727f, 0, -9.60523f);
+  private readonly Quaternion MC_START_DIRECTION = Quaternion.Euler(-1, -157.117f, 0);
+  private readonly Vector3 MC_CROUCH_POS = new Vector3(2.93f, 0, -3);
+  private readonly Vector3 MC_CROUCH_DIRECTION = new Vector3(5, 90, 0);
+  private readonly float MC_CROUCH_HEIGHT = 0.7f;
   private const float ROSE_X = 1.3f,      ROSE_START_Z = -7.35f,   ROSE_END_Z = -2.55f,   ROSE_WALK_TIME = 8.7f;
   private const float VANESSA_X = 0.668f, VANESSA_START_Z = -8.2f, VANESSA_END_Z = -3.5f, VANESSA_WALK_TIME = 9.1f;
   private const float FIZZY_X = 0.78f,    FIZZY_START_Z = -9.07f,  FIZZY_END_Z = -4.47f,  FIZZY_WALK_TIME = 9.45f,  FIZZY_BOB_HEIGHT = 0.25f, FIZZY_BOB_FREQUENCY = 4.5f;
@@ -28,16 +32,31 @@ public class Quest_Introduction : Quest {
   private int dialogChoice_proficiency = -1;
   private int dialogChoice_help = -1;
 
-  protected override string getSceneForState(int state) {
-    return state == 0 ? null : "cafe"; // Handle state 0's transition manually.
-  }
+  protected override void initialise(int state, Hashtable args) {
+    dialogChoice_greeting = (int) args.getOrDefault(KEY_CHOICE_GREETING, -1);
+    dialogChoice_proficiency = (int) args.getOrDefault(KEY_CHOICE_PROFICIENCY, -1);
+    dialogChoice_help = (int) args.getOrDefault(KEY_CHOICE_HELP, -1);
 
-  protected override void setupState(int state, Hashtable args) {
-    dialogChoice_greeting = (int) args[KEY_CHOICE_GREETING];
-    dialogChoice_proficiency = (int) args[KEY_CHOICE_PROFICIENCY];
-    dialogChoice_help = (int) args[KEY_CHOICE_HELP];
-
-    if (state == 100) Player.SINGLETON.setState(PLAYER_START);
+    setUpScene(
+      state: state,
+      scene: "cafe",
+      autoFadeIn: state > 0,
+      mcPosition: state < 200 ? MC_START_POS : MC_CROUCH_POS,
+      mcRotation: 
+        state < 200 ? MC_START_DIRECTION // Facing the door
+        : state == 200 ? Quaternion.Euler(MC_CROUCH_DIRECTION) // Crouching down behind counter 
+        : Quaternion.Euler(2, 255, 0), // Facing the girls
+      rosePosition: state > 300 ? new Vector3(ROSE_X, 0, ROSE_END_Z) : (Vector3?) null,
+      mayPosition: state > 300 ? new Vector3(MAY_X, 0, MAY_END_Z) : (Vector3?) null,
+      vanessaPosition: state > 300 ? new Vector3(VANESSA_X, 0, VANESSA_END_Z) : (Vector3?) null,
+      fizzyPosition: state > 300 ? new Vector3(FIZZY_X, 0, FIZZY_END_Z) : (Vector3?) null,
+      lookEnabled: state > 0 && state != 400,
+      moveEnabled: false,
+      jumpEnabled: false,
+      onTransitionComplete: state >= 200 && state <= 300 
+        ? (Callback) (() => { Player.SINGLETON.firstPersonController.headbob.setBaseHeadHeight(MC_CROUCH_HEIGHT, true); }) 
+        : null
+    );
   }
 
   protected override void saveArgs(Hashtable args) {
@@ -51,81 +70,76 @@ public class Quest_Introduction : Quest {
     else if (state == 100) s100_lookTutorial();
     else if (state == 110) s110_moveTutorial();
     else if (state == 120) s120_interactTutorial();
-    else if (state == 300) s300_secondMonologue();
+    else if (state == 200) s200_secondMonologue();
+    else if (state == 300) s300_girlsArrive();
     else if (state == 310) s310_greetRose();
+    else if (state == 400) s400_secondChoice();
     else throw new UnityException("Unknown state " + state);
   }
 
   private void s0_initialMonologue() {
-    ScreenFade.fadeOut(() => {
-      SceneTransition.swapTo("cafe", () => {
-        var player = Player.SINGLETON;
-        player.setState(PLAYER_START);
-        player.camera.fieldOfView = 6f;
-        player.GetComponent<FirstPersonModule.FirstPersonController>().disableAllInput();
+    Player.SINGLETON.camera.fieldOfView = 6f;
 
-        // Add a black screen fill BEHIND the conversation UI (the fade fill is always in front of everything).
-        // This lets us show conversations before fading in.
-        // TODO this is probably a useful util - maybe move it elsewhere?
-        var screenFill = new GameObject("Screen fill");
-        var fillImage = screenFill.AddComponent<Image>();
-        fillImage.color = Color.black;
-        screenFill.transform.SetParent(MainCanvas.transform);
-        var rectTransform = screenFill.transform as RectTransform;
-        rectTransform.anchorMin = new Vector2(0, 0);
-        rectTransform.anchorMax = new Vector2(1, 1);
-        rectTransform.offsetMin = new Vector2(0, 0);
-        rectTransform.offsetMax = new Vector2(0, 0);
+    // Add a black screen fill BEHIND the conversation UI (the fade fill is always in front of everything).
+    // This lets us show conversations before fading in.
+    // TODO this is probably a useful util - maybe move it elsewhere?
+    var screenFill = new GameObject("Screen fill");
+    var fillImage = screenFill.AddComponent<Image>();
+    fillImage.color = Color.black;
+    screenFill.transform.SetParent(MainCanvas.transform);
+    var rectTransform = screenFill.transform as RectTransform;
+    rectTransform.anchorMin = new Vector2(0, 0);
+    rectTransform.anchorMax = new Vector2(1, 1);
+    rectTransform.offsetMin = new Vector2(0, 0);
+    rectTransform.offsetMax = new Vector2(0, 0);
+    
+    // Fade in background noises
+    // TODO play more and varied sounds - screams, explosions, monster roars, thunder
+    var mixer = Resources.Load<AudioMixer>("Audio/MainMixer");
+    AudioSource sirens = setupAmbientAudioSource("Ambience - sirens", "Audio/Environment/Sirens", mixer);
+    AudioSource alarms = setupAmbientAudioSource("Ambience - alarms", "Audio/Environment/Alarm", mixer);
+    Player.SINGLETON.StartCoroutine(fadeVolume(1, 4, sirens, alarms));
 
-        // Fade in background noises
-        // TODO play more and varied sounds - screams, explosions, monster roars, thunder
-        var mixer = Resources.Load<AudioMixer>("Audio/MainMixer");
-        AudioSource sirens = setupAmbientAudioSource("Ambience - sirens", "Audio/Environment/Sirens", mixer);
-        AudioSource alarms = setupAmbientAudioSource("Ambience - alarms", "Audio/Environment/Alarm", mixer);
-        player.StartCoroutine(fadeVolume(1, 4, sirens, alarms));
+    ScreenFade.fadeIn(() => {
+      new Conversation()
+        .wait(3f)
+        .speaker(Character.MC_NARRATION, "")
+        .text("So this morning's been eventful.")
+        .wait(0.5f)
+        .show(() => {
+          // Slowly fade in, zoom out, and fade out audio
+          Player.SINGLETON.StartCoroutine(fadeGraphic(fillImage, 0, 4, true));
+          var slowZoomCoroutine = Player.SINGLETON.camera.zoomProportional(75, 30);
+          Player.SINGLETON.StartCoroutine(slowZoomCoroutine);
+          Player.SINGLETON.StartCoroutine(fadeOutAmbienceBasedOnZoom(Player.SINGLETON.camera, sirens, alarms));
 
-        ScreenFade.fadeIn(() => {
           new Conversation()
-            .wait(3f)
             .speaker(Character.MC_NARRATION, "")
-            .text("So this morning's been eventful.")
+            .wait(1.5f)
+            .text("Seems to be an apocalypse. Monsters, or demons, or undead... maybe all of the above?")
+            .text("It's been pretty bad.")
+            .text("They've been rampaging through the streets, emptying out the whole town pretty quickly.")
+            .text("Everyone who hasn't been cut down is running for their lives.")
             .wait(0.5f)
+            .text("And yet, I came to work.")
+            .wait(1.5f)
+            .text("I've already seen the fires of hell. My manager rained them down on me the last time I missed a shift.")
+            .text("Well, fine, Steve. The world's ending, but here I am. You happy?")
+            .wait(2f)
+            .text("...He's probably dead. I don't know why I'm still mentally yelling at him.")
+            .text("Pretty sure that was his blood smeared all over the window. Which, honestly, is just like him. I've never seen him make <i>coffee</i> without leaving something for me to clean up.")
+            .wait(2.5f)
+            .text("<i>Sigh.</i> I should probably find some detergent or something.")
+            .text("Does detergent work on blood? I don't have a lot of experience with this.")
             .show(() => {
-              player.StartCoroutine(fadeGraphic(fillImage, 0, 4, true));
-
-              var slowZoomCoroutine = player.camera.zoomProportional(75, 30);
-              player.StartCoroutine(slowZoomCoroutine);
-              player.StartCoroutine(fadeOutAmbienceBasedOnZoom(player.camera, sirens, alarms));
-
-              new Conversation()
-                .speaker(Character.MC_NARRATION, "")
-                .wait(1.5f)
-                .text("Seems to be an apocalypse. Monsters, or demons, or undead... maybe all of the above?")
-                .text("It's been pretty bad.")
-                .text("They've been rampaging through the streets, emptying out the whole town pretty quickly.")
-                .text("Everyone who hasn't been cut down is running for their lives.")
-                .wait(0.5f)
-                .text("And yet, I came to work.")
-                .wait(1.5f)
-                .text("I've already seen the fires of hell. My manager rained them down on me the last time I missed a shift.")
-                .text("Well, fine, Steve. The world's ending, but here I am. You happy?")
-                .wait(2f)
-                .text("...He's probably dead. I don't know why I'm still mentally yelling at him.")
-                .text("Pretty sure that was his blood smeared all over the window. Which, honestly, is just like him. I've never seen him make <i>coffee</i> without leaving something for me to clean up.")
-                .wait(2.5f)
-                .text("<i>Sigh.</i> I should probably find some detergent or something.")
-                .text("Does detergent work on blood? I don't have a lot of experience with this.")
-                .show(() => {
-                  // If slow zoom hasn't finished, stop slow zoom and quickly finish zooming out
-                  if (player.camera.fieldOfView < 75) {
-                    player.StopCoroutine(slowZoomCoroutine);
-                    player.StartCoroutine(player.camera.zoomDamp(75, 1));
-                  }
-                  setState(100);
-                });
+              // If slow zoom hasn't finished, stop slow zoom and quickly finish zooming out
+              if (Player.SINGLETON.camera.fieldOfView < 75) {
+                Player.SINGLETON.StopCoroutine(slowZoomCoroutine);
+                Player.SINGLETON.StartCoroutine(Player.SINGLETON.camera.zoomDamp(75, 1));
+              }
+              setState(100);
             });
         });
-      });
     });
   }
 
@@ -160,48 +174,52 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("…")
       .wait(0.5f)
-      .show(() => { setState(300); });
+      .performAction(() => {
+        var player = Player.SINGLETON;
+        player.firstPersonController.look.inputEnabled = false;
+        player.firstPersonController.move.inputEnabled = false;
+
+        player.setCrouchHeight(MC_CROUCH_HEIGHT, 1.5f);
+        player.smoothMove(MC_CROUCH_POS, 1.5f);
+        player.setLookDirection(MC_CROUCH_DIRECTION, 1.5f);
+      })
+      .wait(1.5f)
+      .performAction(() => {
+        Player.SINGLETON.firstPersonController.look.inputEnabled = true;
+        Player.SINGLETON.firstPersonController.look.restrictCameraToDirection(Vector3.zero, 0); // TODO
+      })
+      .show(() => { setState(200); });
     });
   }
 
-  private void s300_secondMonologue() {
-    var player = Player.SINGLETON;
-    player.firstPersonController.look.inputEnabled = false;
-    player.firstPersonController.move.inputEnabled = false;
-
-    // TOOD fix this
-    player.setCrouchHeight(0.7f, 1.5f);
-    player.smoothMove(new Vector3(2.93f, player.transform.position.y, -3), 1.5f);
-    player.setLookDirection(new Vector3(5, 90, 0), 1.5f);
-
+  private void s200_secondMonologue() {
     new Conversation()
-      .wait(1.5f)
-      .performAction(() => {
-        player.firstPersonController.look.inputEnabled = true;
-        player.firstPersonController.look.restrictCameraToDirection(Vector3.zero, 0); // TODO
-      })
       .speaker(Character.MC_NARRATION, "")
       .text("I'm not <i>totally</i> sure why I'm here.")
-        .wait(0.5f)
-        .text("Maybe because I've been gunning for Employee of the Month for a while, and I can't stop <i>now</i>.")
-        .text("This kind of dedication would look pretty good to any secret shoppers that showed up.")
-        .wait(0.5f)
-        .text("Maybe because I don't want to give corporate any excuse to keep my next paystub from me.")
-        .text("I wonder if apocalypses are recognized federal holidays? Maybe I can get time and a half for this.")
-        .wait(1.5f)
-        .text("Maybe...")
-        .wait(1)
-        .text("Maybe I just like the routine. If I'm going to get devoured by aliens, I might as well keep doing my job until it happens.")
-        .text("Not like I have much else going on.")
+      .wait(0.5f)
+      .text("Maybe because I've been gunning for Employee of the Month for a while, and I can't stop <i>now</i>.")
+      .text("This kind of dedication would look pretty good to any secret shoppers that showed up.")
+      .wait(0.5f)
+      .text("Maybe because I don't want to give corporate any excuse to keep my next paystub from me.")
+      .text("I wonder if apocalypses are recognized federal holidays? Maybe I can get time and a half for this.")
       .wait(1.5f)
+      .text("Maybe...")
+      .wait(1)
+      .text("Maybe I just like the routine. If I'm going to get devoured by aliens, I might as well keep doing my job until it happens.")
+      .text("Not like I have much else going on.")
+      .wait(1.5f)
+      .show(() => { setState(300); });
+  }
+
+  private void s300_girlsArrive() {
+    Character.ROSE.getProp().transform.position = new Vector3(ROSE_X, 0, ROSE_START_Z);
+    Character.VANESSA.getProp().transform.position = new Vector3(VANESSA_X, 0, VANESSA_START_Z);
+    Character.FIZZY.getProp().transform.position = new Vector3(FIZZY_X, 0, FIZZY_START_Z);
+    Character.MAY.getProp().transform.position = new Vector3(MAY_X, 0, MAY_START_Z);
+
+    new Conversation()
       .text(Character.NONE, "*<i>Door chime rings</i>*")
       .text("*<i>Footsteps</i>*")
-      .performAction(() => {
-        Character.ROSE.getProp().transform.position = new Vector3(ROSE_X, 0, ROSE_START_Z);
-        Character.VANESSA.getProp().transform.position = new Vector3(VANESSA_X, 0, VANESSA_START_Z);
-        Character.FIZZY.getProp().transform.position = new Vector3(FIZZY_X, 0, FIZZY_START_Z);
-        Character.MAY.getProp().transform.position = new Vector3(MAY_X, 0, MAY_START_Z);
-      })
       .wait(0.5f)
       .speaker(Character.MC_NARRATION, "")
       .text("Wow. Actual customers?")
@@ -212,14 +230,14 @@ public class Quest_Introduction : Quest {
         Character.VANESSA.getProp().walk(new Vector3(VANESSA_X, 0, VANESSA_END_Z), VANESSA_WALK_TIME);
         Character.FIZZY.getProp().walk(new Vector3(FIZZY_X, 0, FIZZY_END_Z), FIZZY_WALK_TIME, FIZZY_BOB_HEIGHT, FIZZY_BOB_FREQUENCY);
         Character.MAY.getProp().walk(new Vector3(MAY_X, 0, MAY_END_Z), MAY_WALK_TIME);
-        
-        player.setCrouchHeight(0.95f, 1f);
-        player.firstPersonController.look.inputEnabled = false;
-        player.setLookDirection(new Vector3(-10, 235, 0), 1f);
+
+        Player.SINGLETON.setCrouchHeight(0.95f, 1f);
+        Player.SINGLETON.firstPersonController.look.inputEnabled = false;
+        Player.SINGLETON.setLookDirection(new Vector3(-10, 235, 0), 1f);
       })
       .wait(1.3f)
       .performAction(() => {
-        player.firstPersonController.look.inputEnabled = true;
+        Player.SINGLETON.firstPersonController.look.inputEnabled = true;
       })
       .text("They're not aliens, surprisingly.")
       .text("Well, they could be. I don't know enough about aliens to say they don't all look like college-aged women covered in blood.")
@@ -240,8 +258,8 @@ public class Quest_Introduction : Quest {
       .speaker(Character.MC_NARRATION, "")
       .text("They haven't noticed me yet, but the one up front is getting closer. Probably getting ready to hop up onto the counter and grab the pastries.")
       .performAction(() => {
-        player.firstPersonController.look.inputEnabled = false;
-        player.setLookDirection(new Vector3(-14, 255, 0), 1f);
+        Player.SINGLETON.firstPersonController.look.inputEnabled = false;
+        Player.SINGLETON.setLookDirection(new Vector3(-14, 255, 0), 1f);
       })
       .choice("Well, I've gotta say <i>something</i>…",
               "Hey there! My name's MC. Please don't eat me.",
@@ -264,15 +282,13 @@ public class Quest_Introduction : Quest {
     else if (dialogChoice_greeting == 3) greetingText = "BOO!";
     else throw new UnityException("greetingSelection must have been set between 0 and 3 before this point.");
 
-    Player player = Player.SINGLETON;
-
     GameObject shotgunProp = null;
 
     var convo = new Conversation()
       .performAction(() => {
-        player.setCrouchHeight(1.7f, 0.3f);
-        player.setLookDirection(new Vector3(2, 255, 0), 0.3f);
-        player.firstPersonController.look.inputEnabled = true;
+        Player.SINGLETON.setCrouchHeight(1.7f, 0.3f);
+        Player.SINGLETON.setLookDirection(new Vector3(2, 255, 0), 0.3f);
+        Player.SINGLETON.firstPersonController.look.inputEnabled = true;
       })
       .speaker(Character.MC)
       .text(greetingText)
@@ -404,13 +420,18 @@ public class Quest_Introduction : Quest {
       .text(Character.VANESSA, "I'm afraid she's right. We've no choice but to make a stand here, defensible or not.")
       .text(Character.MAY, "Shit. I'm sorry guys, I should have found somewhere safer for us to rest.")
       .performAction(() => {
-        player.firstPersonController.look.inputEnabled = false;
-        player.setLookDirection(new Vector3(2, 255, 0), 0.3f);
+        Player.SINGLETON.firstPersonController.look.enabled = false;
+        Player.SINGLETON.setLookDirection(new Vector3(2, 255, 0), 0.3f);
       })
+      .show(() => { setState(400); });
+  }
+
+  private void s400_secondChoice() {
+    new Conversation()
       .speaker(Character.FIZZY)
-      .choice("If only there was some random helpful bystander willing to carry us poor, exhausted, attractive girls around. And possibly use us to slay demons.",
+      .choice("If only there was some random helpful bystander willing to carry us poor, exhausted, pretty girls around. And possibly use us to slay demons.",
         "Demon slaying? Awesome, sign me up!",
-        "Oooh! Me! I'm a random helpful bystander something something attractive girls.",
+        "Oooh! Me! I'm a random helpful bystander something something pretty girls.",
         "Subtle <i>and</i> modest. How can I refuse such charm?",
         "Well, I guess I'd be a lot safer with a bunch of sentient gun ladies.",
         (selection, _) => {
@@ -421,10 +442,10 @@ public class Quest_Introduction : Quest {
         }
       )
       .performAction(() => {
-        player.firstPersonController.look.inputEnabled = true;
+        Player.SINGLETON.firstPersonController.look.enabled = true;
       })
       .dynamicallyInsert(() => {
-        switch(dialogChoice_help) {
+        switch (dialogChoice_help) {
           case 0:
             return new Conversation().text(Character.ROSE, "Heck yeah it's awesome!");
           case 1:
@@ -439,7 +460,7 @@ public class Quest_Introduction : Quest {
       })
       .text(Character.MC, "Alright, let's go. There's a back door through the kitchen, leads onto some side streets away from the main road. Might have a better chance of escaping undetected through there.")
       .dynamicallyInsert(() => {
-        switch(dialogChoice_help) {
+        switch (dialogChoice_help) {
           case 0:
             return new Conversation().text(Character.ROSE, "Let's do this.");
           case 1:
@@ -452,17 +473,32 @@ public class Quest_Introduction : Quest {
             throw new UnityException("dialogChoice_help was " + dialogChoice_help + ", which is invalid.");
         }
       })
-      .show(() => { QuestManager.start(new Quest_Tutorial()); });
+      .show(() => {
+        QuestManager.start(new Quest_Tutorial());
+      });
   }
 
   // ---------- UTILS -----------
 
   // TODO this might be a useful generic util
   private IEnumerator fadeGraphic(Graphic image, float alpha, float fadeDuration, bool destroyImageOnComplete) {
+    if (fadeDuration <= 0) throw new UnityException("Fade duration must be a positive value");
+    float fadePerSecond = (alpha - image.color.a) / fadeDuration;
+
     while (image.color.a != alpha) {
-      image.CrossFadeAlpha(alpha, fadeDuration, false);
+      image.color = new Color(image.color.r,
+                              image.color.g, 
+                              image.color.b,
+                              image.color.a + (fadePerSecond * TimeUtils.dialogDeltaTime));
+
+      // If we overshoot, correct to exact value
+      if ((fadePerSecond > 0 && image.color.a > alpha) || (fadePerSecond < 0 && image.color.a < alpha)) {
+        image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
+      }
+
       yield return null;
     }
+
     if (destroyImageOnComplete) GameObject.Destroy(image.gameObject);
   }
 

@@ -53,7 +53,11 @@ public class MachineGun : WeaponController {
 
     if (rayHit) {
       // Damage
-      var damage = new Damage(Random.Range(DAMAGE_MIN, DAMAGE_MAX), Player.SINGLETON.transform.position, rayHitInfo.point, rayHitInfo.collider);
+      var damage = new Damage(amount: Random.Range(DAMAGE_MIN, DAMAGE_MAX),
+                              origin: Player.SINGLETON.transform.position,
+                              hitPoint: rayHitInfo.point,
+                              source: Weapons.MACHINE_GUN,
+                              hitLocation: rayHitInfo.collider);
       rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
       
       // Force
@@ -74,7 +78,7 @@ public class MachineGun : WeaponController {
     base.Update();
 
     if (burstShotsRemaining > 0 && weapon.equipped && !TimeUtils.gameplayPaused) {
-      burstCooldownRemaining -= Time.deltaTime;
+      burstCooldownRemaining -= TimeUtils.gameplayDeltaTime;
       if (burstCooldownRemaining <= 0) {
         fire(SCATTER_RADIANS_BURST);
         burstShotsRemaining--;

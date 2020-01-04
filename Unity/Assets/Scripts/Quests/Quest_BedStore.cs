@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Quest_BedStore : Quest {
   private static readonly Vector3 INTRO_POS_MC = new Vector3(0, 0, -8.5f),
@@ -15,10 +16,14 @@ public class Quest_BedStore : Quest {
 
   public static string NAME = "BedStore";
   public override string name => NAME;
+  public static string SCENE = "mission_bed_store";
 
-  protected override string getSceneForState(int state) {
-    if (state >= 100 && state < 500) return "mission_bed_store";
-    else return "cafe";
+  protected override void initialise(int state, Hashtable args) {
+    // TODO set up everything else here
+    setUpScene(
+      state: state,
+      scene: (state >= 100 && state < 500) ? SCENE : "cafe"
+    );
   }
 
   protected override void handleState(int state) {
@@ -273,8 +278,9 @@ public class Quest_BedStore : Quest {
   }
   
   private void s500_returnToCafe() {
-    SceneTransition.fadeTo("cafe",
-      () => {
+    SceneTransition.changeTo(
+      scene: "cafe",
+      onSceneLoaded: () => {
         var firstPersonController = Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>();
         firstPersonController.move.inputEnabled = false;
         firstPersonController.jump.inputEnabled = false;
@@ -283,7 +289,7 @@ public class Quest_BedStore : Quest {
         Character.MAY.getProp().setPosition(new Vector3(-0.5890785f, 0, -6.104723f));
         Character.VANESSA.getProp().setPosition(new Vector3(1.156008f, 0, -6.55563f));
       },
-      () => {
+      onFadeComplete: () => {
         // TODO choose who says what based on affinity
         Character antagonist = Weapons.randomWeapon().character;
         Character protagonist;
@@ -319,7 +325,7 @@ public class Quest_BedStore : Quest {
           )
           .text(Character.MC, "Plus, I have to leave room for all the homeless people.")
           .text(Character.VANESSA, "Oh, very funny.")
-          .show(() => { SceneTransition.fadeTo("main_menu"); });
+          .show(() => { SceneTransition.changeTo("main_menu"); });
       });
   }
 

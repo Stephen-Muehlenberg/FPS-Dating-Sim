@@ -14,7 +14,7 @@ public class DamageDirectionIndicator : MonoBehaviour {
   public void Update() {
     if (TimeUtils.gameplayPaused) return;
 
-    image.color = new Color(1, 0, 0, image.color.a - Time.deltaTime);
+    image.color = new Color(1, 0, 0, image.color.a - TimeUtils.dialogDeltaTime);
   }
 
   public static void show(Transform playerTransform, Vector3 damageOrigin) {

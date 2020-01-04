@@ -11,7 +11,7 @@ public class Debug_InitialializeQuest : MonoBehaviour {
       var args = new Hashtable {
         {  Quest.KEY_STATE, state }
       };
-      QuestManager.resume(questToInitialize, args);
+      QuestManager.start(questToInitialize, args);
     }
 
     Destroy(this);

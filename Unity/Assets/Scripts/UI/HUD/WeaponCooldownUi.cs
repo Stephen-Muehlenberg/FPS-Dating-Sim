@@ -73,7 +73,7 @@ public class WeaponCooldownUi : MonoBehaviour {
     if (TimeUtils.gameplayPaused) return;
 
     if (flashInProgress) {
-      flashTime += Time.deltaTime;
+      flashTime += TimeUtils.gameplayDeltaTime;
 
       if (flashTime <= FLASH_FADE_IN_TIME) {
         leftBar.color = Color.Lerp(CROSSHAIR_CHARGING_COLOUR, flashColour, flashTime / FLASH_FADE_IN_TIME);

@@ -77,16 +77,23 @@ public class Character {
     combatTextOutline: new Color(0.87f, 0.63f, 0.24f),
     hasProp:           true);
   
-  public static void setPositions(Vector3? mcPos, Quaternion? mcRot) { setPositions(mcPos, mcRot, null, null, null, null); }
-  public static void setPositions(Vector3? rosePos, Vector3? mayPos, Vector3? vanessaPos, Vector3? fizzyPos) { setPositions(null, null, rosePos, mayPos, vanessaPos, fizzyPos); }
   /**
-   * Sets the position and rotation of MC (the player), and the positions of the girls.
+   * Sets the position and/or rotation of MC (the player), and/or the positions of the girls.
    * If MC's position or rotation is null, that value will not be set.
    * If a girl's position is null, that girl will not be in the scene.
    */
-  public static void setPositions(Vector3? mcPos, Quaternion? mcRot, Vector3? rosePos, Vector3? mayPos, Vector3? vanessaPos, Vector3? fizzyPos) {
+  public static void setPositions(Vector3? mcPos = null,
+                                  Quaternion? mcRot = null,
+                                  Vector3? rosePos = null,
+                                  Vector3? mayPos = null,
+                                  Vector3? vanessaPos = null,
+                                  Vector3? fizzyPos = null) {
     if (mcPos.HasValue) Player.SINGLETON.transform.position = mcPos.Value;
-    if (mcRot.HasValue) Player.SINGLETON.transform.rotation = mcRot.Value;
+    if (mcRot.HasValue) {
+      Vector3 rotation = mcRot.Value.eulerAngles;
+      Player.SINGLETON.transform.rotation = Quaternion.Euler(0, rotation.y, 0);
+      Player.SINGLETON.camera.transform.localRotation = Quaternion.Euler(rotation.x, 0, 0);
+    }
 
     if (rosePos.HasValue) ROSE.getProp().transform.position = rosePos.Value;
     else if (ROSE.prop != null) GameObject.Destroy(ROSE.prop);

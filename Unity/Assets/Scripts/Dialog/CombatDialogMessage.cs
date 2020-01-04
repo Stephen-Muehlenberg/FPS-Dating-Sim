@@ -92,6 +92,8 @@ public class CombatDialogMessage : MonoBehaviour {
 
     // Slide message up if y position has changed
     var rectTransform = transform as RectTransform;
+    // TODO this uses Time.deltaTime, instead of TimeUtils.dialogDeltaTime.
+    // TODO also remember to check if delta time is 0, as SmoothDamp returns NaN if delta time is 0.
     rectTransform.anchoredPosition = new Vector2(0, Mathf.SmoothDamp(rectTransform.anchoredPosition.y, yPosition, ref velocity, 0.15f));
     
     if (!fadeInComplete) {

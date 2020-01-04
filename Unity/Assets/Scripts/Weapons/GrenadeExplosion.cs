@@ -9,7 +9,9 @@ public class GrenadeExplosion : MonoBehaviour {
   }
 
   void Update() {
-    lifetime += Time.deltaTime;
+    if (TimeUtils.gameplayPaused) return;
+
+    lifetime += TimeUtils.gameplayDeltaTime;
 
     if (lifetime >= DURATION) {
       GetComponent<MeshRenderer>().enabled = false;

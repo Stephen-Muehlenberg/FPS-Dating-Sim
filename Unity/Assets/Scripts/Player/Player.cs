@@ -32,8 +32,7 @@ public class Player : MonoBehaviour {
     firstPersonController.jump.enabled = state.jump;
   }
 
-  public void setInConversation(bool inConversation) { setInConversation(inConversation, false); }
-  public void setInConversation(bool inConversation, bool forceDisableJump) {
+  public void setInConversation(bool inConversation, bool forceDisableJump = false) {
     firstPersonController.move.inputEnabled = !inConversation;
     firstPersonController.jump.inputEnabled = !inConversation && !forceDisableJump;
     if (inConversation) Weapons.unequip();
@@ -71,7 +70,7 @@ public class Player : MonoBehaviour {
         Mathf.SmoothStep(transform.position.x, destination.x, t),
         Mathf.SmoothStep(transform.position.y, destination.y, t),
         Mathf.SmoothStep(transform.position.z, destination.z, t));
-      t += Time.deltaTime * timeMultiplier;
+      t += TimeUtils.dialogDeltaTime * timeMultiplier;
       yield return null;
     }
   }
@@ -86,7 +85,7 @@ public class Player : MonoBehaviour {
       currentRotation = Quaternion.Slerp(startingRotation, targetRotation, t);
       transform.rotation = Quaternion.Euler(0, currentRotation.eulerAngles.y, 0);
       camera.transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, 0, 0);
-      t += Time.deltaTime * timeMultiplier;
+      t += TimeUtils.dialogDeltaTime * timeMultiplier;
       yield return null;
     }
   }
@@ -100,7 +99,7 @@ public class Player : MonoBehaviour {
 
     while (t < 1) {
       headbob.setBaseHeadHeight(Mathf.SmoothStep(baseHeadHeight, height, t));
-      t += Time.deltaTime * timeMultiplier;
+      t += TimeUtils.dialogDeltaTime * timeMultiplier;
       yield return null;
     }
     headbob.baseHeadHeight = height;

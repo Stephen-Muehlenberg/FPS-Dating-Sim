@@ -21,7 +21,7 @@ public class DamageText : MonoBehaviour {
   void Update() {
     if (Time.timeScale == 0) return; // Game is paused; do nothing
 
-    age += Time.deltaTime;
+    age += TimeUtils.dialogDeltaTime;
     // Math basically animates the text up slightly, than falls as if affected by gravity
     var verticalOffset = new Vector3(0, ((1 - Mathf.Pow((age * 9 - 3), 2)) / 6f) + 2f, 0);
 

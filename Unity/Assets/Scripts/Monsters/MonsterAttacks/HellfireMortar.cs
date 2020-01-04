@@ -19,9 +19,9 @@ public class HellfireMortar : MonoBehaviour {
     if (Time.timeScale == 0) return; // Game is paused; do nothing
 
     // TODO use a more accurate method for aiming
-    transform.position += transform.forward * horizontalVelocity * Time.deltaTime;
-    transform.position += Vector3.up * verticalVelocity * Time.deltaTime;
-    verticalVelocity += GRAVITY * Time.deltaTime;
+    transform.position += transform.forward * horizontalVelocity * TimeUtils.gameplayDeltaTime;
+    transform.position += Vector3.up * verticalVelocity * TimeUtils.gameplayDeltaTime;
+    verticalVelocity += GRAVITY * TimeUtils.gameplayDeltaTime;
   }
 
   void OnTriggerEnter(Collider other) {

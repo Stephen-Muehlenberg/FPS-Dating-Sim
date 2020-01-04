@@ -14,6 +14,7 @@ public class ConversationManager : MonoBehaviour {
   private static int currentConversationIndex;
 
   private float speedMultiplier;
+  private TimeUtils.TimeMode previousMode;
 
   private TextRevealer textRevealer = new TextRevealer();
   private string currentMessage;
@@ -48,7 +49,8 @@ public class ConversationManager : MonoBehaviour {
     if (SINGLETON == null) initializeSingleton();
 
     // Prevent player interaction
-    TimeUtils.pauseGameplay();
+    SINGLETON.previousMode = TimeUtils.mode;
+    TimeUtils.mode = TimeUtils.TimeMode.DIALOG;
     LookController.disable();
 
     ConversationManager.conversation = conversation;
@@ -72,7 +74,7 @@ public class ConversationManager : MonoBehaviour {
     conversation = null;
 
     // Re-enable player interaction
-    TimeUtils.resumeGameplay();
+    TimeUtils.mode = previousMode;
     LookController.enable();
 
     // Notify & remove listeners
@@ -184,7 +186,7 @@ public class ConversationManager : MonoBehaviour {
     if (conversation == null) return;
 
     if (waitRemaining > 0) {
-      waitRemaining -= Time.unscaledDeltaTime;
+      waitRemaining -= TimeUtils.dialogDeltaTime;
       if (waitRemaining <= 0) finishCurrentAction();
       return;
     }

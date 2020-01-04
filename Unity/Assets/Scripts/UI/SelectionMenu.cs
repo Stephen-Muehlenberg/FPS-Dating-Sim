@@ -135,7 +135,7 @@ public class SelectionMenu : MonoBehaviour {
 
   private void updateHighlight() {
     // Add mouse movement to the previous mouse position.
-    mouseInput += new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * Time.deltaTime / Time.timeScale; // Ignore timescale
+    mouseInput += new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * TimeUtils.dialogDeltaTime;
     // Restrain mouse position to the unit circle - it's hypotenuse cannot be greater than 1.
     // This provides a small amount of buffer against minor mouse jitter, so the cursor dousn't instantly dart
     // about, but it's small enough that you can still quickly swap from one side of the circle to the other.

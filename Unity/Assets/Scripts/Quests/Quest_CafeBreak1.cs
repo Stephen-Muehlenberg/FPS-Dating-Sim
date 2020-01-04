@@ -27,15 +27,25 @@ public class Quest_CafeBreak1 : Quest {
     get { return (deliveredRosesDrink ? 0 : 1) + (deliveredMaysDrink ? 0 : 1) + (deliveredVanessasDrink ? 0 : 1) + (deliveredFizzysDrink ? 0 : 1); }
   }
 
-  protected override string getSceneForState(int state) {
-    return "cafe";
-  }
-
-  protected override void setupState(int state, Hashtable args) {
+  protected override void initialise(int state, Hashtable args) {
     deliveredRosesDrink = (bool) args.getOrDefault("R", false);
     deliveredMaysDrink = (bool) args.getOrDefault("M", false);
     deliveredVanessasDrink = (bool) args.getOrDefault("V", false);
     deliveredFizzysDrink = (bool) args.getOrDefault("F", false);
+
+    // TODO set up rest of scene
+    setUpScene(
+      state: state,
+      scene: "cafe",
+      mcPosition: state < 200 ? OPENING_MC_POS : INTERLUDE_MC_POS,
+      mcRotation: state < 200 ? Quaternion.identity : Quaternion.Euler(0, 270, 0),
+      rosePosition: state < 200 ? (Vector3?) null : INTERLUDE_ROSE_POS,
+      mayPosition: state < 200 ? (Vector3?) null : INTERLUDE_MAY_POS,
+      vanessaPosition: state < 200 ? (Vector3?) null : INTERLUDE_VANESSA_POS,
+      fizzyPosition: state < 200 ? (Vector3?) null : INTERLUDE_FIZZY_POS,
+      moveEnabled: state >= 200,
+      jumpEnabled: false
+    );
   }
 
   protected override void saveArgs(Hashtable args) {
@@ -52,9 +62,6 @@ public class Quest_CafeBreak1 : Quest {
   }
 
   private void s000_openingConversationPart1() {
-    Character.setPositions(OPENING_MC_POS, Quaternion.identity);
-    Player.SINGLETON.setInConversation(true);
-
     new Conversation()
       .wait(2f)
       .text(Character.MC_NARRATION, "<i>I stagger back into the café with four guns that each hop off and transform back into women.</i>")
@@ -129,13 +136,10 @@ public class Quest_CafeBreak1 : Quest {
     .text(Character.MC, "Vanessa, please save me.")
     .text(Character.VANESSA, "I will take a lemonade, mixed with soda water and a splash of grenadine. Oh, and please make sure it's chilled.")
     .text(Character.MC, "That's not saving me. That's not saving me at all.")
-    .show(() => { SceneTransition.fadeTo("cafe", () => { setState(200); }); });
+    .show(() => { SceneTransition.changeTo(scene: "cafe", onSceneLoaded: () => { setState(200); }); });
   }
 
   private void s200_openingConversationPart3() {
-    Character.setPositions(INTERLUDE_MC_POS, Quaternion.Euler(0, 270, 0), INTERLUDE_ROSE_POS, INTERLUDE_MAY_POS, INTERLUDE_VANESSA_POS, INTERLUDE_FIZZY_POS);
-    Player.SINGLETON.setInConversation(false, true);
-
     if (!deliveredRosesDrink) {
       Character.ROSE.getProp().setInteraction("Give drink", (roseTarget) => {
         Player.SINGLETON.setInConversation(true);

@@ -24,13 +24,12 @@ public class MainMenu : MonoBehaviour {
     else if (Input.GetKeyUp(KeyCode.Alpha3)) startQuest(QuestManager.QUEST_3);
     else if (Input.GetKeyUp(KeyCode.Alpha4)) startQuest(QuestManager.QUEST_4);
     else if (Input.GetKeyUp(KeyCode.Alpha5)) startQuest(QuestManager.QUEST_5);
-    else if (Input.GetKeyUp(KeyCode.Alpha6)) startQuest(QuestManager.QUEST_6);
-    else if (Input.GetKeyUp(KeyCode.Alpha7)) startQuest(QuestManager.QUEST_7);
+    else if (Input.GetKeyUp(KeyCode.Alpha9)) startQuest(QuestManager.QUEST_9);
   }
 
   private void startQuest(string quest) {
     interactable = false;
-    QuestManager.start(quest);
+    ScreenFade.fadeOut(() => { QuestManager.start(quest); });
   }
 
   public void resumeGame() {

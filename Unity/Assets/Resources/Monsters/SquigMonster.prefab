@@ -80,6 +80,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -171,6 +172,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -263,6 +265,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -293,6 +296,7 @@ GameObject:
   - component: {fileID: 114117159233486118}
   - component: {fileID: 114160365966651450}
   - component: {fileID: 114539430864901074}
+  - component: {fileID: 1783377120}
   m_Layer: 0
   m_Name: SquigMonster
   m_TagString: Monster
@@ -307,7 +311,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1450460461417136}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0, w: -1}
   m_LocalPosition: {x: -4.1663303, y: 0.24595815, z: 96.07957}
   m_LocalScale: {x: 1.08, y: 1.08, z: 1.08}
   m_Children:
@@ -322,7 +326,7 @@ Transform:
   - {fileID: 4656254054868926}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -341.39, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -360, z: 0}
 --- !u!114 &114669778223093104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,7 +336,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: d9f70e641bb3a5b4bb95fccea12dd2de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -345,11 +348,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 6d0f6da2ae74a1348b2db0f092ef1c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  remaining: 1350
+  remaining: 2500
   weakPoints:
   - {fileID: 135486314536984962}
   showDamageText: 1
@@ -362,7 +364,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: ffdd49cea88250e46aeacaa23b135df6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -397,7 +398,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 213b4de133d05c84a910b168f2ac55df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -426,7 +426,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 7c7e48669698373418f5f5d5fb073dac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -444,7 +443,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 5f94861059202bc448f6cc4dfc89ea59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -465,7 +463,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450460461417136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_GeneratorAsset: {fileID: 0}
   m_Script: {fileID: 11500000, guid: 56ad4609192979e42a2ba977c1dabde8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -475,6 +472,29 @@ MonoBehaviour:
   maxWanderTime: 3
   flockId: 0
   flockRangeSq: 225
+--- !u!114 &1783377120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450460461417136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c3c0df343591e340a2d6e4c432f9cd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isStaggered: 0
+  stagger: 0
+  threshold: 350
+  decay: 150
+  negativeStaggerOnTrigger: 700
+  duration: 2
+  remaining: 0
+  shotgunMultiplier: 1.1
+  machineGunMultiplier: 0.7
+  sniperRifleMultiplier: 1
+  grenadeLauncherMultiplier: 1
 --- !u!1 &1524630451683388
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +575,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -647,6 +668,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -738,6 +760,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -830,6 +853,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -921,6 +945,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -1013,6 +1038,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0

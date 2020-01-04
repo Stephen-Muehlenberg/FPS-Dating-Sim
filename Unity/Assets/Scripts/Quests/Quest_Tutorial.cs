@@ -4,41 +4,45 @@ using UnityEngine;
 public class Quest_Tutorial : Quest {
   public static string NAME = "Tutorial";
   public override string name => NAME;
+  private static readonly string SCENE = "mission_tutorial";
 
-  protected override string getSceneForState(int state) {
-    // Manually handle the state 0 transition
-    return state == 0 ? null : "mission_tutorial";
+  private static readonly string QUEST_MESSAGE_ESCAPE = "Escape through the back alleys";
+
+  protected override void initialise(int state, Hashtable args) {
+    setUpScene(
+      state: state,
+      scene: SCENE,
+      moveEnabled: state > 0,
+      jumpEnabled: state > 0,
+      combatHudEnabled: state > 0,
+      questMessage: state > 0 ? QUEST_MESSAGE_ESCAPE : null,
+      onTransitionComplete: 
+        state == 0 ? () => {
+          // TODO maybe these should be setUpScene args?
+          Player.SINGLETON.GetComponent<GunSwitch>().enabled = false;
+          MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().alpha = 0;
+          MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().alpha = 0;
+        }
+        : (Callback) null
+    );
   }
 
   protected override void handleState(int state) {
-    if (state == 0) setupScene();
+    if (state == 0) openingDialog();
     else throw new UnityException("Unknown state " + state);
   }
 
-  private void setupScene() {
-    state = 0;
-
-    SceneTransition.fadeTo("mission_tutorial",
-      () => {
-        Player.SINGLETON.firstPersonController.move.inputEnabled = false;
-        Player.SINGLETON.firstPersonController.jump.inputEnabled = false;
-        Player.SINGLETON.GetComponent<GunSwitch>().enabled = false;
-        MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().alpha = 0;
-        MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().alpha = 0;
-      },
-      () => {
-        new Conversation()
-          .text(Character.MC_NARRATION, "So here I am, sneaking out the back door, loaded up with guns who also happen to be girls.")
-          .text(Character.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
-          .show(() => {
-            CurrentQuestMessage.set("Escape through the back alleys");
-            Player.SINGLETON.firstPersonController.move.inputEnabled = true;
-            Player.SINGLETON.firstPersonController.jump.inputEnabled = true;
-            Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().fade(1, 1.5f));
-            Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().fade(1, 1.5f));
-          });
-      }
-    );
+  private void openingDialog() {
+    new Conversation()
+      .text(Character.MC_NARRATION, "So here I am, sneaking out the back door, loaded up with guns who also happen to be girls.")
+      .text(Character.MC_NARRATION, "And I was hoping this morning would get <i>less</i> weird.")
+      .show(() => {
+        CurrentQuestMessage.set(QUEST_MESSAGE_ESCAPE);
+        Player.SINGLETON.firstPersonController.move.enabled = true;
+        Player.SINGLETON.firstPersonController.jump.enabled = true;
+        Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Crosshair").GetComponent<CanvasGroup>().fade(1, 1.5f));
+        Player.SINGLETON.StartCoroutine(MainCanvas.transform.Find("Health Bar").GetComponent<CanvasGroup>().fade(1, 1.5f));
+      });
   }
 
   public override void handleEvent(string eventName, GameObject trigger) {
@@ -83,7 +87,7 @@ public class Quest_Tutorial : Quest {
   private IEnumerator showObjectiveWithDelay() {
     float time = 0f;
     while (time < 1.6f) {
-      if (!TimeUtils.gameplayPaused) time += Time.deltaTime;
+      if (!TimeUtils.gameplayPaused) time += TimeUtils.gameplayDeltaTime;
       yield return null;
     }
 

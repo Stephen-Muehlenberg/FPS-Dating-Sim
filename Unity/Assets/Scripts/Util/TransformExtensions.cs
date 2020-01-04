@@ -24,7 +24,8 @@ public static class TransformExtensions {
     Vector3 velocity = Vector3.zero;
     while (transform.position != destination) {
       yield return null;
-      transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, duration);
+      if (TimeUtils.dialogDeltaTime > 0) // SmoothDamp returns NaN if used with a delta time of 0
+        transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, duration, float.MaxValue, TimeUtils.dialogDeltaTime);
     }
     callback?.Invoke();
   }

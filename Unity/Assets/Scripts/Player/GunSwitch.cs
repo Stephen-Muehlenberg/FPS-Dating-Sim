@@ -30,7 +30,7 @@ public class GunSwitch : MonoBehaviour {
   }
 
   private void startWeaponSelection() {
-    TimeUtils.setTimeScale(SLOW_TIMESCALE);
+    TimeUtils.startBulletTime(SLOW_TIMESCALE);
   //  postProcessing.depthOfField.enabled = true;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = false;
 
@@ -41,7 +41,7 @@ public class GunSwitch : MonoBehaviour {
   }
 
   private void endWeaponSelection(int selection, string _) {
-    TimeUtils.clearTimeScale();
+    TimeUtils.stopBulletTime();
 //    postProcessing.depthOfField.enabled = false;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = true;
     equip(Weapons.array[selection], true);

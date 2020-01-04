@@ -29,7 +29,7 @@ public class IdleBehaviour : MonoBehaviour {
 
 	void Update () {
 		if (waitTimeRemaining > 0) {
-      waitTimeRemaining -= Time.deltaTime;
+      waitTimeRemaining -= TimeUtils.gameplayDeltaTime;
       if (waitTimeRemaining <= 0) {
         startNewWander();
         waitTimeRemaining = 0f;
@@ -37,7 +37,7 @@ public class IdleBehaviour : MonoBehaviour {
       }
     }
     else {
-      wanderTimeRemaining -= Time.deltaTime;
+      wanderTimeRemaining -= TimeUtils.gameplayDeltaTime;
       if (wanderTimeRemaining <= 0) {
         agent.ResetPath();
         wanderTimeRemaining = 0f;

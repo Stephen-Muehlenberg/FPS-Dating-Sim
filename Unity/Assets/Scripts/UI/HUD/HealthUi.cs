@@ -33,7 +33,7 @@ public class HealthUi : MonoBehaviour {
     float fadeDuration = 0f;
     while (fadeDuration < healthFlashDuration) {
       yield return this;
-      fadeDuration += Time.deltaTime;
+      fadeDuration += TimeUtils.dialogDeltaTime;
       healthBackground.color = Color.Lerp(backgroundFlashColour, backgroundNormalColour, fadeDuration / healthFlashDuration);
     }
 

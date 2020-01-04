@@ -20,7 +20,7 @@ public static class CameraExtensions {
     while ((zoomingOut && camera.fieldOfView < targetFOV) || (!zoomingOut && camera.fieldOfView > targetFOV)) {
       if (TimeUtils.dialogPaused) yield return null;
       else {
-        time += Time.deltaTime;
+        time += TimeUtils.dialogDeltaTime;
         camera.fieldOfView = initialFOV * Mathf.Pow(2, (time / doublingTime));
         yield return null;
       }
@@ -34,7 +34,8 @@ public static class CameraExtensions {
   public static IEnumerator zoomDamp(this Camera camera, float targetFOV, float zoomTime) {
     float velocity = 0;
     while (camera.fieldOfView != targetFOV) {
-      camera.fieldOfView = Mathf.SmoothDamp(camera.fieldOfView, targetFOV, ref velocity, zoomTime);
+      if (TimeUtils.dialogDeltaTime == 0) yield return null;
+      camera.fieldOfView = Mathf.SmoothDamp(camera.fieldOfView, targetFOV, ref velocity, zoomTime, float.MaxValue, TimeUtils.dialogDeltaTime);
       yield return null;
     }
   }

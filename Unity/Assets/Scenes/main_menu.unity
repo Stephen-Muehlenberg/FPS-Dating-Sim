@@ -5040,8 +5040,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -24, y: 0}
-  m_SizeDelta: {x: 224, y: 0}
+  m_AnchoredPosition: {x: -40, y: 0}
+  m_SizeDelta: {x: 260, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &173956357
 MonoBehaviour:
@@ -5056,7 +5056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.73333335}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.6313726}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -5076,24 +5076,23 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Playtesting tip:
+  m_Text: '<b>Playtesting tip:</b>
 
-    Press the number keys to jump to various scenes.
+    Press the number keys from the main menu to jump to various scenes.
 
 
     1: Opening Scene
 
     2: Tutorial Mission
 
-    3: Cafe Break 1
+    3: Cafe Break
 
     4: Competition Mission
 
-    5: Cafe Break 2
+    5: Bed Store Mission
 
-    6: Bed Store Mission
 
-    7: Old Test Level'
+    9: Old Test Level'
 --- !u!222 &173956358
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -25888,7 +25887,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: v0.32
+  m_Text: v0.33
 --- !u!222 &1925938396
 CanvasRenderer:
   m_ObjectHideFlags: 0

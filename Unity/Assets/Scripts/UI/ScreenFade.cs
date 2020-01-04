@@ -6,7 +6,8 @@ public class ScreenFade : MonoBehaviour {
   private static GameObject scrimCanvas;
   private static Image scrim;
   private static Callback callback;
-  private static float fadeDuration = 0.75f; // TODO make this adjustable and/or have multiple different durations to choose from
+  private const float DEFAULT_DURATION= 0.75f;
+  private static Coroutine currentFade;
 
   // -----------------------------------
   // WORK IN PROGRESS
@@ -33,57 +34,53 @@ public class ScreenFade : MonoBehaviour {
     }
     if (destroyImageOnComplete) GameObject.Destroy(image.gameObject);
   }
+  // END WORK IN PROGRESS
   // -----------------------------------
 
   private static void lazyIntitialize() {
     scrimCanvas = Instantiate(Resources.Load<GameObject>("UI/Fade Canvas"));
     scrim = scrimCanvas.GetComponentInChildren<Image>();
     DontDestroyOnLoad(scrimCanvas);
-    scrimCanvas.SetActive(false);
   }
 
-  public static void fadeOut(Callback callback) {
+  public static void fadeOut(Callback callback = null, 
+                             float fadeDuration = DEFAULT_DURATION,
+                             bool initialiseToTransparent = false) {
     if (scrimCanvas == null) lazyIntitialize();
+    if (currentFade != null) scrimCanvas.GetComponent<ScreenFade>().StopCoroutine(currentFade);
 
     scrimCanvas.SetActive(true);
+    if (initialiseToTransparent) scrim.color = new Color(0, 0, 0, 0);
     ScreenFade.callback = callback;
-    scrimCanvas.GetComponent<ScreenFade>().StartCoroutine(fadeTo(1));
+    
+    currentFade = scrimCanvas.GetComponent<ScreenFade>().StartCoroutine(fade(fadeIn: false, duration: fadeDuration));
   }
 
-  public static void fadeIn(Callback callback) {
+  public static void fadeIn(Callback callback = null,
+                            float fadeDuration = DEFAULT_DURATION,
+                            bool initialiseToBlack = false) {
     if (scrimCanvas == null) lazyIntitialize();
+    if (currentFade != null) scrimCanvas.GetComponent<ScreenFade>().StopCoroutine(currentFade);
 
     scrimCanvas.SetActive(true);
+    if (initialiseToBlack) scrim.color = new Color(0, 0, 0, 1);
     ScreenFade.callback = callback;
-    scrimCanvas.GetComponent<ScreenFade>().StartCoroutine(fadeTo(0));
+
+    currentFade = scrimCanvas.GetComponent<ScreenFade>().StartCoroutine(fade(fadeIn: true, duration: fadeDuration));
   }
 
-  public static void fadeTo(float targetAlpha, Callback callback) {
-    if (scrimCanvas == null) lazyIntitialize();
+  private static IEnumerator fade(bool fadeIn, float duration) {
+    float targetAlpha = fadeIn ? 0 : 1;
+    float alphaPerSecond = (fadeIn ? -1 : 1) / duration;
 
-    scrimCanvas.SetActive(true);
-    ScreenFade.callback = callback;
-    scrimCanvas.GetComponent<ScreenFade>().StartCoroutine(fadeTo(targetAlpha));
-  }
-
-  private static IEnumerator fadeTo(float targetAlpha) {
-    if (scrim.color.a < targetAlpha) { // Darken
-      while (scrim.color.a < targetAlpha) {
-        scrim.color = new Color(0, 0, 0, scrim.color.a + (Time.unscaledDeltaTime / fadeDuration));
-        yield return null;
-      }
+    while ((fadeIn && scrim.color.a > targetAlpha) || (!fadeIn && scrim.color.a < targetAlpha)) {
+      scrim.color = new Color(0, 0, 0, scrim.color.a + (alphaPerSecond * Time.unscaledDeltaTime));
+      yield return null;
     }
-    else if (scrim.color.a > targetAlpha) { // Lighten
-      while (scrim.color.a > targetAlpha) {
-        scrim.color = new Color(0, 0, 0, scrim.color.a - (Time.unscaledDeltaTime / fadeDuration));
-        yield return null;
-      }
-    }
-    else Debug.LogWarning("Attempting to fade to the same colour.");
 
     scrim.color = new Color(0, 0, 0, targetAlpha);
     if (scrim.color.a == 0) scrimCanvas.SetActive(false); // Disable canvas while it's invisble
 
-    callback();
+    callback.Invoke();
   }
 }

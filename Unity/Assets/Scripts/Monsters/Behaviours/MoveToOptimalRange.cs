@@ -36,8 +36,8 @@ public class MoveToOptimalRange : MonoBehaviour {
 
     withinRange = (transform.position - Player.SINGLETON.transform.position).sqrMagnitude <= maxOptimalRangeSq;
 
-    if (inOptimalRange()) timeTillReposition -= Time.deltaTime;
-    else timeTillReposition -= Time.deltaTime * suboptimalRangeTimeMultiplier;
+    if (inOptimalRange()) timeTillReposition -= TimeUtils.gameplayDeltaTime;
+    else timeTillReposition -= TimeUtils.gameplayDeltaTime * suboptimalRangeTimeMultiplier;
 
     if (timeTillReposition <= 0) reposition();
 	}

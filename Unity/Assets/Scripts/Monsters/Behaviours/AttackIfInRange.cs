@@ -38,7 +38,7 @@ public class AttackIfInRange : MonoBehaviour {
         previouslyInRange = true;
       }
 
-      timeTillNextAttack -= Time.deltaTime;
+      timeTillNextAttack -= TimeUtils.gameplayDeltaTime;
 
       if (timeTillNextAttack <= 0) {
         target.SendMessageUpwards("takeDamage", new Damage(damage, transform.position, target.position, null));

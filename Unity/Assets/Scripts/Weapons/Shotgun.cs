@@ -42,6 +42,8 @@ public class Shotgun : WeaponController {
   }
 
   private void fire(int pelletCount, float scatterRadians, float trailWidth, AudioClip sound, float volume) {
+    var enemiesHit = new Hashtable();
+
     for (int i = 0; i < pelletCount; i++) {
       var scatteredDirection = bulletOrigin.randomScatter(scatterRadians);
 
@@ -53,18 +55,35 @@ public class Shotgun : WeaponController {
       lineRenderers[i].widthMultiplier = trailWidth;
 
       if (rayHit) {
-        // Damage
         float damageBase = Random.Range(PELLET_DAMAGE_MIN, PELLET_DAMAGE_MAX);
         float damageFalloffMultiplier = Mathf.Pow(5f, (rayHitInfo.distance / -20f));
         int damageMultiplied = (int) (damageBase * damageFalloffMultiplier);
-        var damage = new Damage(damageMultiplied, transform.position, rayHitInfo.point, rayHitInfo.collider);
-        // TODO send the damage as a single lump sum per target, rather than discrete hits
-        rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
+        var damage = new Damage(amount: damageMultiplied,
+                                origin: transform.position,
+                                hitPoint: rayHitInfo.point,
+                                source: Weapons.SHOTGUN,
+                                hitLocation: rayHitInfo.collider);
+
+        var health = rayHitInfo.collider.GetComponentInParent<Health>();
+
+        if (health == null) continue;
+        else if (enemiesHit.Contains(health)) {
+          var damages = enemiesHit[health] as List<Damage>;
+          damages.Add(damage);
+          enemiesHit[health] = damages;
+        }
+        else {
+          enemiesHit.Add(health, new List<Damage>(1) { damage });
+        }
 
         // Force
         var rigidBody = rayHitInfo.collider.GetComponentInParent<Rigidbody>();
         if (rigidBody != null) rigidBody.AddForceAtPosition(scatteredDirection * PELLET_FORCE, rayHitInfo.point);
       }
+    }
+
+    foreach (Health health in enemiesHit.Keys) {
+      health.takeDamage(enemiesHit[health] as List<Damage>);
     }
 
     audioSource.PlayOneShot(sound, volume);

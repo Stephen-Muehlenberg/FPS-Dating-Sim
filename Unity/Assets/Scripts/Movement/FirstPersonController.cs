@@ -39,6 +39,8 @@ namespace FirstPersonModule {
     }
 
     public void Update() {
+      if (TimeUtils.mode == TimeUtils.TimeMode.PAUSED) return;
+
       // Check if there's anything beneath the player. The distance is equal to characterController.skinWidth (currently 0.035) + 0.02 for extra padding
       inAir = Physics.OverlapBox(transform.position + Vector3.down * 0.055f, new Vector3(0.25f, 0.06f, 0.25f), Quaternion.identity, collisionMask).Length == 0;
       
@@ -48,7 +50,7 @@ namespace FirstPersonModule {
       headbob.update();
       gravity.update();
 
-      if (!isKinematic) characterController.Move(velocity * Time.deltaTime);
+      if (!isKinematic) characterController.Move(velocity * TimeUtils.dialogDeltaTime);
     }
 
     public void enableAllInput() {
@@ -63,12 +65,16 @@ namespace FirstPersonModule {
       jump.inputEnabled = false;
     }
 
-    public void setState(bool lookEnabled, bool moveEnabled, bool jumpEnabled) {
+    public void setState(bool lookEnabled = true,
+                         bool moveEnabled = true,
+                         bool jumpEnabled = true,
+                         bool headbobEnabled = true,
+                         bool gravityEnabled = true) {
       look.enabled = lookEnabled;
       move.enabled = moveEnabled;
       jump.enabled = jumpEnabled;
-      headbob.enabled = moveEnabled;
-      gravity.enabled = moveEnabled;
+      headbob.enabled = headbobEnabled;
+      gravity.enabled = gravityEnabled;
     }
 
     public void enableAll() {
@@ -213,7 +219,7 @@ namespace FirstPersonModule {
 
       if (moving) {
         currentAcceleration = controller.inAir ? currentProfile.airAcceleration : currentProfile.acceleration;
-        velocityDelta = movementInput.normalized * currentAcceleration * Time.deltaTime;
+        velocityDelta = movementInput.normalized * currentAcceleration * TimeUtils.gameplayDeltaTime;
 
         // Ignore vertical component
         newSpeedSq = (controller.velocity + velocityDelta).horizontalSqMagnitude();
@@ -262,7 +268,7 @@ namespace FirstPersonModule {
         deceleration = Vector3.Project(deceleration, accelerationTangent);
       }
 
-      deceleration *= Time.deltaTime;
+      deceleration *= TimeUtils.gameplayDeltaTime;
 
       // If deceleration reduces horizontal speed to < 0 (moving backwards), set horizontal speed to exactly 0.
       var sqMagnitudeAfterDeceleration = controller.velocity.horizontalSqMagnitude() - deceleration.sqrMagnitude;
@@ -287,7 +293,7 @@ namespace FirstPersonModule {
       if (!enabled || !inputEnabled) return;
       
       input = Input.GetAxis("Mouse X");
-      if (input != 0) controller.gameObject.transform.Rotate(0, input * Settings.mouseSensitivity * Time.deltaTime, 0);
+      if (input != 0) controller.gameObject.transform.Rotate(0, input * Settings.mouseSensitivity * TimeUtils.dialogDeltaTime, 0);
 
       input = Input.GetAxis("Mouse Y");
       if (input != 0) {
@@ -308,7 +314,7 @@ namespace FirstPersonModule {
           }
         }
 
-        controller.cameraPivot.Rotate(input * Settings.mouseSensitivity * Time.deltaTime, 0, 0);
+        controller.cameraPivot.Rotate(input * Settings.mouseSensitivity * TimeUtils.dialogDeltaTime, 0, 0);
       }
     }
   }
@@ -371,8 +377,8 @@ namespace FirstPersonModule {
       }
       else {
         if (Input.GetButton("Jump") && controller.velocity.y > 0 && jumpHoldRemaining > 0) {
-          controller.velocity += new Vector3(0, Time.deltaTime * 6.9f, 0);
-          jumpHoldRemaining -= Time.deltaTime;
+          controller.velocity += new Vector3(0, TimeUtils.dialogDeltaTime * 6.9f, 0);
+          jumpHoldRemaining -= TimeUtils.dialogDeltaTime;
         }
         else jumpHoldRemaining = 0;
       }
@@ -398,7 +404,7 @@ namespace FirstPersonModule {
     public HeadbobProfile walking;
     public HeadbobProfile running;
 
-    [Tooltip("Camera Y position that headbob ossicates around. Initializes to the Controller's cameraPivot by default.")]
+    [Tooltip("Camera Y position that headbob ossilates around. Initializes to the Controller's cameraPivot by default.")]
     public float baseHeadHeight;
     [Tooltip("How much should the head bob after landing (multiplied by fall speed).")]
     public float landingBobStrength = 0.11f;
@@ -429,9 +435,19 @@ namespace FirstPersonModule {
       currentFallSpeed = 0;
     }
 
-    public void setBaseHeadHeight(float height) {
+    public void setBaseHeadHeight(float height, bool snapToPosition = false) {
       recoveryYPosition += height - baseHeadHeight;
       baseHeadHeight = height;
+
+      if (snapToPosition) {
+        currentProfile = controller.move.moving ? (controller.move.running ? running : walking) : stationary;
+
+        controller.cameraPivot.localPosition = new Vector3(
+          controller.cameraPivot.localPosition.x,
+          height + currentProfile.height * Mathf.Sin(cycleTime / currentProfile.duration * twoPi),
+          controller.cameraPivot.localPosition.z
+        );
+      }
     }
     
     public override void update() {
@@ -455,7 +471,7 @@ namespace FirstPersonModule {
 
         // While still recovering from a landing, continue with the extra large headbob
         if (recoveryYPosition != baseHeadHeight) {
-          landingBobVelocity += Time.deltaTime * landingBobSpeed; // Headbob downwards velocity gradually slows and eventually reverses, returning to normal position
+          landingBobVelocity += TimeUtils.dialogDeltaTime * landingBobSpeed; // Headbob downwards velocity gradually slows and eventually reverses, returning to normal position
           recoveryYPosition += landingBobVelocity;
           setCameraLocalYPosition(recoveryYPosition);
 
@@ -469,7 +485,7 @@ namespace FirstPersonModule {
         else {
           currentProfile = controller.move.moving ? (controller.move.running ? running : walking) : stationary;
 
-          cycleTime += Time.deltaTime;
+          cycleTime += TimeUtils.dialogDeltaTime;
           if (cycleTime > currentProfile.duration) cycleTime -= currentProfile.duration;
 
           setCameraLocalYPosition(baseHeadHeight + currentProfile.height * Mathf.Sin(cycleTime / currentProfile.duration * twoPi));
@@ -478,9 +494,10 @@ namespace FirstPersonModule {
     }
 
     private void setCameraLocalYPosition(float y) {
+      if (TimeUtils.dialogDeltaTime == 0) return; // SmoothDamp returns NaN if used with a delta time of 0
       controller.cameraPivot.localPosition = new Vector3(
         controller.cameraPivot.localPosition.x,
-        Mathf.SmoothDamp(controller.cameraPivot.localPosition.y, y, ref currentVelocity, 0.1f),
+        Mathf.SmoothDamp(controller.cameraPivot.localPosition.y, y, ref currentVelocity, 0.1f, float.MaxValue, TimeUtils.dialogDeltaTime),
         controller.cameraPivot.localPosition.z);
     }
   }
@@ -489,7 +506,7 @@ namespace FirstPersonModule {
   public class GravityModule : ComponentModule {
     public Vector3 gravity = new Vector3(0, -9.8f, 0);
     public override void update() {
-      if (controller.inAir) controller.velocity += gravity * Time.deltaTime;
+      if (controller.inAir) controller.velocity += gravity * TimeUtils.dialogDeltaTime;
       else controller.velocity = new Vector3(controller.velocity.x, Mathf.Max(0, controller.velocity.y), controller.velocity.z);
     }
   }

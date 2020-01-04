@@ -15,14 +15,14 @@ public class HellfireFlamethrower : MonoBehaviour {
   }
 
   void Update() {
-    timeToLive -= Time.deltaTime;
+    timeToLive -= TimeUtils.gameplayDeltaTime;
 
     if (timeToLive <= 0) {
       Destroy(this.gameObject);
       return;
     }
 
-    transform.position += transform.forward * Time.deltaTime * SPEED;
+    transform.position += transform.forward * TimeUtils.gameplayDeltaTime * SPEED;
     transform.localScale = new Vector3(LIFETIME - timeToLive + 2.5f, 2, 0.5f);
   }
 

@@ -16,7 +16,7 @@ public class AttackIfPlayerVisible : MonoBehaviour {
 	void Update () {
     if (Time.timeScale == 0) return; // Game is paused; do nothing
 
-    timeTillNextAttack -= Time.deltaTime;
+    timeTillNextAttack -= TimeUtils.gameplayDeltaTime;
     if (timeTillNextAttack <= 0) {
       attack();
       timeTillNextAttack += Random.Range(attackCooldownMin, attackCooldownMax);

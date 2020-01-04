@@ -27,7 +27,7 @@ public class EnemySpawner : MonoBehaviour {
 	void Update () {
     if (Time.timeScale == 0) return; // Game is paused; do nothing
 
-    timeTillNextWave -= Time.deltaTime;
+    timeTillNextWave -= TimeUtils.gameplayDeltaTime;
 
     if (timeTillNextWave <= 0 && MonstersController.monsters.Count < maxMonsters) {
       threatRemainingThisWave = threatInNextWave;

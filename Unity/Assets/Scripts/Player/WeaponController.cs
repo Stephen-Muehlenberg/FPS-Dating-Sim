@@ -71,12 +71,12 @@ abstract public class WeaponController : MonoBehaviour {
   virtual protected bool hasSecondaryFire() { return true; }
 
   /**
-   * Reduce cooldown by Time.deltaTime.
+   * Reduce cooldown by TimeUtils.gameplayDeltaTime.
    * @return the cooldown's progress, as a fraction between 0 and 1.
    */
   private float updateCooldown() {
     if (!fatigue.canFire) return 0;
-    cooldownRemaining -= Time.deltaTime;
+    cooldownRemaining -= TimeUtils.gameplayDeltaTime;
     if (cooldownRemaining <= 0) return 1;
     return 1f - (cooldownRemaining / cooldown);
   }

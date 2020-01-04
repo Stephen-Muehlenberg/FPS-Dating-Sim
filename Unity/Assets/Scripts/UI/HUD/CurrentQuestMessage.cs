@@ -8,11 +8,10 @@ public class CurrentQuestMessage {
 
   /**
    * Sets the current quest message, to be displayed at the top of the screen.
-   * Messages should be short and easy to read, no more than 1 line.
+   * Messages should be short and easy to read, no more than 1 line, with no full stop.
    * @param animateIn should the message animate in (true, default) or appear immediately (false).
    */
-  public static void set(string message) { set(message, true); }
-  public static void set(string message, bool animateIn) {
+  public static void set(string message, bool animateIn = true) {
     if (currentText != null) clear(animateIn);
 
     currentText = Object.Instantiate(Resources.Load<GameObject>("UI/CurrentQuestMessage")).GetComponent<Text>();
@@ -37,8 +36,7 @@ public class CurrentQuestMessage {
   /**
    * Removes the current quest message, optionally animating out.
    */
-  public static void clear() { clear(true); }
-  public static void clear(bool animateOut) {
+  public static void clear(bool animateOut = true) {
     if (currentText == null) Debug.LogWarning("No message to clear");
     else if (animateOut) currentText.StartCoroutine(animate(currentText, 0.85f, false, -50));
     else Object.Destroy(currentText.gameObject);
@@ -61,7 +59,7 @@ public class CurrentQuestMessage {
  
     while (progress < 1) {
       if (!TimeUtils.dialogPaused) {
-        progress += Time.deltaTime / duration;
+        progress += TimeUtils.dialogDeltaTime / duration;
         rectTransform.offsetMin = Vector2.Lerp(startOffsetMin, endOffsetMin, progress);
         rectTransform.offsetMax = Vector2.Lerp(startOffsetMax, endOffsetMax, progress);
         rectTransform.anchoredPosition = Vector2.Lerp(startAnchored, endAnchored, progress);

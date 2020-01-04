@@ -37,11 +37,11 @@ public class SniperRifleFatigue_Basic : WeaponFatigue {
 
   override public void update() {
     if (timeSinceLastShot < MIN_REST_UNTIL_RECOVERY_STARTS) {
-      timeSinceLastShot += Time.deltaTime;
+      timeSinceLastShot += TimeUtils.gameplayDeltaTime;
       return;
     }
 
-    fatigue -= FATIGUE_RECOVERED_PER_SECOND * Time.deltaTime;
+    fatigue -= FATIGUE_RECOVERED_PER_SECOND * TimeUtils.gameplayDeltaTime;
     if (exhausted && fatigue <= MIN_FATIGUE_COOLDOWN) exhausted = false;
     if (fatigue <= 0) fatigue = 0;
   }

@@ -26,9 +26,9 @@ public class AttackIfInOptimalRange : MonoBehaviour {
 
     // If not moving, rotate to face player
     var lookRotation = Quaternion.LookRotation(Player.SINGLETON.transform.position - transform.position);
-    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * ROTATION_SPEED);
+    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, TimeUtils.gameplayDeltaTime * ROTATION_SPEED);
 
-    timeTillNextAttack -= Time.deltaTime;
+    timeTillNextAttack -= TimeUtils.gameplayDeltaTime;
 
     if (timeTillNextAttack <= 0) {
       // TODO make monster fire (mostly) directly forward, not magically fire towards the player

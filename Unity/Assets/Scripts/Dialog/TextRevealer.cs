@@ -36,7 +36,7 @@ public class TextRevealer {
   }
 
   public void update() {
-    timeTillNextCharacter -= Time.unscaledDeltaTime;
+    timeTillNextCharacter -= TimeUtils.dialogDeltaTime;
 
     if (timeTillNextCharacter <= 0) {
       do

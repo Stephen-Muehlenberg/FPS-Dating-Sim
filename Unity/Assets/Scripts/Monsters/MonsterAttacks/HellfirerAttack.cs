@@ -37,9 +37,9 @@ public class HellfirerAttack : MonoBehaviour {
     transform.rotation = Quaternion.Slerp(
       transform.rotation,
       Quaternion.LookRotation(Player.SINGLETON.transform.position - transform.position, Vector3.up),
-      Time.deltaTime * ROTATION_SPEED);
+      TimeUtils.gameplayDeltaTime * ROTATION_SPEED);
 
-    timeTillNextFlamethrowerHitbox -= Time.deltaTime;
+    timeTillNextFlamethrowerHitbox -= TimeUtils.gameplayDeltaTime;
     if (timeTillNextFlamethrowerHitbox <= 0) {
       Instantiate(flameHitboxPrefab, transform.position + transform.forward + Vector3.up * 1.5f, transform.rotation);
       timeTillNextFlamethrowerHitbox = FLAMETHROWER_HITBOX_RATE;
@@ -53,7 +53,7 @@ public class HellfirerAttack : MonoBehaviour {
       if (timeTillNextMortar < 1.5f) timeTillNextMortar = 1.5f;
     }
 
-    timeTillNextMortar -= Time.deltaTime;
+    timeTillNextMortar -= TimeUtils.gameplayDeltaTime;
     if (timeTillNextMortar <= 0) {
       var vectorToTarget = Player.SINGLETON.camera.transform.position - mortarSpawnPoint.position;
       var projectileDirection = Quaternion.LookRotation(vectorToTarget, Vector3.up);

@@ -3,13 +3,17 @@ using UnityEngine;
 
 public class PauseMenu : MonoBehaviour {
   public bool interactable = true; // False while menu cannot be interacted with, e.g. while another menu is open on top
+  private TimeUtils.TimeMode previousTimeMode;
 
   public static void show() {
-    TimeUtils.pauseDialog();
+    TimeUtils.TimeMode previous = TimeUtils.mode;
+    TimeUtils.mode = TimeUtils.TimeMode.PAUSED;
 
     // Create menu
     var prefab = Resources.Load<GameObject>("UI/PauseMenu");
     var instance = Instantiate(prefab);
+
+    instance.GetComponent<PauseMenu>().previousTimeMode = previous;
 
     // Attach & fit menu to scene canvas
     instance.transform.SetParent(GameObject.Find("Canvas").transform);
@@ -51,10 +55,10 @@ public class PauseMenu : MonoBehaviour {
   }
 
   public void exitToMainMenu() {
-    SceneTransition.fadeTo("main_menu", () => {
-      TimeUtils.resumeDialog();
-      TimeUtils.resumeGameplay();
-    });
+    SceneTransition.changeTo(
+      scene: "main_menu",
+      onSceneLoaded: () => { TimeUtils.mode = TimeUtils.TimeMode.GAMEPLAY; }
+    );
   }
 
   public void exitGame() {
@@ -83,7 +87,7 @@ public class PauseMenu : MonoBehaviour {
 
     Destroy(this.gameObject);
 
-    TimeUtils.resumeDialog();
+    TimeUtils.mode = previousTimeMode;
     if (Player.SINGLETON != null) Player.SINGLETON.firstPersonController.enabled = true;
   }
 }
