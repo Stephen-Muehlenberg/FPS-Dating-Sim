@@ -81,8 +81,11 @@ public class Weapons {
     throw new UnityException("Should be unreachable");
   }
 
-  public static void setEquipped(Weapon weapon, bool equipped, bool playEquipEffects) {
-    if (weapon.equipped == equipped) return; // No change
+  public static void equip(Weapon weapon, bool playEquipEffects = true) { setEquipped(weapon, true, playEquipEffects); }
+  public static void unequip() { setEquipped(currentlyEquipped, false, false); }
+
+  private static void setEquipped(Weapon weapon, bool equipped, bool playEquipEffects) {
+    if (weapon == null && currentlyEquipped == null || weapon.equipped == equipped) return; // No change
     if (equipped && !weapon.canEquip) throw new UnityException("Can't equip " + weapon.name + " while canEquip == false.");
 
     if (equipped) {
@@ -98,6 +101,4 @@ public class Weapons {
 
     if (equipEvents != null) equipEvents.Invoke(currentlyEquipped);
   }
-
-  public static void unequip() { if (currentlyEquipped != null) setEquipped(currentlyEquipped, false, false); }
 }

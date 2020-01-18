@@ -39,7 +39,7 @@ namespace FirstPersonModule {
     }
 
     public void Update() {
-      if (TimeUtils.mode == TimeUtils.TimeMode.PAUSED) return;
+      if (TimeUtils.gameplayPaused) return;
 
       // Check if there's anything beneath the player. The distance is equal to characterController.skinWidth (currently 0.035) + 0.02 for extra padding
       inAir = Physics.OverlapBox(transform.position + Vector3.down * 0.055f, new Vector3(0.25f, 0.06f, 0.25f), Quaternion.identity, collisionMask).Length == 0;
@@ -50,7 +50,7 @@ namespace FirstPersonModule {
       headbob.update();
       gravity.update();
 
-      if (!isKinematic) characterController.Move(velocity * TimeUtils.dialogDeltaTime);
+      if (!isKinematic) characterController.Move(velocity * Time.deltaTime);
     }
 
     public void enableAllInput() {
@@ -293,7 +293,7 @@ namespace FirstPersonModule {
       if (!enabled || !inputEnabled) return;
       
       input = Input.GetAxis("Mouse X");
-      if (input != 0) controller.gameObject.transform.Rotate(0, input * Settings.mouseSensitivity * TimeUtils.dialogDeltaTime, 0);
+      if (input != 0) controller.gameObject.transform.Rotate(0, input * Settings.mouseSensitivity * Time.deltaTime, 0);
 
       input = Input.GetAxis("Mouse Y");
       if (input != 0) {
@@ -314,7 +314,7 @@ namespace FirstPersonModule {
           }
         }
 
-        controller.cameraPivot.Rotate(input * Settings.mouseSensitivity * TimeUtils.dialogDeltaTime, 0, 0);
+        controller.cameraPivot.Rotate(input * Settings.mouseSensitivity * Time.deltaTime, 0, 0);
       }
     }
   }
@@ -377,8 +377,8 @@ namespace FirstPersonModule {
       }
       else {
         if (Input.GetButton("Jump") && controller.velocity.y > 0 && jumpHoldRemaining > 0) {
-          controller.velocity += new Vector3(0, TimeUtils.dialogDeltaTime * 6.9f, 0);
-          jumpHoldRemaining -= TimeUtils.dialogDeltaTime;
+          controller.velocity += new Vector3(0, Time.deltaTime * 6.9f, 0);
+          jumpHoldRemaining -= Time.deltaTime;
         }
         else jumpHoldRemaining = 0;
       }
@@ -471,7 +471,7 @@ namespace FirstPersonModule {
 
         // While still recovering from a landing, continue with the extra large headbob
         if (recoveryYPosition != baseHeadHeight) {
-          landingBobVelocity += TimeUtils.dialogDeltaTime * landingBobSpeed; // Headbob downwards velocity gradually slows and eventually reverses, returning to normal position
+          landingBobVelocity += Time.deltaTime * landingBobSpeed; // Headbob downwards velocity gradually slows and eventually reverses, returning to normal position
           recoveryYPosition += landingBobVelocity;
           setCameraLocalYPosition(recoveryYPosition);
 
@@ -485,7 +485,7 @@ namespace FirstPersonModule {
         else {
           currentProfile = controller.move.moving ? (controller.move.running ? running : walking) : stationary;
 
-          cycleTime += TimeUtils.dialogDeltaTime;
+          cycleTime += Time.deltaTime;
           if (cycleTime > currentProfile.duration) cycleTime -= currentProfile.duration;
 
           setCameraLocalYPosition(baseHeadHeight + currentProfile.height * Mathf.Sin(cycleTime / currentProfile.duration * twoPi));
@@ -494,10 +494,10 @@ namespace FirstPersonModule {
     }
 
     private void setCameraLocalYPosition(float y) {
-      if (TimeUtils.dialogDeltaTime == 0) return; // SmoothDamp returns NaN if used with a delta time of 0
+      if (Time.deltaTime == 0) return; // SmoothDamp returns NaN if used with a delta time of 0
       controller.cameraPivot.localPosition = new Vector3(
         controller.cameraPivot.localPosition.x,
-        Mathf.SmoothDamp(controller.cameraPivot.localPosition.y, y, ref currentVelocity, 0.1f, float.MaxValue, TimeUtils.dialogDeltaTime),
+        Mathf.SmoothDamp(controller.cameraPivot.localPosition.y, y, ref currentVelocity, 0.1f, float.MaxValue),
         controller.cameraPivot.localPosition.z);
     }
   }
@@ -506,7 +506,7 @@ namespace FirstPersonModule {
   public class GravityModule : ComponentModule {
     public Vector3 gravity = new Vector3(0, -9.8f, 0);
     public override void update() {
-      if (controller.inAir) controller.velocity += gravity * TimeUtils.dialogDeltaTime;
+      if (controller.inAir) controller.velocity += gravity * Time.deltaTime;
       else controller.velocity = new Vector3(controller.velocity.x, Mathf.Max(0, controller.velocity.y), controller.velocity.z);
     }
   }

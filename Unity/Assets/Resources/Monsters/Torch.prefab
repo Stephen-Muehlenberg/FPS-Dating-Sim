@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0f6da2ae74a1348b2db0f092ef1c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  remaining: 415
+  remaining: 400
   weakPoints:
   - {fileID: 135187183399124042}
   showDamageText: 1

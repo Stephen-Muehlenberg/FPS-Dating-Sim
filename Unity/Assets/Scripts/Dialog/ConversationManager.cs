@@ -14,7 +14,6 @@ public class ConversationManager : MonoBehaviour {
   private static int currentConversationIndex;
 
   private float speedMultiplier;
-  private TimeUtils.TimeMode previousMode;
 
   private TextRevealer textRevealer = new TextRevealer();
   private string currentMessage;
@@ -49,20 +48,17 @@ public class ConversationManager : MonoBehaviour {
     if (SINGLETON == null) initializeSingleton();
 
     // Prevent player interaction
-    SINGLETON.previousMode = TimeUtils.mode;
-    TimeUtils.mode = TimeUtils.TimeMode.DIALOG;
     LookController.disable();
 
     ConversationManager.conversation = conversation;
     currentConversationIndex = 0;
 
+    // Clear text and set default text speed
     SINGLETON.textbox.SetActive(false); // Hidden until manually enabled by an action
     SINGLETON.currentMessage = "";
     SINGLETON.textRevealInProgress = false;
     SINGLETON.choiceInProgress = false;
     SINGLETON.waitRemaining = 0;
-
-    // Clear text and set default text speed
     SINGLETON.setSpeed(Conversation.Speed.NORMAL);
 
     SINGLETON.processCurrentAction();
@@ -74,7 +70,6 @@ public class ConversationManager : MonoBehaviour {
     conversation = null;
 
     // Re-enable player interaction
-    TimeUtils.mode = previousMode;
     LookController.enable();
 
     // Notify & remove listeners
@@ -85,22 +80,23 @@ public class ConversationManager : MonoBehaviour {
 
   private void processCurrentAction() {
     var action = conversation.actions[currentConversationIndex];
+
     if (action is Conversation.Action.SetSpeaker) setSpeaker((action as Conversation.Action.SetSpeaker).speaker);
     else if (action is Conversation.Action.OverrideName) overrideSpeakerName((action as Conversation.Action.OverrideName).name);
     else if (action is Conversation.Action.SetSpeed) setSpeed((action as Conversation.Action.SetSpeed).speed);
     else if (action is Conversation.Action.PerformAction) (action as Conversation.Action.PerformAction).callback();
     else if (action is Conversation.Action.SetText) {
       setText((action as Conversation.Action.SetText).text);
-      return; // Don't immediately finish this action
+      return; // Don't start the next action yet
     }
     else if (action is Conversation.Action.Wait) {
       waitRemaining = (action as Conversation.Action.Wait).seconds;
-      return; // Don't immediately finish this action
+      return; // Don't start the next action yet
     }
     else if (action is Conversation.Action.Choice) {
       choiceInProgress = true;
       setText((action as Conversation.Action.Choice).messageText);
-      return; // Don't immediately finish this action
+      return; // Don't start the next action yet
     }
     else if (action is Conversation.Action.DynamicInsert) {
       List<Conversation.Action> newActions = (action as Conversation.Action.DynamicInsert).callback.Invoke().actions;
@@ -110,7 +106,7 @@ public class ConversationManager : MonoBehaviour {
     }
     else throw new UnityException("Unidentified Conversation.Action " + action);
 
-    // For non setText actions, immediately process the next action
+    // For actions which have been completed immediately, process the next action
     finishCurrentAction();
   }
 
@@ -123,8 +119,6 @@ public class ConversationManager : MonoBehaviour {
     if (currentConversationIndex < conversation.actions.Count) processCurrentAction();
     else finishConversation();
   }
-
-  // TODO
 
   private void setSpeaker(Character speaker) {
     if (speaker == SINGLETON.currentSpeaker) return;

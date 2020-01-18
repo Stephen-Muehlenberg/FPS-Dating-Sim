@@ -72,7 +72,7 @@ public class Quest_Tutorial : Quest {
     new CombatDialog()
       .message(Character.MC, "So much for escaping undetected.\nLadies? Little help?")
       .performAction(() => {
-        Weapons.MACHINE_GUN.equip();
+        Weapons.equip(Weapons.MACHINE_GUN);
         Player.SINGLETON.StartCoroutine(showObjectiveWithDelay());
       })
       .message(Character.MAY, "Gotcha covered. Just point and shoot.")
@@ -123,7 +123,7 @@ public class Quest_Tutorial : Quest {
     
     new CombatDialog()
       .performAction(() => {
-        Weapons.SHOTGUN.equip();
+        Weapons.equip(Weapons.SHOTGUN);
       })
       .message(Character.ROSE, "Yo, I want some of that action.")
       .setPriority(CombatDialog.Priority.HIGH)

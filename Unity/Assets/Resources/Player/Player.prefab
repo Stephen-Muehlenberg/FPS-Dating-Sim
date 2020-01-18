@@ -1377,6 +1377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camera: {fileID: 20106206834160328}
   firstPersonController: {fileID: 630188558}
+  gunSwitch: {fileID: 114113145995705270}
 --- !u!114 &4249236658548480751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1435,7 +1436,6 @@ MonoBehaviour:
     controller: {fileID: 0}
     enabled: 1
     inputEnabled: 1
-    sensitivity: 20
   move:
     controller: {fileID: 0}
     enabled: 1
@@ -1789,8 +1789,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 040ed1aea339bdc42bb0674d3cde8fe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTint: {r: 0, g: 0, b: 0, a: 0}
-  fatiguedTint: {r: 0, g: 0, b: 0, a: 0}
   bulletOrigin: {fileID: 4962496492447886}
   audioSource: {fileID: 82523224934380866}
   lineRenderer: {fileID: 120056701798693166}
@@ -14133,8 +14131,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83e05cf02dea737479ccf42ff2afbf5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTint: {r: 0.7867647, g: 0, b: 0, a: 1}
-  fatiguedTint: {r: 0.6415094, g: 0.46297613, b: 0.46297613, a: 1}
   bulletOrigin: {fileID: 4770917011868772}
   audioSource: {fileID: 82918995429383508}
   lineRenderers:
@@ -20808,8 +20804,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274543d8ed6f4e6478bb8fb8ee4e8b7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTint: {r: 0, g: 0, b: 0, a: 0}
-  fatiguedTint: {r: 0, g: 0, b: 0, a: 0}
   bulletOrigin: {fileID: 4965624490425022}
   audioSource: {fileID: 82911670072663816}
   lineRenderer: {fileID: 120161905894375630}
@@ -26953,8 +26947,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe48b24cbde40814b8d6f153612e23c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalTint: {r: 0, g: 0, b: 0, a: 0}
-  fatiguedTint: {r: 0, g: 0, b: 0, a: 0}
   grenadePrefab: {fileID: 1471160413389568, guid: 4667159aa762ed54db12c16c28451ab8,
     type: 3}
   grenadeSpawnPoint: {fileID: 4598371439015454}

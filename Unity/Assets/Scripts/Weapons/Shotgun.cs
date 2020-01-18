@@ -44,6 +44,10 @@ public class Shotgun : WeaponController {
   private void fire(int pelletCount, float scatterRadians, float trailWidth, AudioClip sound, float volume) {
     var enemiesHit = new Hashtable();
 
+    // Calculate random damage once, so all pellets have the same damage. If it were calculated
+    // per-pellet, then they'd be a lot more likely to do near average damage every shot.
+    float pelletDamage = Random.Range(PELLET_DAMAGE_MIN, PELLET_DAMAGE_MAX);
+
     for (int i = 0; i < pelletCount; i++) {
       var scatteredDirection = bulletOrigin.randomScatter(scatterRadians);
 
@@ -55,9 +59,8 @@ public class Shotgun : WeaponController {
       lineRenderers[i].widthMultiplier = trailWidth;
 
       if (rayHit) {
-        float damageBase = Random.Range(PELLET_DAMAGE_MIN, PELLET_DAMAGE_MAX);
         float damageFalloffMultiplier = Mathf.Pow(5f, (rayHitInfo.distance / -20f));
-        int damageMultiplied = (int) (damageBase * damageFalloffMultiplier);
+        int damageMultiplied = (int) (pelletDamage * damageFalloffMultiplier);
         var damage = new Damage(amount: damageMultiplied,
                                 origin: transform.position,
                                 hitPoint: rayHitInfo.point,

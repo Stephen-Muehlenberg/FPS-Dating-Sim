@@ -8,10 +8,9 @@ public class SelectionMenu : MonoBehaviour {
   private const int STATE_NORMAL = 0, STATE_HIGHLIGHTED = 1, STATE_SELECTED = 2, STATE_SELECTED_HIGHLIGHTED = 3;
   private const int FONT_SIZE_NORMAL = 28, FONT_SIZE_HIGHLIGHTED = 32;
   private const float MAX_MOUSE_SELECTION_OFFSET = 5f;
-  private const int DEFAULT_HIGHLIGHT = 2; // Up
   private const int NO_SELECTION = -1;
 
-  private int currentHighlight = DEFAULT_HIGHLIGHT;
+  private int currentHighlight;
   private int currentSelection = NO_SELECTION;
   private int mouseDownSelection = NO_SELECTION; // Selected item when the mouse was pressed down. Used for more accurate click detection.
 
@@ -97,17 +96,16 @@ public class SelectionMenu : MonoBehaviour {
   private void initialise(Option[] options, int initialSelection, Mode mode, SelectionCallback callback) {
     if (options.Length < 1 || options.Length > 4) throw new UnityException("Must be 1 to 4 options, but was " + options.Length);
 
-    RectTransform rectTransform = transform as RectTransform;
-    rectTransform.SetParent(MainCanvas.transform);
-    rectTransform.offsetMin = new Vector2(0, 0);
-    rectTransform.offsetMax = new Vector2(0, 0);
-
     this.mode = mode;
     this.callback = callback;
 
     currentSelection = initialSelection;
-    if (currentSelection >= 0 && currentSelection <= 3) {
-      currentHighlight = currentSelection;
+    currentHighlight = currentSelection;
+
+    if (currentSelection == NO_SELECTION) {
+      highlightTransform.gameObject.SetActive(false);
+    }
+    else {
       mouseInput = new Vector2(x: currentHighlight == 0 ? -0.1f : currentHighlight == 1 ? 0.1f : 0,
                                y: currentHighlight == 2 ? -0.1f : currentHighlight == 3 ? 0.1f : 0);
       highlightTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(-mouseInput.y, mouseInput.x) * Mathf.Rad2Deg);
@@ -141,25 +139,32 @@ public class SelectionMenu : MonoBehaviour {
     // about, but it's small enough that you can still quickly swap from one side of the circle to the other.
     if (mouseInput.sqrMagnitude > 1) mouseInput = mouseInput.normalized;
 
-    highlightTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(-mouseInput.y, mouseInput.x) * Mathf.Rad2Deg);
-
-    absX = Mathf.Abs(mouseInput.x);
-    absY = Mathf.Abs(mouseInput.y);
-
-    if (absX > absY) { // More horizontal than vertical
-      if (mouseInput.x > 0) setCurrentHighlight(1);      // Right
-      else if (mouseInput.x < 0) setCurrentHighlight(0); // Left
+    // If nothing initially selected then highlight starts off disabled. Enable it once the mouse has move
+    // a reasonably significant distance, so we don't accidentally highlight something with tiny input jitter.
+    if (!highlightTransform.gameObject.activeSelf) {
+      if (mouseInput.SqrMagnitude() > 0.7f) highlightTransform.gameObject.SetActive(true);
     }
-    else if (absY > absX) { // More vertical than horizontal
-      if (mouseInput.y < 0) setCurrentHighlight(2);      // Up
-      else if (mouseInput.y > 0) setCurrentHighlight(3); // Down
+    else {
+      highlightTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(-mouseInput.y, mouseInput.x) * Mathf.Rad2Deg);
+
+      absX = Mathf.Abs(mouseInput.x);
+      absY = Mathf.Abs(mouseInput.y);
+
+      if (absX > absY) { // More horizontal than vertical
+        if (mouseInput.x > 0) setCurrentHighlight(1);      // Right
+        else if (mouseInput.x < 0) setCurrentHighlight(0); // Left
+      }
+      else if (absY > absX) { // More vertical than horizontal
+        if (mouseInput.y < 0) setCurrentHighlight(2);      // Up
+        else if (mouseInput.y > 0) setCurrentHighlight(3); // Down
+      }
     }
   }
 
   private void setCurrentHighlight(int indexToHighlight) {
     if (currentHighlight == indexToHighlight) return; // No change
 
-    optionItems[currentHighlight].setHighlighted(false);
+    if (currentHighlight != NO_SELECTION) optionItems[currentHighlight].setHighlighted(false);
     optionItems[indexToHighlight].setHighlighted(true);
 
     currentHighlight = indexToHighlight;
@@ -169,9 +174,11 @@ public class SelectionMenu : MonoBehaviour {
   private void updateSelection() {
     // Mode.Click
     if (mode == Mode.Click) {
+      // Highlight inactive if no initial selection. Wait until mouse movement before allowing selection.
+      if (!highlightTransform.gameObject.activeSelf) return;
+
       if (Input.GetMouseButtonDown(0)) {
         mouseDownSelection = currentHighlight;
-        // TODO highlight current item?
       }
       else if (Input.GetMouseButtonUp(0) && mouseDownSelection == currentHighlight) {
         select(currentHighlight);
@@ -189,7 +196,9 @@ public class SelectionMenu : MonoBehaviour {
 
   private void select(int optionIndex) {
     var call = callback;
+    var selectionName = optionIndex == NO_SELECTION ? "" : optionItems[optionIndex].text.text;
     Destroy(this.gameObject);
-    call.Invoke(optionIndex, optionItems[optionIndex].text.text);
+
+    call.Invoke(optionIndex, selectionName);
   }
 }

@@ -40,7 +40,7 @@ public class Actor : MonoBehaviour {
     while (transform.position.x != destination.x || transform.position.z != destination.z) {
       if (TimeUtils.dialogPaused) yield return null;
 
-      t += TimeUtils.dialogDeltaTime;
+      t += Time.deltaTime;
 
       Vector3.Lerp(origin, destination, t / duration);
       transform.position = Vector3.Lerp(origin, destination, t / duration) + (Vector3.up * headbobHeight * Mathf.Abs(Mathf.Sin(t * headbobFrequency + randomHeadbobOffset)));

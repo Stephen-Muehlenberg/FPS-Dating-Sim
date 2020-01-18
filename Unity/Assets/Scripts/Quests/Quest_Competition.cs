@@ -27,6 +27,7 @@ public class Quest_Competition : Quest {
       lookEnabled: true,
       moveEnabled: state > 0,
       jumpEnabled: state > 0,
+      weaponEquipped: state == 0 ? null : Weapons.SHOTGUN,
       questMessage: state == 0 ? null : OBJECTIVE_CLEAR_PLAZA,
       animateQuestMessageIn: true
     );
@@ -49,7 +50,10 @@ public class Quest_Competition : Quest {
       .text(Character.MC, "Ok, let's get back to saving the world!")
       .text(Character.MC_NARRATION, "The girls gave a cheer, and we all left the cafe.")
       .text("It soon became clear we'd killed every monster in the vicinity. We ended up wondering over to the nearby shopping center.")
-      .show(() => { SceneTransition.changeTo(scene: "mission_competition", onSceneLoaded: () => { setState(100); }); });
+      .show(() => { SceneTransition.changeTo(scene: "mission_competition", onSceneLoaded: () => {
+        Weapons.equip(Weapons.SHOTGUN);
+        setState(100);
+      }); });
   }
 
   private void s100_park() {

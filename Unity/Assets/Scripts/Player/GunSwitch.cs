@@ -21,7 +21,6 @@ public class GunSwitch : MonoBehaviour {
     if (TimeUtils.gameplayPaused) return;
 
     if (Input.GetButtonDown("SelectWeapon")) startWeaponSelection();
-   // else if (Input.GetButtonUp("SelectWeapon")) endWeaponSelection();
 
     else if (Input.GetKeyUp(KeyCode.Alpha1)) equip(Weapons.SHOTGUN, true);
     else if (Input.GetKeyUp(KeyCode.Alpha2)) equip(Weapons.MACHINE_GUN, true);
@@ -44,13 +43,15 @@ public class GunSwitch : MonoBehaviour {
     TimeUtils.stopBulletTime();
 //    postProcessing.depthOfField.enabled = false;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = true;
-    equip(Weapons.array[selection], true);
+    equip(weapon: selection >= 0 ? Weapons.array[selection] : null,
+          playEffects: true);
   }
 
-  public void equip(Weapon newWeapon) { equip(newWeapon, false); }
-  public void equip(Weapon newWeapon, bool playEffects) {
-    if (Weapons.currentlyEquipped == newWeapon) return; // No change
-    newWeapon.equip();
-    if (playEffects) audioSource.Play();
+  public void equip(Weapon weapon, bool playEffects = false) {
+    if (Weapons.currentlyEquipped == weapon) return; // No change
+    else {
+      Weapons.equip(weapon, playEffects);
+      if (playEffects) audioSource.Play();
+    }
   }
 }

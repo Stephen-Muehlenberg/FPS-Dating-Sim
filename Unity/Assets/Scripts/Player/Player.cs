@@ -6,6 +6,7 @@ public class Player : MonoBehaviour {
 
   new public Camera camera;
   public FirstPersonModule.FirstPersonController firstPersonController;
+  public GunSwitch gunSwitch;
 
 	void Awake () {
     SINGLETON = this;

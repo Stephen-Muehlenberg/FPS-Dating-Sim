@@ -17,10 +17,6 @@
     this.selectionColors = selectionColors;
   }
 
-  public void equip() { Weapons.setEquipped(this, true, true); }
-  public void equip(bool playEffects) { Weapons.setEquipped(this, true, true); }
-  public void unequip() { Weapons.setEquipped(this, false, false); }
-
   // Weapons persist between scene changes, but controllers do not.
   // When new controllers are loaded in, make sure to initialize them
   // to match the weapon's state.

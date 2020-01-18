@@ -88,7 +88,7 @@ public class Quest_BedStore : Quest {
     locationMarkerTransform.position = new Vector3(156, 2.5f, 95);
     LocationMarker.add(locationMarkerTransform);
     CurrentQuestMessage.set("Head to the furniture store");
-    Weapons.MACHINE_GUN.equip();
+    Weapons.equip(Weapons.MACHINE_GUN);
   }
   
   private void s110_setupClearNearbyEnemies() {
@@ -113,7 +113,7 @@ public class Quest_BedStore : Quest {
       MonstersController.killAll();
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
-      Weapons.currentlyEquipped.unequip();
+      Weapons.unequip();
 
       // Position actors
       Character.ROSE.getProp().setPosition(STORE_POS_A);
@@ -222,7 +222,7 @@ public class Quest_BedStore : Quest {
       // Disable game stuff, enter conversation mode
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
-      Weapons.currentlyEquipped.unequip();
+      Weapons.unequip();
 
       // Position actors based on whether they fought or scrounged
       var defenders = new List<Actor>();

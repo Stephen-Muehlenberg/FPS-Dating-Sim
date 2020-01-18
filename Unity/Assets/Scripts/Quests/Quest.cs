@@ -78,12 +78,12 @@ public abstract class Quest {
         Player.SINGLETON.firstPersonController.setState(lookEnabled: lookEnabled,
                                                         moveEnabled: moveEnabled,
                                                         jumpEnabled: jumpEnabled);
-        // TODO load Weapon, or unequip weapon if null
+        Player.SINGLETON.gunSwitch.equip(weapon: weaponEquipped, playEffects: false);
         CurrentQuestMessage.set(message: questMessage, animateIn: animateQuestMessageIn);
         // TODO toggle combat HUD
 
         onTransitionComplete?.Invoke();
-        TimeUtils.mode = gameplayInitiallyPaused ? TimeUtils.TimeMode.DIALOG : TimeUtils.TimeMode.GAMEPLAY;
+        TimeUtils.mode = /*gameplayInitiallyPaused ? TimeUtils.TimeMode.DIALOG :*/ TimeUtils.TimeMode.GAMEPLAY;
       },
       onFadeComplete: () => {
         onFadeComplete?.Invoke();

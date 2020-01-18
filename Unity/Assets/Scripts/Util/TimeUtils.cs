@@ -7,6 +7,8 @@ public class TimeUtils : MonoBehaviour {
    * PAUSED:    FPS gameplay paused,   dialog paused,   menus enabled,  timescale x0.
    */
   public enum TimeMode {
+    // NOTE: Dialog mode is currently never used. Maybe remove it in future, but want to
+    // confirm it's definitely not needed before ripping it out.
     GAMEPLAY, DIALOG, PAUSED
   }
 
@@ -36,6 +38,7 @@ public class TimeUtils : MonoBehaviour {
     get { return gameplayTimeScale * Time.deltaTime; }
   }
 
+  // TODO probably remove these delta times, just use Time.deltaTime or Time.unscaledDeltaTime
   public static float dialogDeltaTime {
     get { return dialogTimeScale * Time.unscaledDeltaTime; }
   }
