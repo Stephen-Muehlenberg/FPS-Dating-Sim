@@ -7,15 +7,15 @@ public class EnemyCounter : MonoBehaviour {
   private int kills = 0;
 
   void Start() {
-    updateMonsterCount(null, true, MonstersController.monsters.Count);
+    updateMonsterCount(null, true, Monsters.monsters.Count);
   }
 
   void OnEnable() {
-    MonstersController.OnMonstersChanged += updateMonsterCount;
+    Monsters.OnMonstersChanged += updateMonsterCount;
   }
 
   void OnDisable() {
-    MonstersController.OnMonstersChanged -= updateMonsterCount;
+    Monsters.OnMonstersChanged -= updateMonsterCount;
   }
 
   private void updateMonsterCount(Monster monster, bool added, int monsterCount) {

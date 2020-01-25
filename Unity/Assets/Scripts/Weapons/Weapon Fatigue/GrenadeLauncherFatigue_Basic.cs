@@ -1,17 +1,15 @@
-﻿using UnityEngine;
-
-public class GrenadeLauncherFatigue_Basic : WeaponFatigue {
-  private const float MAX_FATIGUE = 16; // If fatigue == MAX_FATIGUE, weapon becomes exhausted
-  private const float MIN_FATIGUE_COOLDOWN = 12.8f; // Once exhausted, can't fire until fatigue drops to MIN_FATIGUE_COOLDOWN
+﻿public class GrenadeLauncherFatigue_Basic : WeaponFatigue {
+  private const float MAX_FATIGUE = 22; // If fatigue == MAX_FATIGUE, weapon becomes exhausted
+  private const float MIN_FATIGUE_COOLDOWN = 18f; // Once exhausted, can't fire until fatigue drops to MIN_FATIGUE_COOLDOWN
 
   private const float FATIGUE_PER_SHOT = 1f;
   private const float MIN_FATIGUE_BEFORE_PENALTY = 5; // No bonus delay applied while fatigue less than this
 
-  private const float MIN_REST_UNTIL_RECOVERY_STARTS = 2;
-  private const float FATIGUE_RECOVERED_PER_SECOND = 0.4f;
+  private const float MIN_REST_UNTIL_RECOVERY_STARTS = 1.8f;
+  private const float FATIGUE_RECOVERED_PER_SECOND = 0.5f;
 
   private const float BASE_DELAY = 0.5f;
-  private const float DELAY_PER_FATIGUE = 0.08f;
+  private const float DELAY_PER_FATIGUE = 0.09f;
 
   private float fatigue = 0;
   private float timeSinceLastShot = 0;

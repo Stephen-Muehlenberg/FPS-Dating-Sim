@@ -6,7 +6,7 @@ public class CombatScene : MonoBehaviour {
 
   void Awake() {
     // Reset the monsters
-    MonstersController.removeAll();
+    Monsters.removeAll();
   }
 
 	void Start () {
@@ -15,6 +15,9 @@ public class CombatScene : MonoBehaviour {
   }
 
   void Update() {
-    if (Input.GetKeyUp(KeyCode.Escape) && !TimeUtils.dialogPaused) PauseMenu.show();
+    if (!TimeUtils.dialogPaused) {
+      if (Input.GetKeyUp(KeyCode.Escape)) PauseMenu.show();
+      else if (Input.GetKeyUp(KeyCode.T)) EnemyHealth.showDamageText = !EnemyHealth.showDamageText;
+    }
   }
 }

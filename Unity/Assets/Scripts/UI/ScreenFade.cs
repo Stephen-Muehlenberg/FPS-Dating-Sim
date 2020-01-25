@@ -37,6 +37,8 @@ public class ScreenFade : MonoBehaviour {
   // END WORK IN PROGRESS
   // -----------------------------------
 
+  // TODO don't keep scrimCanvas instance alive permanently; kill it after fade is complete.
+
   private static void lazyIntitialize() {
     scrimCanvas = Instantiate(Resources.Load<GameObject>("UI/Fade Canvas"));
     scrim = scrimCanvas.GetComponentInChildren<Image>();

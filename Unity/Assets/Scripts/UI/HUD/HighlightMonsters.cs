@@ -20,17 +20,17 @@ public class HighlightMonsters : MonoBehaviour {
     SINGLETON.highlightWithinRangeSq = range * range;
     SINGLETON.noMonstersNearCallback = noMonstersNearCallback;
 
-    foreach (Monster monster in MonstersController.monsters) {
+    foreach (Monster monster in Monsters.monsters) {
       var marker = LocationMarker.add(monster.transform, monster.GetComponent<NavMeshAgent>().height);
       SINGLETON.monsterMarkers.Add(monster, marker);
     }
 
-    MonstersController.OnMonstersChanged += SINGLETON.onMonstersChanged;
+    Monsters.OnMonstersChanged += SINGLETON.onMonstersChanged;
     SINGLETON.enabled = true;
   }
 
   public static void clearHighlights() {
-    MonstersController.OnMonstersChanged -= SINGLETON.onMonstersChanged;
+    Monsters.OnMonstersChanged -= SINGLETON.onMonstersChanged;
     LocationMarker.clear();
     SINGLETON.monsterMarkers.Clear();
     SINGLETON.enabled = false;

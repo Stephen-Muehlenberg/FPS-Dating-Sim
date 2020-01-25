@@ -5,6 +5,7 @@ public class SniperRifle : WeaponController {
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer lineRenderer;
+  public GameObject hitParticlePrefab;
 
   private const float RANGE = 1000f;
   private const int DAMAGE_MIN = 400, DAMAGE_MAX = 500;
@@ -100,6 +101,11 @@ public class SniperRifle : WeaponController {
                               source: Weapons.SNIPER_RIFLE,
                               hitLocation: rayHitInfo.collider);
       rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
+
+      // Particles
+      if (rayHitInfo.collider.GetComponentInParent<EnemyHealth>() != null) {
+        Instantiate(hitParticlePrefab, rayHitInfo.point, Quaternion.Euler(scatteredDirection));
+      }
 
       // Force
       var rigidBody = rayHitInfo.collider.GetComponentInParent<Rigidbody>();

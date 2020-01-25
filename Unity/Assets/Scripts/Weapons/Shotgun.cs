@@ -6,6 +6,7 @@ public class Shotgun : WeaponController {
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer[] lineRenderers;
+  public GameObject hitParticlePrefab;
 
   public AudioClip singleShotSound;
   public AudioClip doubleShotSound;
@@ -77,6 +78,11 @@ public class Shotgun : WeaponController {
         }
         else {
           enemiesHit.Add(health, new List<Damage>(1) { damage });
+        }
+
+        // Particles
+        if (rayHitInfo.collider.GetComponentInParent<EnemyHealth>() != null) {
+          Instantiate(hitParticlePrefab, rayHitInfo.point, Quaternion.Euler(scatteredDirection));
         }
 
         // Force

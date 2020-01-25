@@ -339,6 +339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f70e641bb3a5b4bb95fccea12dd2de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 2
 --- !u!114 &4743830530648815620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,7 +355,6 @@ MonoBehaviour:
   remaining: 2500
   weakPoints:
   - {fileID: 135486314536984962}
-  showDamageText: 1
 --- !u!114 &114419546061698786
 MonoBehaviour:
   m_ObjectHideFlags: 0

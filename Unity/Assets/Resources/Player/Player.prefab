@@ -1792,6 +1792,8 @@ MonoBehaviour:
   bulletOrigin: {fileID: 4962496492447886}
   audioSource: {fileID: 82523224934380866}
   lineRenderer: {fileID: 120056701798693166}
+  hitParticlePrefab: {fileID: 6282232180554748622, guid: fe42fd4f2257a5e46af1fedd153615a8,
+    type: 3}
 --- !u!120 &120056701798693166
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -14150,6 +14152,8 @@ MonoBehaviour:
   - {fileID: 120845420361022286}
   - {fileID: 120946021704879850}
   - {fileID: 120870690507422680}
+  hitParticlePrefab: {fileID: 6282232180554748622, guid: 22c0ab90f42961448889fe44f2bf0aaf,
+    type: 3}
   singleShotSound: {fileID: 8300000, guid: cf72534490e6225438ab066653d7833d, type: 3}
   doubleShotSound: {fileID: 8300000, guid: a4613c5e8cf9c78468afac53f55a43d6, type: 3}
 --- !u!1 &1576639181807942
@@ -20807,6 +20811,8 @@ MonoBehaviour:
   bulletOrigin: {fileID: 4965624490425022}
   audioSource: {fileID: 82911670072663816}
   lineRenderer: {fileID: 120161905894375630}
+  hitParticlePrefab: {fileID: 6282232180554748622, guid: 16ddd5075d7e7cd439d222982177977a,
+    type: 3}
   shotDelayRemaining: 0
 --- !u!120 &120161905894375630
 LineRenderer:

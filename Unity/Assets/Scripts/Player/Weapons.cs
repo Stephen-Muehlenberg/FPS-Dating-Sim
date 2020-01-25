@@ -85,8 +85,10 @@ public class Weapons {
   public static void unequip() { setEquipped(currentlyEquipped, false, false); }
 
   private static void setEquipped(Weapon weapon, bool equipped, bool playEquipEffects) {
-    if (weapon == null && currentlyEquipped == null || weapon.equipped == equipped) return; // No change
-    if (equipped && !weapon.canEquip) throw new UnityException("Can't equip " + weapon.name + " while canEquip == false.");
+    if (weapon == null && currentlyEquipped == null) return; // No change
+    if (weapon != null && currentlyEquipped != null && weapon.equipped == equipped) return; // No change
+
+    if (equipped && weapon != null && !weapon.canEquip) throw new UnityException("Can't equip " + weapon.name + " while canEquip == false.");
 
     if (equipped) {
       if (currentlyEquipped != null) setEquipped(currentlyEquipped, false, false);
@@ -96,9 +98,11 @@ public class Weapons {
       currentlyEquipped = null;
     }
 
-    weapon.equipped = equipped;
-    weapon.controller.setEquipped(equipped, playEquipEffects);
+    if (weapon != null) {
+      weapon.equipped = equipped;
+      weapon.controller.setEquipped(equipped, playEquipEffects);
+    }
 
-    if (equipEvents != null) equipEvents.Invoke(currentlyEquipped);
+    equipEvents?.Invoke(currentlyEquipped);
   }
 }

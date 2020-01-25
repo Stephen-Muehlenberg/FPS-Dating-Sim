@@ -16,13 +16,26 @@ public class Quest_BedStore : Quest {
 
   public static string NAME = "BedStore";
   public override string name => NAME;
-  public static string SCENE = "mission_bed_store";
+  public static string SCENE_BED_STORE = "mission_bed_store";
+  private Weapon firstWeaponSelected = null;
 
   protected override void initialise(int state, Hashtable args) {
     // TODO set up everything else here
     setUpScene(
       state: state,
-      scene: (state >= 100 && state < 500) ? SCENE : "cafe"
+      scene: (state >= 100 && state < 500) ? SCENE_BED_STORE : "cafe",
+      mcPosition: state == 0 ? new Vector3(0, 0, -8.5f) 
+                             : (Vector3?) null,
+      rosePosition: state == 0 ? new Vector3(-1.23f, 0, -6.918f)
+                               : (Vector3?) null,
+      mayPosition: state == 0 ? new Vector3(-0.58908f, 0, -6.104723f)
+                              : (Vector3?) null,
+      vanessaPosition: state == 0 ? new Vector3(1.156008f, 0, -6.55563f)
+                                  : (Vector3?) null,
+      fizzyPosition: state == 0 ? new Vector3(0.378718f, 0, -5.961192f)
+                                : (Vector3?) null,
+      moveEnabled: state > 0,
+      jumpEnabled: state > 0
     );
   }
 
@@ -53,9 +66,6 @@ public class Quest_BedStore : Quest {
   }
   
   private void s000_startConversation() {
-    Character.setPositions(INTRO_POS_MC, Quaternion.identity, INTRO_POS_ROSE, INTRO_POS_MAY, INTRO_POS_VANESSA, INTRO_POS_FIZZY);
-    Player.SINGLETON.setInConversation(true);
-
     new Conversation()
       .wait(2f)
       .text(Character.NONE, "<i>Some dialog goes here.</i>")
@@ -80,7 +90,9 @@ public class Quest_BedStore : Quest {
       .text(Character.MC, "Um, there's a home furnishing store like two blocks from here.")
       .text(Character.MAY, "Goddammit. <i>Mission Time's back on!</i>")
       .wait(0.4f)
-      .show(() => setState(100));
+      .show(() => SceneTransition.changeTo(scene: SCENE_BED_STORE, onSceneLoaded: () => {
+        setState(100);
+      }));
   }
   
   private void s100_setupLevel() {
@@ -110,7 +122,7 @@ public class Quest_BedStore : Quest {
 
     ScreenFade.fadeOut(() => {
       // Disable game stuff, enter conversation mode
-      MonstersController.killAll();
+      Monsters.killAll();
       foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
       CombatDialogManager.clearAllMessages();
       Weapons.unequip();
@@ -145,11 +157,10 @@ public class Quest_BedStore : Quest {
           .text(Character.VANESSA, "Yes, yes. Can we resume the mission?")
           .text("MC, choose two of us to defend the store with, and the other two will scrounge through the store.")
           .show(() => {
-            // TODO fluidly rotate it to face the girls.
             firstPersonController.look.inputEnabled = false;
             player.transform.rotation = Quaternion.identity;
+            
 
-            // TODO
             /*WeaponSelectMenu.select(2, 2, "Choose 2 girls to help defend the store", (selection) => {
               firstPersonController.look.inputEnabled = true;
 
@@ -167,6 +178,10 @@ public class Quest_BedStore : Quest {
       });
     });
   }
+
+  private void showChoice() {
+
+  }
   
   private void s300_setupDefend() {
     ScreenFade.fadeOut(() => {
@@ -181,14 +196,14 @@ public class Quest_BedStore : Quest {
       CurrentQuestMessage.set("Defend the store");
 
       ScreenFade.fadeIn(() => {
-        MonstersController.OnMonstersChanged += onMonstersChanged;
+        Monsters.OnMonstersChanged += onMonstersChanged;
       });
     });
   }
 
   private void onMonstersChanged(Monster monster, bool added, int monstersRemaining) {
     if (monstersRemaining == 0) {
-      MonstersController.OnMonstersChanged -= onMonstersChanged;
+      Monsters.OnMonstersChanged -= onMonstersChanged;
 
       var dialog = new CombatDialog();
       var weapon = Weapons.currentlyEquipped;
@@ -376,7 +391,7 @@ public class Quest_BedStore : Quest {
     CurrentQuestMessage.clear();
 
     if (state == 100) {
-      if (MonstersController.monstersNear(new Vector3(156, 0, 96), 35f) > 0) {
+      if (Monsters.monstersNear(new Vector3(156, 0, 96), 35f) > 0) {
         new CombatDialog()
           .message(Character.MC, "This is the place.")
           .message(Character.MAY, "Great, but before we go in, let's finish off any nearby monsters.")

@@ -114,7 +114,7 @@ public class Quest_TestKillEnemies : Quest {
   // -- 20 --
   private void setupSuburbia() {
     // TODO display monster kill counter
-    MonstersController.OnMonstersChanged += onMonsterChangedListener;
+    Monsters.OnMonstersChanged += onMonsterChangedListener;
     PlayerDeath.onDeath += onPlayerDeath;
   }
 
@@ -129,7 +129,7 @@ public class Quest_TestKillEnemies : Quest {
     monstersKilled++;
 
     if (monstersKilled == 50) {
-      MonstersController.OnMonstersChanged -= onMonsterChangedListener;
+      Monsters.OnMonstersChanged -= onMonsterChangedListener;
       SceneTransition.changeTo(scene: "cafe", onSceneLoaded: () => { setState(200); });
     }
   }

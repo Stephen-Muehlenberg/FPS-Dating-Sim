@@ -6,6 +6,7 @@ public class MachineGun : WeaponController {
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer lineRenderer;
+  public GameObject hitParticlePrefab;
 
   private const float RANGE = 300f;
   private const int DAMAGE_MIN = 85, DAMAGE_MAX = 105;
@@ -59,7 +60,12 @@ public class MachineGun : WeaponController {
                               source: Weapons.MACHINE_GUN,
                               hitLocation: rayHitInfo.collider);
       rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
-      
+
+      // Particles
+      if (rayHitInfo.collider.GetComponentInParent<EnemyHealth>() != null) {
+        Instantiate(hitParticlePrefab, rayHitInfo.point, Quaternion.Euler(scatteredDirection));
+      }
+
       // Force
       var rigidBody = rayHitInfo.collider.GetComponentInParent<Rigidbody>();
       if (rigidBody != null) rigidBody.AddForceAtPosition(scatteredDirection * BULLET_FORCE, rayHitInfo.point);

@@ -1,11 +1,17 @@
 ﻿using UnityEngine;
 
 public class Monster : MonoBehaviour {
+  public enum Type {
+    TORCH, INFERNAL, SQUIG, HELLFIRER, OTHER
+  }
+
+  public Type type = Type.OTHER;
+
   public void Start() {
-    MonstersController.add(this);
+    Monsters.add(this);
   }
 
   public void die() {
-    MonstersController.remove(this);
+    Monsters.remove(this);
   }
 }

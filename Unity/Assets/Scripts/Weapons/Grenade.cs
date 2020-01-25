@@ -2,11 +2,13 @@
 
 public class Grenade : MonoBehaviour {
   private static float LIFETIME = 3f;
-  private static int MIN_DIRECT_DAMAGE = 75;
-  private static int MAX_DIRECT_DAMAGE = 100;
-  private static int MIN_SPLASH_DAMAGE = 295;
-  private static int MAX_SPLASH_DAMAGE = 400;
-  public static float RADIUS = 6.5f;
+  private static int MIN_DIRECT_DAMAGE = 125;
+  private static int MAX_DIRECT_DAMAGE = 150;
+  private static int MIN_SPLASH_DAMAGE = 325;
+  private static int MAX_SPLASH_DAMAGE = 375;
+  // Damage scales linearly from x1 at the center of the explosion, to this value at the edge
+  private static float FRACTION_OF_DAMAGE_AT_EDGE_OF_EXPLOSION = 0.5f; 
+  public static float RADIUS = 7.5f;
   private static float ROCKET_JUMP_Y_VELOCITY = 10;
 
   public GameObject explosionPrefab;
@@ -50,7 +52,7 @@ public class Grenade : MonoBehaviour {
       if (creature.gameObject == Player.SINGLETON.gameObject) continue; // Player is immune to grenade damage
 
       var fractionalDistanceFromBlastCenter = Mathf.Sqrt(creature.distanceSq) / RADIUS;
-      var damageMultipler = 1f - (fractionalDistanceFromBlastCenter / 2f); // Multipler ranges from 1 (closest) to 0.5 (furthest)
+      var damageMultipler = 1f - (fractionalDistanceFromBlastCenter * FRACTION_OF_DAMAGE_AT_EDGE_OF_EXPLOSION);
       var totalDamage = Mathf.RoundToInt(randomBaseDamage * damageMultipler);
       Damage damage;
 

@@ -81,19 +81,11 @@ public class SelectionMenu : MonoBehaviour {
     GameObject menu = Instantiate(Resources.Load("UI/SelectionMenuWeapon")) as GameObject;
     menu.GetComponent<SelectionMenu>().initialise(options, initialSelection, Mode.Hold, callback);
   }
-
-  /**
-   * Displays a SelectionMenu with the specified properties.
-   */
-  public static void show(Option[] options, int initialSelection, Mode mode, Style style, SelectionCallback callback) {
-    string resource;
-    if (style == Style.DialogChoice) resource = "UI/SelectionMenuDialog";
-    else resource = "UI/SelectionMenuWeapon";
-    GameObject menu = Instantiate(Resources.Load(resource)) as GameObject;
-    menu.GetComponent<SelectionMenu>().initialise(options, initialSelection, mode, callback);
-  }
   
-  private void initialise(Option[] options, int initialSelection, Mode mode, SelectionCallback callback) {
+  private void initialise(Option[] options,
+                          int initialSelection,
+                          Mode mode,
+                          SelectionCallback callback) {
     if (options.Length < 1 || options.Length > 4) throw new UnityException("Must be 1 to 4 options, but was " + options.Length);
 
     this.mode = mode;

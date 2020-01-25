@@ -29,7 +29,7 @@ public class EnemySpawner : MonoBehaviour {
 
     timeTillNextWave -= TimeUtils.gameplayDeltaTime;
 
-    if (timeTillNextWave <= 0 && MonstersController.monsters.Count < maxMonsters) {
+    if (timeTillNextWave <= 0 && Monsters.monsters.Count < maxMonsters) {
       threatRemainingThisWave = threatInNextWave;
       var spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length - 1)];
 

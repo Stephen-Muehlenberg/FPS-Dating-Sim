@@ -69,7 +69,7 @@ public class Awareness : MonoBehaviour {
     Destroy(this);
     
     // Alert nearby allies
-    foreach (Monster monster in MonstersController.monsters) {
+    foreach (Monster monster in Monsters.monsters) {
       distanceSq = (transform.position - monster.transform.position).sqrMagnitude;
       var awareness = monster.GetComponent<Awareness>();
       if (awareness != null && distanceSq <= awareness.alliesAlertRadiusSq) awareness.becomeAlert();

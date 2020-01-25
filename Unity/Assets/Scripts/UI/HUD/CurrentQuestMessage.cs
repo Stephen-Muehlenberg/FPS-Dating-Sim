@@ -25,12 +25,17 @@ public class CurrentQuestMessage {
     currentText.text = message;
 
     if (animateIn) currentText.StartCoroutine(animate(currentText, 0.85f, true, -50));
+    else {
+      // TODO this should start on screen but is starting off screen.
+    }
   }
 
-  private static void setRectPosition(RectTransform rect, float y) {
-    rect.offsetMin = new Vector2(0, y); // Left, Pos Y
-    rect.offsetMax = new Vector2(0, HEIGHT); // Right, Height
-    rect.anchoredPosition = new Vector2(0, y - (HEIGHT / 2));
+  /**
+   * Updates an existing quest message, without changing its position or interupting 
+   * its animation.
+   */
+  public static void update(string message) {
+    currentText.text = message;
   }
 
   /**

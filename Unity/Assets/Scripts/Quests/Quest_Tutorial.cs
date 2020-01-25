@@ -58,8 +58,8 @@ public class Quest_Tutorial : Quest {
 
   private IEnumerator encounterFirstEnemiesEvent() {
     var monsters = new Monster[] {
-      MonstersController.findByName("Group 1 Torch 1"),
-      MonstersController.findByName("Group 1 Torch 2")
+      Monsters.findByName("Group 1 Torch 1"),
+      Monsters.findByName("Group 1 Torch 2")
     };
     foreach (Monster monster in monsters) {
       monster.GetComponent<FollowPlayer>().enabled = true;
@@ -96,11 +96,11 @@ public class Quest_Tutorial : Quest {
 
   private void trigger2ndEnemyGroup() {
     var monsters = new Monster[] {
-      MonstersController.findByName("Group 2 Torch 1"),
-      MonstersController.findByName("Group 2 Torch 2"),
-      MonstersController.findByName("Group 2 Torch 3"),
-      MonstersController.findByName("Group 2 Torch 4"),
-      MonstersController.findByName("Group 2 Torch 5")
+      Monsters.findByName("Group 2 Torch 1"),
+      Monsters.findByName("Group 2 Torch 2"),
+      Monsters.findByName("Group 2 Torch 3"),
+      Monsters.findByName("Group 2 Torch 4"),
+      Monsters.findByName("Group 2 Torch 5")
     };
     foreach (Monster monster in monsters) {
       monster.GetComponent<Awareness>().enabled = true;
@@ -110,11 +110,11 @@ public class Quest_Tutorial : Quest {
 
   private void trigger3rdEnemyGroup() {
     var monsters = new Monster[] {
-      MonstersController.findByName("Group 3 Hellhound 1"),
-      MonstersController.findByName("Group 3 Torch 1"),
-      MonstersController.findByName("Group 3 Torch 2"),
-      MonstersController.findByName("Group 3 Torch 3"),
-      MonstersController.findByName("Group 3 Torch 4")
+      Monsters.findByName("Group 3 Hellhound 1"),
+      Monsters.findByName("Group 3 Torch 1"),
+      Monsters.findByName("Group 3 Torch 2"),
+      Monsters.findByName("Group 3 Torch 3"),
+      Monsters.findByName("Group 3 Torch 4")
     };
     foreach (Monster monster in monsters) {
       monster.GetComponent<Awareness>().enabled = true;

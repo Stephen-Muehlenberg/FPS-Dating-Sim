@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EnemyHealth : Health {
   public Collider[] weakPoints;
-  public bool showDamageText = true;
+  public static bool showDamageText = false; // Used for debugging
 
   private static int amount; // Static for re-use across all instances
   private static bool isCrit; // Static for re-use across all instances
