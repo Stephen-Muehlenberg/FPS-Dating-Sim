@@ -28,10 +28,10 @@ public class Quest_CafeBreak1 : Quest {
   }
 
   protected override void initialise(int state, Hashtable args) {
-    deliveredRosesDrink = (bool) args.getOrDefault("R", false);
-    deliveredMaysDrink = (bool) args.getOrDefault("M", false);
-    deliveredVanessasDrink = (bool) args.getOrDefault("V", false);
-    deliveredFizzysDrink = (bool) args.getOrDefault("F", false);
+    deliveredRosesDrink = args.getOrDefault("R", false);
+    deliveredMaysDrink = args.getOrDefault("M", false);
+    deliveredVanessasDrink = args.getOrDefault("V", false);
+    deliveredFizzysDrink = args.getOrDefault("F", false);
 
     // TODO set up rest of scene
     setUpScene(

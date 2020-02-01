@@ -30,8 +30,9 @@ public class HighlightMonsters : MonoBehaviour {
   }
 
   public static void clearHighlights() {
-    Monsters.OnMonstersChanged -= SINGLETON.onMonstersChanged;
     LocationMarker.clear();
+    if (SINGLETON == null) return;
+    Monsters.OnMonstersChanged -= SINGLETON.onMonstersChanged;
     SINGLETON.monsterMarkers.Clear();
     SINGLETON.enabled = false;
   }

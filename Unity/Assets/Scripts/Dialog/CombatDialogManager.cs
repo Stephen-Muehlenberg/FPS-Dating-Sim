@@ -21,6 +21,7 @@ public class CombatDialogManager : MonoBehaviour {
   public static bool dialogInProgress() { return SINGLETON.dialog != null; }
 
   private static void lazyInitialize() {
+    // TODO extract this out to its own canvas
     SINGLETON = MainCanvas.transform.gameObject.AddComponent<CombatDialogManager>();
   }
   
@@ -46,7 +47,8 @@ public class CombatDialogManager : MonoBehaviour {
   }
 
   public static void clearAllMessages() {
-    foreach (CombatDialogMessage message in SINGLETON.messages) Destroy(message.gameObject);
+    if (SINGLETON == null) return;
+    foreach (CombatDialogMessage message in SINGLETON.messages) if (message != null) Destroy(message.gameObject);
     SINGLETON.messages = new List<CombatDialogMessage>();
     SINGLETON.dialog = null; // TODO might need to make use of the message finished callbacks?
   }

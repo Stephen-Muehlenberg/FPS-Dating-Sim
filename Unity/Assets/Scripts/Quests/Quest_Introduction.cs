@@ -33,9 +33,9 @@ public class Quest_Introduction : Quest {
   private int dialogChoice_help = -1;
 
   protected override void initialise(int state, Hashtable args) {
-    dialogChoice_greeting = (int) args.getOrDefault(KEY_CHOICE_GREETING, -1);
-    dialogChoice_proficiency = (int) args.getOrDefault(KEY_CHOICE_PROFICIENCY, -1);
-    dialogChoice_help = (int) args.getOrDefault(KEY_CHOICE_HELP, -1);
+    dialogChoice_greeting = args.getOrDefault(KEY_CHOICE_GREETING, -1);
+    dialogChoice_proficiency = args.getOrDefault(KEY_CHOICE_PROFICIENCY, -1);
+    dialogChoice_help = args.getOrDefault(KEY_CHOICE_HELP, -1);
 
     setUpScene(
       state: state,

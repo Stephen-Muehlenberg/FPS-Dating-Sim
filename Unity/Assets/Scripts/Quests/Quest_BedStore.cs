@@ -3,39 +3,55 @@ using System.Collections.Generic;
 using System.Collections;
 
 public class Quest_BedStore : Quest {
-  private static readonly Vector3 INTRO_POS_MC = new Vector3(0, 0, -8.5f),
-                                  INTRO_POS_ROSE = new Vector3(-1.23f, 0, -6.918f),
-                                  INTRO_POS_MAY = new Vector3(-0.58908f, 0, -6.104723f),
-                                  INTRO_POS_VANESSA = new Vector3(1.156008f, 0, -6.55563f),
-                                  INTRO_POS_FIZZY = new Vector3(0.378718f, 0, -5.961192f);
+  public static readonly string NAME = "BedStore";
+  public override string name => NAME;
+  private const string SCENE_BED_STORE = "mission_bed_store";
+
+  private const string KEY_FIRST_WEAPON = "firstWeap", KEY_SECOND_WEAPON = "secondWeap";
   private static readonly Vector3 STORE_POS_MC = new Vector3(156, 0, 95.5f),
                                   STORE_POS_A = new Vector3(155, 0.2f, 97),
                                   STORE_POS_B = new Vector3(155.6f, 0.2f, 97.5f),
                                   STORE_POS_C = new Vector3(156.4f, 0.2f, 97.4f),
                                   STORE_POS_D = new Vector3(157, 0.2f, 97);
 
-  public static string NAME = "BedStore";
-  public override string name => NAME;
-  public static string SCENE_BED_STORE = "mission_bed_store";
   private Weapon firstWeaponSelected = null;
+  private Weapon secondWeaponSelected = null;
 
   protected override void initialise(int state, Hashtable args) {
-    // TODO set up everything else here
+    firstWeaponSelected = Weapons.fromIndex(args.getOrDefault(KEY_FIRST_WEAPON, -1));
+    secondWeaponSelected = Weapons.fromIndex(args.getOrDefault(KEY_SECOND_WEAPON, -1));
+
     setUpScene(
       state: state,
       scene: (state >= 100 && state < 500) ? SCENE_BED_STORE : "cafe",
-      mcPosition: state == 0 ? new Vector3(0, 0, -8.5f) 
-                             : (Vector3?) null,
+      mcPosition: state == 0 || state > 400 ? new Vector3(0, 0, -8.5f)
+                : state >= 200 && state <= 400 ? STORE_POS_MC
+                : (Vector3?) null,
+      mcRotation: state == 200 ? Quaternion.identity : (Quaternion?) null,
       rosePosition: state == 0 ? new Vector3(-1.23f, 0, -6.918f)
-                               : (Vector3?) null,
+                  : state == 200 ? STORE_POS_A
+                  : (Vector3?) null,
       mayPosition: state == 0 ? new Vector3(-0.58908f, 0, -6.104723f)
-                              : (Vector3?) null,
+                 : state == 200 ? STORE_POS_B
+                 : (Vector3?) null,
       vanessaPosition: state == 0 ? new Vector3(1.156008f, 0, -6.55563f)
-                                  : (Vector3?) null,
+                     : state == 200 ? STORE_POS_C
+                     : (Vector3?) null,
       fizzyPosition: state == 0 ? new Vector3(0.378718f, 0, -5.961192f)
-                                : (Vector3?) null,
-      moveEnabled: state > 0,
-      jumpEnabled: state > 0
+                   : state == 200 ? STORE_POS_D
+                   : (Vector3?) null,
+      moveEnabled: state > 0 && state != 200,
+      jumpEnabled: state > 0 && state != 200,
+      weaponEquipped: state == 100 ? Weapons.randomWeapon()
+                    : state == 300 ? (Random.value > 0.5 ? firstWeaponSelected : secondWeaponSelected)
+                    : null,
+      questMessage: state == 100 ? "Head to the furniture store"
+                  : state == 300 ? "Defend the store"
+                  : null,
+      onTransitionComplete: () => {
+        // If player's passed the initial wave of enemies, disable them.
+        if (state >= 200 && state < 400) GameObject.Destroy(GameObject.Find("Monsters"));
+      }
     );
   }
 
@@ -44,11 +60,17 @@ public class Quest_BedStore : Quest {
     if (state == 0) s000_startConversation();
     else if (state == 100) s100_setupLevel(); // TODO probably show some sort of text once you load, directing you
     else if (state == 110) s110_setupClearNearbyEnemies();
-    else if (state == 200) s200_setupOutsideDialog();
+    else if (state == 200) s200_outsideDialog();
     else if (state == 300) s300_setupDefend();
     else if (state == 400) s400_endMission();
     else if (state == 500) s500_returnToCafe();
     else throw new UnityException("Unhandled quest state " + state);
+  }
+
+  protected override void saveArgs(Hashtable args) {
+    if (firstWeaponSelected == null) return;
+    args.Add(KEY_FIRST_WEAPON, firstWeaponSelected.index);
+    args.Add(KEY_SECOND_WEAPON, secondWeaponSelected.index);
   }
 
   public override void stop() {
@@ -90,9 +112,7 @@ public class Quest_BedStore : Quest {
       .text(Character.MC, "Um, there's a home furnishing store like two blocks from here.")
       .text(Character.MAY, "Goddammit. <i>Mission Time's back on!</i>")
       .wait(0.4f)
-      .show(() => SceneTransition.changeTo(scene: SCENE_BED_STORE, onSceneLoaded: () => {
-        setState(100);
-      }));
+      .show(() => reloadMission(state: 100));
   }
   
   private void s100_setupLevel() {
@@ -100,7 +120,6 @@ public class Quest_BedStore : Quest {
     locationMarkerTransform.position = new Vector3(156, 2.5f, 95);
     LocationMarker.add(locationMarkerTransform);
     CurrentQuestMessage.set("Head to the furniture store");
-    Weapons.equip(Weapons.MACHINE_GUN);
   }
   
   private void s110_setupClearNearbyEnemies() {
@@ -110,95 +129,71 @@ public class Quest_BedStore : Quest {
       new CombatDialog()
         .wait(2.5f)
         .message(Character.MAY, "Ok I guess that's safe enough.")
-        .show(CombatDialog.Priority.HIGH, () => { setState(200); });
+        .show(priority: CombatDialog.Priority.HIGH,
+              callback: () => reloadMission(state: 200));
     });
   }
   
-  private void s200_setupOutsideDialog() {
-    // Make player invincible so they don't die during fade, e.g. from stray projectiles
-    Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(true);
-
-    CurrentQuestMessage.clear();
-
-    ScreenFade.fadeOut(() => {
-      // Disable game stuff, enter conversation mode
-      Monsters.killAll();
-      foreach (GameObject projectile in GameObject.FindGameObjectsWithTag("Projectile")) { Object.Destroy(projectile); }
-      CombatDialogManager.clearAllMessages();
-      Weapons.unequip();
-
-      // Position actors
-      Character.ROSE.getProp().setPosition(STORE_POS_A);
-      Character.MAY.getProp().setPosition(STORE_POS_B);
-      Character.VANESSA.getProp().setPosition(STORE_POS_C);
-      Character.FIZZY.getProp().setPosition(STORE_POS_D);
-
-      // Reposition, reset, and restrict the player
-      var player = Player.SINGLETON;
-      player.transform.position = STORE_POS_MC;
-      player.transform.rotation = Quaternion.identity; // Identity just happens to be facing the direction we want
-      var firstPersonController = player.GetComponent<FirstPersonModule.FirstPersonController>();
-      firstPersonController.reset();
-      firstPersonController.move.inputEnabled = false;
-      firstPersonController.jump.inputEnabled = false;
-
-      ScreenFade.fadeIn(() => {
-        new Conversation()
-          .wait(1.5f)
-          // TODO have girl who likes you most say "good job", restoring your health
-          .text(Character.MAY, "Alright, MC can stay out here and defend the store.")
-          .text("But two of us should go in to pick out some stuff and carry it out.")
-          .text(Character.MC, "Pick out some stuff? Just get the first five pillows and blankets you find.")
-          .text(Character.ROSE, "I'm not using one of those scratchy-ass wool blankets. Those things are bullshit.")
-          .text(Character.MC, "Oh, yeah, that kind of stiff shit? That's fair, actually, those are pretty bullshit.")
-          .text(Character.FIZZY, "I don't want one of those pillows stuffed with feathers!")
-          .text("I just stay up all night picking out the feathers through the pillowcase.")
-          .text(Character.ROSE, "I don't want Fizzy to have one of those either, 'cause then I have to listen to it all night.")
-          .text(Character.VANESSA, "Yes, yes. Can we resume the mission?")
-          .text("MC, choose two of us to defend the store with, and the other two will scrounge through the store.")
-          .show(() => {
-            firstPersonController.look.inputEnabled = false;
-            player.transform.rotation = Quaternion.identity;
-            
-
-            /*WeaponSelectMenu.select(2, 2, "Choose 2 girls to help defend the store", (selection) => {
-              firstPersonController.look.inputEnabled = true;
-
-              foreach (Weapon weapon in Weapons.array) {
-                weapon.canEquip = false;
-              }
-              selection[0].canEquip = true;
-              selection[1].canEquip = true;
-
-              new Conversation()
-                .text(Character.MAY, "Ok, see you in a bit!")
-                .show(() => { setState(300); });
-            });*/
-          });
+  private void s200_outsideDialog() {
+    new Conversation()
+      .wait(1.5f)
+      // TODO have girl who likes you most say "good job", restoring your health
+      .text(Character.MAY, "Alright, MC can stay out here and defend the store.")
+      .text("But two of us should go in to pick out some stuff and carry it out.")
+      .text(Character.MC, "Pick out some stuff? Just get the first five pillows and blankets you find.")
+      .text(Character.ROSE, "I'm not using one of those scratchy-ass wool blankets. Those things are bullshit.")
+      .text(Character.MC, "Oh, yeah, that kind of stiff shit? That's fair, actually, those are pretty bullshit.")
+      .text(Character.FIZZY, "I don't want one of those pillows stuffed with feathers!")
+      .text("I just stay up all night picking out the feathers through the pillowcase.")
+      .text(Character.ROSE, "I don't want Fizzy to have one of those either, 'cause then I have to listen to it all night.")
+      .text(Character.VANESSA, "Yes, yes. Can we resume the mission?")
+      .show(() => {
+        Player.SINGLETON.setLookDirection(direction: new Vector3(0, 0, 0), duration: 0.5f);
+        showChoice();
       });
-    });
   }
 
   private void showChoice() {
+    Player.SINGLETON.firstPersonController.look.inputEnabled = false;
+    Player.SINGLETON.transform.rotation = Quaternion.identity;
 
+    new Conversation()
+      .choice(
+        messageText: firstWeaponSelected == null ? "MC, choose two of us to defend the store with. The other two will scrounge through the store." : "Who else will stay with you?",
+        option0: firstWeaponSelected == Weapons.SHOTGUN ? "Undo" : Weapons.SHOTGUN.name,
+        option1: firstWeaponSelected == Weapons.MACHINE_GUN ? "Undo" : Weapons.MACHINE_GUN.name,
+        option2: firstWeaponSelected == Weapons.SNIPER_RIFLE ? "Undo" : Weapons.SNIPER_RIFLE.name,
+        option3: firstWeaponSelected == Weapons.GRENADE_LAUNCHER ? "Undo" : Weapons.GRENADE_LAUNCHER.name,
+        callback: (selection, text) => {
+          if (firstWeaponSelected == null) {
+            firstWeaponSelected = Weapons.array[selection];
+            showChoice();
+          }
+          else if (Weapons.array[selection] == firstWeaponSelected) {
+            firstWeaponSelected = null;
+            showChoice();
+          }
+          else {
+            secondWeaponSelected = Weapons.array[selection];
+            Player.SINGLETON.firstPersonController.look.inputEnabled = true;
+            new Conversation()
+              .text(Character.MAY, "Ok, see you in a bit!")
+              .show(() => reloadMission(300));
+          }
+        })
+      .show();
   }
-  
-  private void s300_setupDefend() {
-    ScreenFade.fadeOut(() => {
-      Player.SINGLETON.GetComponent<FirstPersonModule.FirstPersonController>().enableAllInput();
-      Player.SINGLETON.GetComponent<PlayerHealth>().setGodMode(false);
-      Player.SINGLETON.GetComponent<GunSwitch>().equip(Weapons.randomEquipableWeapon());
-      GameObject.Destroy(Character.ROSE.getProp().gameObject);
-      GameObject.Destroy(Character.MAY.getProp().gameObject);
-      GameObject.Destroy(Character.VANESSA.getProp().gameObject);
-      GameObject.Destroy(Character.FIZZY.getProp().gameObject);
-      GameObject.Find("HordeToggle").GetComponent<EnableGameObjects>().enableAll();
-      CurrentQuestMessage.set("Defend the store");
 
-      ScreenFade.fadeIn(() => {
-        Monsters.OnMonstersChanged += onMonstersChanged;
-      });
-    });
+  private void s300_setupDefend() {
+    foreach (Weapon weapon in Weapons.array) {
+      weapon.canEquip = false;
+    }
+    firstWeaponSelected.canEquip = true;
+    secondWeaponSelected.canEquip = true;
+    
+    GameObject.Find("HordeToggle").GetComponent<EnableGameObjects>().enableAll();
+
+    Monsters.OnMonstersChanged += onMonstersChanged;
   }
 
   private void onMonstersChanged(Monster monster, bool added, int monstersRemaining) {
@@ -225,7 +220,7 @@ public class Quest_BedStore : Quest {
           .message(weapon.character, "Okey dokey, guess that's the last of 'em.");
       }
 
-      dialog.show(CombatDialog.Priority.MAX, () => { setState(400); });
+      dialog.show(CombatDialog.Priority.MAX, () => setState(400));
     }
   }
   
@@ -287,7 +282,7 @@ public class Quest_BedStore : Quest {
             new string[] {"Oh.", "Sweet!"},
             new string[] {"Ah.", "Let's carry on then."},
             new string[] {"Ooh, nice!", "Alright, then let's go!"})
-          .show(() => { setState(500); });
+          .show(() => setState(500));
       });
     });
   }
@@ -340,8 +335,17 @@ public class Quest_BedStore : Quest {
           )
           .text(Character.MC, "Plus, I have to leave room for all the homeless people.")
           .text(Character.VANESSA, "Oh, very funny.")
-          .show(() => { SceneTransition.changeTo("main_menu"); });
+          .show(() => SceneTransition.changeTo(scene: "main_menu",
+                                               onSceneLoaded: () => TimeUtils.mode = TimeUtils.TimeMode.GAMEPLAY));
       });
+  }
+
+  // In some places its simpler to reload the mission, rather than manually making changes
+  private void reloadMission(int state) {
+    Hashtable args = save();
+    args[Quest.KEY_STATE] = state;
+    QuestManager.start(quest: new Quest_BedStore(),
+                       args: args);
   }
 
   // -- EVENTS --
@@ -395,12 +399,12 @@ public class Quest_BedStore : Quest {
         new CombatDialog()
           .message(Character.MC, "This is the place.")
           .message(Character.MAY, "Great, but before we go in, let's finish off any nearby monsters.")
-          .show(CombatDialog.Priority.MAX, () => { setState(110); });
+          .show(CombatDialog.Priority.MAX, () => setState(110));
       }
       else {
         new CombatDialog()
           .message(Character.MC, "This is the place.")
-          .show(CombatDialog.Priority.MAX, () => { setState(200); });
+          .show(CombatDialog.Priority.MAX, () => reloadMission(state: 200));
       }
     }
   }

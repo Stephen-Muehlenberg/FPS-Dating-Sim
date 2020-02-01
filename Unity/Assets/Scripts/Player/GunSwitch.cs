@@ -43,14 +43,16 @@ public class GunSwitch : MonoBehaviour {
     TimeUtils.stopBulletTime();
 //    postProcessing.depthOfField.enabled = false;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = true;
-    equip(weapon: selection >= 0 ? Weapons.array[selection] : null,
-          playEffects: true);
+    Weapon selectedWeapon = selection >= 0 ? Weapons.array[selection] : null;
+    if (selectedWeapon.canEquip) equip(weapon: selectedWeapon, playEffects: true);
   }
 
   public void equip(Weapon weapon, bool playEffects = false) {
     if (Weapons.currentlyEquipped == weapon) return; // No change
     else {
-      Weapons.equip(weapon, playEffects);
+      if (weapon == null) Weapons.unequip();
+      else Weapons.equip(weapon, playEffects);
+
       if (playEffects) audioSource.Play();
     }
   }

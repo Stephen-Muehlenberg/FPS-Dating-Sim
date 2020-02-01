@@ -47,6 +47,11 @@ public class Weapons {
   public static Weapon currentlyEquipped;
   public static event EquipEvent equipEvents;
 
+  public static Weapon fromIndex(int index) {
+    if (index < 0 || index > 3) return null;
+    return array[index];
+  }
+
   public static Weapon randomWeapon() { return array[Random.Range(0, 4)]; }
   public static Weapon randomEquipableWeapon() { return randomWeaponWithEquipStatus(true); }
   public static Weapon randomNonEquipableWeapon() { return randomWeaponWithEquipStatus(false); }
