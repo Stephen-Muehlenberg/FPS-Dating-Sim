@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Weapons {
   public delegate void EquipEvent(Weapon selection);
@@ -43,27 +44,25 @@ public class Weapons {
       selected: new Color(1, 0.629899f, 0))
     );
 
-  public static Weapon[] array = new Weapon[] { SHOTGUN, MACHINE_GUN, SNIPER_RIFLE, GRENADE_LAUNCHER };
+  public static List<Weapon> list = new List<Weapon> { SHOTGUN, MACHINE_GUN, SNIPER_RIFLE, GRENADE_LAUNCHER };
   public static Weapon currentlyEquipped;
   public static event EquipEvent equipEvents;
 
-  public static Weapon fromIndex(int index) {
-    if (index < 0 || index > 3) return null;
-    return array[index];
-  }
-
-  public static Weapon randomWeapon() { return array[Random.Range(0, 4)]; }
+  public static Weapon random() { return list[Random.Range(0, 4)]; }
   public static Weapon randomEquipableWeapon() { return randomWeaponWithEquipStatus(true); }
   public static Weapon randomNonEquipableWeapon() { return randomWeaponWithEquipStatus(false); }
 
   public static SelectionMenu.Option[] equipableOptions() {
     SelectionMenu.Option[] options = new SelectionMenu.Option[4];
-
+    
     for (int i = 0; i < 4; i++) {
-      if (!array[i].inInventory) continue;
-      // TODO handle weapon fatigue colour change
-      if (array[i].canEquip) options[i] = new SelectionMenu.Option(array[i].name, array[i].selectionColors);
-      else options[i] = new SelectionMenu.Option(array[i].name, SelectionMenu.OptionColors.Unselectable); 
+      if (!list[i].showInWeaponMenu) continue;
+
+      options[i] = new SelectionMenu.Option(
+        text: list[i].name,
+        colors: list[i].canEquip ? list[i].selectionColors : SelectionMenu.OptionColors.Unselectable,
+        selectable: list[i].canEquip
+      );
     }
 
     return options;
@@ -71,14 +70,14 @@ public class Weapons {
 
   private static Weapon randomWeaponWithEquipStatus(bool canEquip) {
     int selectableCount = 0;
-    foreach (Weapon weapon in array) { if (weapon.canEquip == canEquip) selectableCount++; }
+    foreach (Weapon weapon in list) { if (weapon.canEquip == canEquip) selectableCount++; }
 
     if (selectableCount == 0) throw new UnityException("No weapons are equipable");
 
     int randomIndex = Random.Range(0, selectableCount);
     for (int i = 0; i < 4; i++) {
-      if (array[i].canEquip == canEquip) {
-        if (randomIndex == 0) return array[i];
+      if (list[i].canEquip == canEquip) {
+        if (randomIndex == 0) return list[i];
         else randomIndex--;
       }
     }

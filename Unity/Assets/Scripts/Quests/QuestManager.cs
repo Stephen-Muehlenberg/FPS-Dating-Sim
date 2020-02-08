@@ -12,6 +12,8 @@ public class QuestManager {
   public static string QUEST_5 = Quest_BedStore.NAME;
   public static string QUEST_9 = Quest_TestKillEnemies.NAME;
 
+  public static void start(string questName, int state) { start(getQuest(questName), new Hashtable() { { Quest.KEY_STATE, state } }); }
+  public static void start(Quest quest, int state) { start(quest, new Hashtable() { { Quest.KEY_STATE, state } }); }
   public static void start(string questName, Hashtable args = null) { start(getQuest(questName), args); }
   public static void start(Quest quest, Hashtable args = null) {
     currentQuest?.stop();

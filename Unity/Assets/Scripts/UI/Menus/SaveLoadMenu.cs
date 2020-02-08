@@ -102,10 +102,13 @@ public class SaveLoadMenu : MonoBehaviour {
       saveLoadButton.interactable = true;
     }
     // If file re-selected within a short window of time, it's a double click, so load
-    else if (item.info.name == selectedItem.info.name && 
-      item.info.playtime == selectedItem.info.playtime && 
-      item.info.lastPlayed == selectedItem.info.lastPlayed && 
-      doubleClickTimeRemaining > 0) load();
+    else if (item.info.name == selectedItem.info.name &&
+      item.info.playtime == selectedItem.info.playtime &&
+      item.info.lastPlayed == selectedItem.info.lastPlayed &&
+      doubleClickTimeRemaining > 0) {
+      if (modeLoad) load();
+      else save();
+    }
 
     if (!modeLoad) nameField.text = item.info.name;
 

@@ -29,14 +29,12 @@ public class SelectionMenu : MonoBehaviour {
   public class Option {
     public readonly string text;
     public readonly OptionColors colors;
+    public readonly bool selectable;
 
-    public Option(string text) {
+    public Option(string text, OptionColors colors = null, bool selectable = true) {
       this.text = text;
-      colors = OptionColors.Default;
-    }
-    public Option(string text, OptionColors colors) {
-      this.text = text;
-      this.colors = colors;
+      this.colors = colors ?? OptionColors.Default;
+      this.selectable = selectable;
     }
   }
 
@@ -77,7 +75,9 @@ public class SelectionMenu : MonoBehaviour {
   /**
    * Displays a SelectionMenu in the style of a weapon choice, using the currently available Weapons.
    */
-  public static void showWeaponChoice(Option[] options, int initialSelection, SelectionCallback callback) {
+  public static void showWeaponChoice(Option[] options, 
+                                      int initialSelection = -1,
+                                      SelectionCallback callback = null) {
     GameObject menu = Instantiate(Resources.Load("UI/SelectionMenuWeapon")) as GameObject;
     menu.GetComponent<SelectionMenu>().initialise(options, initialSelection, Mode.Hold, callback);
   }
@@ -107,6 +107,7 @@ public class SelectionMenu : MonoBehaviour {
       if (options.Length > i) optionItems[i].initialize(
         option: options[i],
         selected: currentSelection == i,
+        canHighlight: options[i].selectable,
         highlighted: currentHighlight == i,
         fontSizeNormal: fontSizeNormal,
         fontSizeHighlighted: fontSizeHighlighted); 

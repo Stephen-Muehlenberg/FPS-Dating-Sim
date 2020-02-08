@@ -2,8 +2,8 @@
   public string name;
   public string weaponName;
   public int index;
-  public bool inInventory = true; // Does this weapon show up in the weapon select menu?
-  public bool canEquip = true; // Can this weapon be equipped?
+  public bool showInWeaponMenu = true;
+  public bool canEquip = true;
   public bool equipped = false;
   public WeaponController controller;
   public Character character;

@@ -16,6 +16,10 @@ public class HighlightMonsters : MonoBehaviour {
   }
 
   public static void highlightNear(Vector3 point, float range, Callback noMonstersNearCallback) {
+    // Create singleton if one doesn't exist
+    if (SINGLETON == null)
+      SINGLETON = new GameObject("Highlight Monsters Singleton").AddComponent<HighlightMonsters>();
+
     SINGLETON.highlightNearPoint = point;
     SINGLETON.highlightWithinRangeSq = range * range;
     SINGLETON.noMonstersNearCallback = noMonstersNearCallback;
@@ -56,6 +60,7 @@ public class HighlightMonsters : MonoBehaviour {
       monsterMarkers.Add(monster, marker);
     }
     else {
+      LocationMarker.remove(monsterMarkers[monster]);
       monsterMarkers.Remove(monster);
     }
   }

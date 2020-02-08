@@ -43,7 +43,7 @@ public class GunSwitch : MonoBehaviour {
     TimeUtils.stopBulletTime();
 //    postProcessing.depthOfField.enabled = false;
     Player.SINGLETON.GetComponent<FirstPersonController>().look.inputEnabled = true;
-    Weapon selectedWeapon = selection >= 0 ? Weapons.array[selection] : null;
+    Weapon selectedWeapon = selection >= 0 ? Weapons.list[selection] : null;
     if (selectedWeapon.canEquip) equip(weapon: selectedWeapon, playEffects: true);
   }
 

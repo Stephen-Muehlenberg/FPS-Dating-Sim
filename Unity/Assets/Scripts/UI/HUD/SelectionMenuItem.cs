@@ -10,20 +10,27 @@ public class SelectionMenuItem : MonoBehaviour {
   public Color normalColour;
   public Color highlightedColour;
   public Vector2 imageCenter;
+  bool canHighlight;
 
   private int fontSizeNormal, fontSizeHighlighted;
 
-  public void initialize(SelectionMenu.Option option, bool selected, bool highlighted, int fontSizeNormal, int fontSizeHighlighted) {
+  public void initialize(SelectionMenu.Option option, bool selected, bool canHighlight, bool highlighted, int fontSizeNormal, int fontSizeHighlighted) {
+    normalColour = option.colors.normal;
+    highlightedColour = option.colors.selected;
     text.text = option.text;
     text.color = selected ? option.colors.selected : option.colors.normal;
     if (image != null) image.color = selected ? option.colors.selected : option.colors.normal;
     this.fontSizeNormal = fontSizeNormal;
     this.fontSizeHighlighted = fontSizeHighlighted;
     text.fontSize = fontSizeNormal;
+    this.canHighlight = canHighlight;
+
     setHighlighted(highlighted);
   }
 
   public void setHighlighted(bool highlighted) {
+    if (!canHighlight) highlighted = false;
+
     text.fontSize = highlighted ? fontSizeHighlighted : fontSizeNormal;
     text.color = highlighted ? highlightedColour : normalColour;
     if (image != null) {

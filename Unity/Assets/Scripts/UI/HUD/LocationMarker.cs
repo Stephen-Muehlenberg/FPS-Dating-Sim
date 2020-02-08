@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+// TODO consider using object pooling in this class
 public class LocationMarker : MonoBehaviour {
   private static GameObject prefab;
   private static List<LocationMarker> markers = new List<LocationMarker>();
@@ -29,18 +30,14 @@ public class LocationMarker : MonoBehaviour {
   }
 
   public static void remove(LocationMarker marker) {
-    for (int i = 0; i < markers.Count; i++) {
-      if (markers[i] == marker) {
-        markers.RemoveAt(i);
-        return;
-      }
-    }
-    throw new UnityException("Couldn't find marker " + marker + " to remove.");
+    markers.Remove(marker);
+    Destroy(marker.gameObject);
   }
 
   public static void remove(Transform location) {
     for (int i = 0; i < markers.Count; i++) {
       if (markers[i].location == location) {
+        Destroy(markers[i].gameObject);
         markers.RemoveAt(i);
         return;
       }
@@ -58,8 +55,7 @@ public class LocationMarker : MonoBehaviour {
   void Update() {
     if (location == null) {
       Debug.LogWarning("LocationMarker self destructed because associated Transform was null!");
-      markers.Remove(this);
-      Destroy(gameObject);
+      remove(this);
       return;
     }
 
