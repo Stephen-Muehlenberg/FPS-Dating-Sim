@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
   public static Player SINGLETON;
 
   new public Camera camera;
+  public PlayerHealth health;
   public FirstPersonModule.FirstPersonController firstPersonController;
   public GunSwitch gunSwitch;
 

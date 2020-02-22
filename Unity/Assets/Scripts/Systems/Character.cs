@@ -2,6 +2,7 @@
 
 public class Character {
   public string name;
+  public int id;
   public Weapon weapon;
   public Color dialogTextOutline; // Out of combat text colours
   public Color dialogTextFill;    // Ditto
@@ -11,8 +12,9 @@ public class Character {
 
   public string portraitResource { get { return "Textures/Portrait" + name; } }
 
-  private Character(string name, Weapon weapon, Color dialogTextOutline, Color dialogTextFill, Color combatTextOutline, bool hasProp) {
+  private Character(string name, int id, Weapon weapon, Color dialogTextOutline, Color dialogTextFill, Color combatTextOutline, bool hasProp) {
     this.name = name;
+    this.id = id;
     this.weapon = weapon;
     this.dialogTextOutline = dialogTextOutline;
     this.dialogTextFill = dialogTextFill;
@@ -21,32 +23,9 @@ public class Character {
     this.prop = null;
   }
 
-  public static Character NONE = new Character( // NONE is for onomatopoeia, non-diagetic text, etc.
-    name:              "",
-    weapon:            null,
-    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
-    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
-    combatTextOutline: Color.white,
-    hasProp:           false
-  );
-  public static Character MC = new Character(
-    name:              "MC",
-    weapon:            null,
-    dialogTextOutline: new Color(0.25f, 0.25f, 0.25f),
-    dialogTextFill:    Color.white,
-    combatTextOutline: new Color(0.42f, 0.42f, 0.42f),
-    hasProp:           false
-  );
-  public static Character MC_NARRATION = new Character(
-    name:              "MC",
-    weapon:            null,
-    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
-    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
-    combatTextOutline: Color.yellow,
-    hasProp:           false
-  );
   public static Character ROSE = new Character(
     name:              "Rose",
+    id:                0,
     weapon:            Weapons.SHOTGUN,
     dialogTextOutline: new Color(1, 0, 0, 0.5f),
     dialogTextFill:    new Color(1, 0.9333f, 0.9333f, 1),
@@ -55,6 +34,7 @@ public class Character {
   );
   public static Character MAY = new Character(
     name:              "May",
+    id:                1,
     weapon:            Weapons.MACHINE_GUN,
     dialogTextOutline: new Color(0, 0.5f, 0, 0.5f),
     dialogTextFill:    new Color(0.9333f, 1, 0.9333f, 1),
@@ -63,6 +43,7 @@ public class Character {
   );
   public static Character VANESSA = new Character(
     name:              "Vanessa",
+    id:                2,
     weapon:            Weapons.SNIPER_RIFLE,
     dialogTextOutline: new Color(0, 0.5f, 1, 0.5f),
     dialogTextFill:    new Color(0.9333f, 0.9333f, 1, 1),
@@ -70,13 +51,41 @@ public class Character {
     hasProp:           true
   );
   public static Character FIZZY = new Character(
-    name:              "Fizzy", 
+    name:              "Fizzy",
+    id:                3,
     weapon:            Weapons.GRENADE_LAUNCHER,
     dialogTextOutline: new Color(0.85f, 0.508f, 0.11f, 0.5f),
     dialogTextFill:    new Color(1, 1, 0.9333f, 1),
     combatTextOutline: new Color(0.87f, 0.63f, 0.24f),
     hasProp:           true);
-  
+  public static Character MC = new Character(
+    name:              "MC",
+    id:                4,
+    weapon:            null,
+    dialogTextOutline: new Color(0.25f, 0.25f, 0.25f),
+    dialogTextFill:    Color.white,
+    combatTextOutline: new Color(0.42f, 0.42f, 0.42f),
+    hasProp:           false
+  );
+  public static Character MC_NARRATION = new Character(
+    name:              "MC",
+    id:                5,
+    weapon:            null,
+    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
+    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
+    combatTextOutline: Color.yellow,
+    hasProp:           false
+  );
+  public static Character NONE = new Character( // NONE is for onomatopoeia, non-diagetic text, etc.
+    name:              "",
+    id:                6,
+    weapon:            null,
+    dialogTextOutline: new Color(0.35f, 0.35f, 0.35f),
+    dialogTextFill:    new Color(0.8f, 0.8f, 0.8f),
+    combatTextOutline: Color.white,
+    hasProp:           false
+  );
+
   /**
    * Sets the position and/or rotation of MC (the player), and/or the positions of the girls.
    * If MC's position or rotation is null, that value will not be set.
