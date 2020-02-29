@@ -181,7 +181,7 @@ public class SelectionMenu : MonoBehaviour {
     // Mode.Hold
     else {
       // TODO handle other menu buttons
-      if (Input.GetMouseButtonUp(2)) {
+      if (Input.GetButtonUp("SelectWeapon")) {
         select(currentHighlight);
       }
     }

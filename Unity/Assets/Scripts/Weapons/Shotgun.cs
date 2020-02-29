@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Shotgun : WeaponController {
+  protected override int getId() { return 0; }
+
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer[] lineRenderers;
@@ -94,6 +96,10 @@ public class Shotgun : WeaponController {
     foreach (Health health in enemiesHit.Keys) {
       health.takeDamage(enemiesHit[health] as List<Damage>);
     }
+
+    if (enemiesHit.Count == 0)
+      EventManager.accept(EventManager.Context.WEAPON_MISSED,
+                          EventManager.TRIGGERED_BY, Weapons.SHOTGUN.index);
 
     audioSource.PlayOneShot(sound, volume);
 

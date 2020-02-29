@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
 public class GrenadeLauncher : WeaponController {
+  protected override int getId() { return 3; }
+
   private const float SCATTER_RADIANS = 7f * Mathf.Deg2Rad;
   private const float INITIAL_VELOCITY = 30f;
 

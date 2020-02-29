@@ -124,6 +124,9 @@ public abstract class Quest {
 
   protected virtual void saveArgs(Hashtable args) {}
 
+  /**
+   * Called just before the Quest is destroyed. Use this callback for any teardown.
+   */
   public virtual void stop() {}
 
   public virtual void handleEvent(string eventName, GameObject trigger) {}

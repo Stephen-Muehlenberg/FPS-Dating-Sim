@@ -2,6 +2,8 @@
 using UnityEngine;
 
 public class SniperRifle : WeaponController {
+  protected override int getId() { return 2; }
+
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer lineRenderer;
@@ -19,6 +21,10 @@ public class SniperRifle : WeaponController {
 
   public float shotDelayRemaining = 0f;
   private IEnumerator bullettimeRoutine = null;
+
+  // Cached for re-use.
+  private Vector3 shotScatteredDirection;
+  private Vector3 shotEndpoint;
 
   void Awake() {
     weapon = Weapons.SNIPER_RIFLE;
@@ -83,34 +89,26 @@ public class SniperRifle : WeaponController {
   }
 
   private void Fire(float scatterRadians) {
-    Vector3 scatteredDirection = bulletOrigin.randomScatter(scatterRadians);
+    shotScatteredDirection = bulletOrigin.randomScatter(scatterRadians);
 
-    rayHit = Physics.Raycast(bulletOrigin.position, scatteredDirection, out rayHitInfo, RANGE, rayLayerMask);
-    var endpoint = rayHit ? rayHitInfo.point : bulletOrigin.position + scatteredDirection * RANGE;
+    rayHit = Physics.Raycast(bulletOrigin.position, shotScatteredDirection, out rayHitInfo, RANGE, rayLayerMask);
+    shotEndpoint = rayHit ? rayHitInfo.point : bulletOrigin.position + shotScatteredDirection * RANGE;
 
     lineRenderer.SetPosition(0, bulletOrigin.position);
-    lineRenderer.SetPosition(1, endpoint);
+    lineRenderer.SetPosition(1, shotEndpoint);
     lineRenderer.enabled = true;
     StartCoroutine(showBulletTrail());
 
     if (rayHit) {
-      // Damage
-      var damage = new Damage(amount: Random.Range(DAMAGE_MIN, DAMAGE_MAX),
-                              origin: transform.position, 
-                              hitPoint: rayHitInfo.point,
-                              source: Weapons.SNIPER_RIFLE,
-                              hitLocation: rayHitInfo.collider);
-      rayHitInfo.collider.SendMessageUpwards("takeDamage", damage, SendMessageOptions.DontRequireReceiver);
-
-      // Particles
-      if (rayHitInfo.collider.GetComponentInParent<EnemyHealth>() != null) {
-        Instantiate(hitParticlePrefab, rayHitInfo.point, Quaternion.Euler(scatteredDirection));
-      }
+      EnemyHealth enemyHealth = rayHitInfo.collider.GetComponentInParent<EnemyHealth>();
+      if (enemyHealth == null) onMiss();
+      else onHitEnemy(enemyHealth, shotScatteredDirection);
 
       // Force
-      var rigidBody = rayHitInfo.collider.GetComponentInParent<Rigidbody>();
-      if (rigidBody != null) rigidBody.AddForceAtPosition(scatteredDirection * BULLET_FORCE, rayHitInfo.point);
+      rayHitInfo.collider.GetComponentInParent<Rigidbody>()
+        ?.AddForceAtPosition(shotScatteredDirection * BULLET_FORCE, rayHitInfo.point);
     }
+    else onMiss();
 
     audioSource.Play();
   }
@@ -120,5 +118,24 @@ public class SniperRifle : WeaponController {
     lineRenderer.enabled = true;
     yield return new WaitForSeconds(BULLET_TRAIL_LIFETIME);
     lineRenderer.enabled = false;
+  }
+
+  private void onHitEnemy(EnemyHealth enemyHealth, Vector3 bulletDirection) {
+
+    // Damage
+    enemyHealth.takeDamage(new Damage(
+      amount: Random.Range(DAMAGE_MIN, DAMAGE_MAX),
+      origin: transform.position,
+      hitPoint: rayHitInfo.point,
+      source: Weapons.SNIPER_RIFLE,
+      hitLocation: rayHitInfo.collider));
+
+    // Particles
+    Instantiate(hitParticlePrefab, rayHitInfo.point, Quaternion.Euler(bulletDirection));
+  }
+
+  private void onMiss() {
+    EventManager.accept(EventManager.Context.WEAPON_MISSED,
+                        EventManager.TRIGGERED_BY, Weapons.SNIPER_RIFLE.index);
   }
 }

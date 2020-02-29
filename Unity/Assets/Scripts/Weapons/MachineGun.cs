@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MachineGun : WeaponController {
+  protected override int getId() { return 1; }
+
   public Transform bulletOrigin;
   public AudioSource audioSource;
   public LineRenderer lineRenderer;
@@ -18,6 +20,7 @@ public class MachineGun : WeaponController {
   
   private int burstShotsRemaining;
   private float burstCooldown, burstCooldownRemaining;
+  private bool burstHit;
 
   public interface MachineGunListener {
     void onFire(int bulletsRemaining);

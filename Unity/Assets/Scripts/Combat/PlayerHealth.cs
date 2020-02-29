@@ -34,6 +34,8 @@ public class PlayerHealth : Health {
 
     foreach (Damage damage in damages) remaining -= damage.amount;
     if (remaining <= 0) SendMessage("die");
+
+    EventManager.accept(Context.PLAYER_HIT);
   }
 
   public void setGodMode(bool enabled) {

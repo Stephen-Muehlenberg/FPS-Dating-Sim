@@ -50,6 +50,10 @@ public class Quest_Competition : Quest {
     else throw new UnityException("Unknown state " + state);
   }
 
+  public override void stop() {
+    if (state >= 100 && state < 600) Monsters.OnMonstersChanged += onMonstersChangedCallback;
+  }
+
   private void s000_openingConversation() {
     new Conversation()
       .text(Character.MAY, "Ok, let's get back to saving the world!")
@@ -174,6 +178,7 @@ public class Quest_Competition : Quest {
       secondsRemaining--;
       updateObjectiveText();
     }
+    Monsters.OnMonstersChanged -= onMonstersChangedCallback;
     setState(stateOnComplete);
   }
 

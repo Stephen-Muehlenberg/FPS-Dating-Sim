@@ -73,6 +73,10 @@ public class Grenade : MonoBehaviour {
       // TODO knock enemies, objects back
     }
 
+    if (creaturesHit.Count == 0)
+      EventManager.accept(EventManager.Context.WEAPON_MISSED,
+                          EventManager.TRIGGERED_BY, Weapons.GRENADE_LAUNCHER.index);
+
     // Spawn explosion, remove grenade
     GameObject.Instantiate(explosionPrefab, transform.position, Quaternion.identity);
     Destroy(this.gameObject);

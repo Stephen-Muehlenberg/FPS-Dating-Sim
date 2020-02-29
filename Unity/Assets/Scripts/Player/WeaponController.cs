@@ -7,6 +7,8 @@ abstract public class WeaponController : MonoBehaviour {
 
   // Cached for re-use across all weapons
   private static float cooldownFraction; // How complete is the cooldown? 0 = not at all, 1 = complete.
+  private static float fatigueBeforeUpdate;
+  private static float fatigueAfterUpdate;
   protected static bool rayHit;
   protected static RaycastHit rayHitInfo;
   // Use rayLayerMask = ~LayerMask.GetMask("Weapons", "Invisible Wall", "Player") to ignore the specified layers.
@@ -31,12 +33,15 @@ abstract public class WeaponController : MonoBehaviour {
     transform.GetChild(0).gameObject.SetActive(visible);
   }
 
+  public int id { get { return getId(); } }
+  abstract protected int getId();
   virtual protected void onEquip() {}
   virtual protected void onUnequip() {}
 
   public void Update() {
     if (TimeUtils.gameplayPaused) return;
 
+    fatigueBeforeUpdate = fatigue.getAsFraction();
     fatigue.update();
 
     if (canFire()) {
@@ -62,6 +67,8 @@ abstract public class WeaponController : MonoBehaviour {
         else WeaponCooldownUi.showProgress(cooldownFraction);
       }
     }
+
+    handleFatigueChange();
   }
 
   private bool canFire() {
@@ -79,6 +86,23 @@ abstract public class WeaponController : MonoBehaviour {
     cooldownRemaining -= TimeUtils.gameplayDeltaTime;
     if (cooldownRemaining <= 0) return 1;
     return 1f - (cooldownRemaining / cooldown);
+  }
+
+  private void handleFatigueChange() {
+    fatigueAfterUpdate = fatigue.getAsFraction();
+
+    // Normal -> Fatigued:
+    if (fatigueBeforeUpdate < 0.6f && fatigueAfterUpdate >= 0.6f)
+      EventManager.accept(EventManager.Context.WEAPON_FATIGUED,
+                          EventManager.TRIGGERED_BY, id);
+    // Fatigued -> Exhausted:
+    else if (fatigueBeforeUpdate < 1 && fatigueAfterUpdate >= 1)
+      EventManager.accept(EventManager.Context.WEAPON_EXHAUSTED,
+                          EventManager.TRIGGERED_BY, id);
+    // Exhausted -> Normal:
+    else if (fatigueBeforeUpdate >= 0.6f && fatigueAfterUpdate < 0.6f)
+      EventManager.accept(EventManager.Context.WEAPON_RECOVERED,
+                          EventManager.TRIGGERED_BY, id);
   }
 
   abstract protected void firePrimary();
