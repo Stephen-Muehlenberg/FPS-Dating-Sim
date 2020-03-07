@@ -16,7 +16,9 @@ public class SceneTransition {
                               bool fadeIn = true, 
                               Callback onSceneLoaded = null,
                               Callback onFadeComplete = null) {
-    if (transitionInProgress) throw new UnityException("Cannot transition to scene " + scene + " because a transition is already in progress.");
+    // TODO not sure if commenting out the line below is safe. If it causes no issues for a few
+    // weeks, then remove this todo and the commented out line.
+//    if (transitionInProgress) throw new UnityException("Cannot transition to scene " + scene + " because a transition is already in progress.");
     transitionInProgress = true;
 
     SceneTransition.onSceneLoaded = onSceneLoaded;

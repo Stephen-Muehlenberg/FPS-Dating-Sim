@@ -79,6 +79,7 @@ public abstract class Quest {
                                                         moveEnabled: moveEnabled,
                                                         jumpEnabled: jumpEnabled);
         Player.SINGLETON.gunSwitch.equip(weapon: weaponEquipped, playEffects: false);
+        Weapons.list.ForEach(weapon => weapon.canEquip = true);
         CombatDialogManager.clearAllMessages();
         CurrentQuestMessage.set(message: questMessage, animateIn: animateQuestMessageIn);
         HighlightMonsters.clearHighlights();

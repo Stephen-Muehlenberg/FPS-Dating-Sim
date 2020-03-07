@@ -16,10 +16,10 @@ public class EventManager {
   public const string QUEST_STATE = "quest_state";
   public const string PLAYER_HP = "player_hp"; // 1000 hp = full health
   public const string CURRENT_WEAPON = "player_weapon"; // -1 = none
-  public const string ROSE_AVAILABLE = "rose_available"; // 1 = true, 0 = false
-  public const string MAY_AVAILABLE = "rose_available"; // 1 = true, 0 = false
-  public const string VANESSA_AVAILABLE = "rose_available"; // 1 = true, 0 = false
-  public const string FIZZY_AVAILABLE = "rose_available"; // 1 = true, 0 = false
+  public const string ROSE_CAN_TALK = "rose_talk"; // 1 = true, 0 = false
+  public const string MAY_CAN_TALK = "rose_talk"; // 1 = true, 0 = false
+  public const string VANESSA_CAN_TALK = "rose_talk"; // 1 = true, 0 = false
+  public const string FIZZY_CAN_TALK = "rose_talk"; // 1 = true, 0 = false
   // Other info
   public const string TRIGGERED_BY = "triggered_by";
 
@@ -131,10 +131,10 @@ public class EventManager {
     if (Player.SINGLETON != null) {
       dict[PLAYER_HP] = Player.SINGLETON.health.remaining;
       dict[CURRENT_WEAPON] = Weapons.currentlyEquipped?.index ?? -1;
-      dict[ROSE_AVAILABLE] = Weapons.SHOTGUN.showInWeaponMenu ? 1 : 0;
-      dict[MAY_AVAILABLE] = Weapons.MACHINE_GUN.showInWeaponMenu ? 1 : 0;
-      dict[VANESSA_AVAILABLE] = Weapons.SNIPER_RIFLE.showInWeaponMenu ? 1 : 0;
-      dict[FIZZY_AVAILABLE] = Weapons.GRENADE_LAUNCHER.showInWeaponMenu ? 1 : 0;
+      dict[ROSE_CAN_TALK] = Weapons.SHOTGUN.canTalk ? 1 : 0;
+      dict[MAY_CAN_TALK] = Weapons.MACHINE_GUN.canTalk ? 1 : 0;
+      dict[VANESSA_CAN_TALK] = Weapons.SNIPER_RIFLE.canTalk ? 1 : 0;
+      dict[FIZZY_CAN_TALK] = Weapons.GRENADE_LAUNCHER.canTalk ? 1 : 0;
     }
     if (QuestManager.currentQuest != null) {
       // TODO add an id to each Quest

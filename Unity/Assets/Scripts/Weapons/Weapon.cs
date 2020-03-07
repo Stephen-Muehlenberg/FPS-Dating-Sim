@@ -2,6 +2,7 @@
   public string name;
   public string weaponName;
   public int index;
+  public bool canTalk = true;
   public bool showInWeaponMenu = true;
   public bool canEquip = true;
   public bool equipped = false;

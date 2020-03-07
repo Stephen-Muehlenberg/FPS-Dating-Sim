@@ -84,7 +84,12 @@ public class CombatDialogMessage : MonoBehaviour {
 
   // Ends the message prematurely
   public void abort() {
-    revealInProgress = false;
+    if (revealInProgress) {
+      revealInProgress = false;
+      // TODO properly handle cases where the '-' shouldn't just be appended, e.g.
+      // "Hello.-", "Hello -", "<b>Hello.</b>-", etc.
+      uiText.text += "-";
+    }
   }
 
   public void Update() {

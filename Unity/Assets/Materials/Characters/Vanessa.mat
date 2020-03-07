@@ -67,7 +67,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _UnlitColorMap:
-        m_Texture: {fileID: 2800000, guid: dd66afb794b96c5449741d3a97c8bcf0, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5c7b6ad65e3f8a449ace16c5d8142ad1, type: 3}
         m_Scale: {x: 1, y: 0.999}
         m_Offset: {x: 0, y: 0}
     m_Floats:
