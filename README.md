@@ -17,7 +17,7 @@ Made in Unity, using version [2019.1.](https://store.unity.com/download), and wr
 
 Each of the main characters transforms into one of your 4 weapons: shotgun, assault rifle, sniper rifle, grenade launcher. These all have a secondary fire mode, such as the sniper rifle's bullet-time zoom-in, and the grenade launcher even lets you rocket jump!
 
-Since they're magical girl-guns, you don't need to worry about ammo. However, using any one gun too much without a break is exhausting, and risks damaging your friendship.
+Since they're magical girl-guns, you don't need to worry about ammo. However, using any one gun too much without a break is exhausting! Their accuracy and rate of fire will slow down the more tired they are. And worse, if you push them too hard you risk damaging your friendship!
 
 ## Actions speak louder than words
 
@@ -25,7 +25,13 @@ Since they're magical girl-guns, you don't need to worry about ammo. However, us
 
 How you fight impacts your relationships just as much as your dialog choices. Rose loves it when you get up close and personal with the monsters, while Vanessa prefers keeping her distance.
 
-Dozens of properties are tracked to determine how the girls feel about your performance. Do you stay still, or jump about? Do you generally keep your distance, or take risks? Did you favour any weapon? Was anyone overworked?
+Dozens of properties are tracked to determine how the girls feel about your performance. Do you stay still, or jump about? Do you play it safe, or take a lot of damage? Do you favour any weapon? Do you work them too hard?
+
+## Reactive Dialog
+
+<img src="https://github.com/Stephen-Muehlenberg/FPS-Dating-Sim/blob/master/Screenshots/FPSDS12.png" width=80% height=80%>
+
+Characters comment on your actions mid-fight. Pay attention to what they say! Not only do they provide direction and tips, you can also gauge their mood and energy levels. Just because you're fighting for your lives against the legions of hell doesn't mean you should be inconsiderate!
 
 ## Missions and Hub
 
