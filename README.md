@@ -7,7 +7,7 @@ Slay demons to romance your weapons!
 
 FPSDS is an experimental visual novel / first person shooter hybrid.
 
-Made in Unity, using version [2019.1.](https://store.unity.com/download), and written in C#. The latest build can be found [here](https://github.com/Stephen-Muehlenberg/FPS-Dating-Sim/blob/master/Latest%20Build/FPSDS_v0.40_2020_03_07.rar).
+Made in Unity, using version [2019.1.](https://store.unity.com/download), and written in C#. The latest Windows build can be found [here](https://github.com/Stephen-Muehlenberg/FPS-Dating-Sim/blob/master/Latest%20Build/FPSDS_v0.40_2020_03_07.rar).
 
 # Features
 
